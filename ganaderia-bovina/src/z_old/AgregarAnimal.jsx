@@ -1,4 +1,4 @@
-import "../../styles/AgregarAnimal.css"
+import "./AgregarAnimal.css"
 import {NavLink} from "react-router-dom";
 
 export const AgregarAnimal = () => {

@@ -1,0 +1,138 @@
+
+/*
+* ------------------------------------------ AnimalesMock.jsx: ------------------------------------------
+* Funcionalidad: Incluir un conjunto inicial de datos de animales: terneros y vacas.
+* Se emplea para comprobar si las funcionalidades CRUD de ListaAnimales funcionan con éxito.
+* En el futuro, este fichero será sustituido por una base de datos.
+* -------------------------------------------------------------------------------------------------------
+*
+* */
+
+export const animalesMock = [
+    {
+        id: "V-1",
+        tipo: "Vaca",
+        estado: "Vacía",
+        nombre: "Luna",
+        fechaNacimiento: "2021-01-15",
+        padre: "Toro1",
+        madre: "Vaca2",
+        corral: "1",
+        celulasSomaticas: "20000",
+        calidadPatas: "8",
+        calidadUbres: "7",
+        grasa: "4.5",
+        proteinas: "3.2",
+    },
+    {
+        id: "C-1",
+        tipo: "Ternero",
+        estado: "Joven",
+        nombre: "Sol",
+        fechaNacimiento: "2023-06-10",
+        padre: "Toro3",
+        madre: "Vaca5",
+        corral: "0",
+        celulasSomaticas: "15000",
+        calidadPatas: "6",
+        calidadUbres: "N/A",
+        grasa: "N/A",
+        proteinas: "N/A",
+    },
+    {
+        id: "V-2",
+        tipo: "Vaca",
+        estado: "Vacía",
+        nombre: "Pepita",
+        fechaNacimiento: "2022-02-25",
+        padre: "Toro1",
+        madre: "Vaca2",
+        corral: "2",
+        celulasSomaticas: "15000",
+        calidadPatas: "9",
+        calidadUbres: "4",
+        grasa: "5.6",
+        proteinas: "3.7",
+    },
+    {
+        id: "C-2",
+        tipo: "Ternero",
+        estado: "Joven",
+        nombre: "Pio",
+        fechaNacimiento: "2024-12-14",
+        padre: "Toro3",
+        madre: "Vaca5",
+        corral: "0",
+        celulasSomaticas: "14500",
+        calidadPatas: "7",
+        calidadUbres: "N/A",
+        grasa: "N/A",
+        proteinas: "N/A",
+    },
+];
+
+/*
+* Mi conjunto inicial:
+* export const animalesMock = [
+    {
+        id: "1",
+        tipo: "Vaca",
+        estado: "Vacía",
+        nombre: "Luna",
+        fechaNacimiento: "2021-01-15",
+        padre: "Toro1",
+        madre: "Vaca2",
+        corral: "1",
+        celulasSomaticas: "20000",
+        calidadPatas: "8",
+        calidadUbres: "7",
+        grasa: "4.5",
+        proteinas: "3.2",
+    },
+    {
+        id: "2",
+        tipo: "Ternero",
+        estado: "Joven",
+        nombre: "Sol",
+        fechaNacimiento: "2023-06-10",
+        padre: "Toro3",
+        madre: "Vaca5",
+        corral: "0",
+        celulasSomaticas: "15000",
+        calidadPatas: "6",
+        calidadUbres: "N/A",
+        grasa: "N/A",
+        proteinas: "N/A",
+    },
+    {
+        id: "3",
+        tipo: "Vaca",
+        estado: "Vacía",
+        nombre: "Pepita",
+        fechaNacimiento: "2022-02-25",
+        padre: "Toro1",
+        madre: "Vaca2",
+        corral: "2",
+        celulasSomaticas: "15000",
+        calidadPatas: "9",
+        calidadUbres: "4",
+        grasa: "5.6",
+        proteinas: "3.7",
+    },
+    {
+        id: "4",
+        tipo: "Ternero",
+        estado: "Joven",
+        nombre: "Pio",
+        fechaNacimiento: "2024-12-14",
+        padre: "Toro3",
+        madre: "Vaca5",
+        corral: "0",
+        celulasSomaticas: "14500",
+        calidadPatas: "7",
+        calidadUbres: "N/A",
+        grasa: "N/A",
+        proteinas: "N/A",
+    },
+];
+* */

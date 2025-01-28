@@ -6,7 +6,7 @@ import GestionVacas from "./pages/GestionVacas.jsx"
 import {NavBar} from "./components/NavBar.jsx"
 import {Footer} from "./components/Footer.jsx"
 import {ListaAnimales} from "./pages/01_Animales/ListaAnimales.jsx";
-import {AgregarAnimal} from "./pages/01_Animales/AgregarAnimal.jsx";
+import {AgregarAnimal} from "./z_old/AgregarAnimal.jsx";
 import {InventarioVT} from "./pages/02_VacunacionesTratamientos/InventarioVT.jsx";
 import {AgregarTipoVT} from "./pages/02_VacunacionesTratamientos/AgregarTipoVT.jsx";
 import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAnimal.jsx";
@@ -17,6 +17,7 @@ import {InseminacionAnimal} from "./pages/04_Inseminaciones/InseminacionAnimal.j
 import {SimulacionCrias} from "./pages/05_SimulacionCrias/SimulacionCrias.jsx";
 import {VisualizarToros} from "./pages/06_Toros/VisualizarToros.jsx";
 import {AgregarToro} from "./pages/06_Toros/AgregarToro.jsx";
+import {FormularioAnimal} from "./pages/01_Animales/FormularioAnimal.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -36,6 +37,9 @@ export const App = () => {
                          <Route path="/gestion-vacas" element={<GestionVacas/>}/>
                          <Route path="/visualizar-animales" element={<ListaAnimales/>}/>
                          <Route path="/agregar-animal" element={<AgregarAnimal/>}/>
+
+                         <Route path="/formulario-animal" element={<FormularioAnimal/>}/>
+
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
                          <Route path="/agregar-tipo-vt" element={<AgregarTipoVT/>}/>
                          <Route path="/insertar-vt-animal" element={<InsertarVTAnimal/>}/>

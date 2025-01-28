@@ -45,7 +45,16 @@ export const NavBar = () => {
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Agregar animal" */}
-                                <li><NavLink to='/agregar-animal' className="dropdown-item">Agregar animal</NavLink></li>
+                                <li>
+                                    {/*<NavLink to='/agregar-animal' className="dropdown-item">Agregar animal</NavLink>*/}
+
+                                    <NavLink to="/formulario-animal"
+                                             state={{ modo: "agregar" }}
+                                             className="dropdown-item">
+                                        Agregar animal
+                                    </NavLink>
+                                </li>
+
                             </ul>
                         </li>
 

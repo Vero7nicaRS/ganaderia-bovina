@@ -6,8 +6,8 @@
 }
 
 /* Estilo del cuadrado */
-.cuadradoVisualizar {
-    width: 300px;
+.cuadradoVisualizarLista {
+    width: 400px;
     height: 60px;
     background-color: #ffffff;
     border: 2px solid #000;
@@ -117,6 +117,8 @@
     width: 100%; /* Asegura que los campos tomen todo el espacio disponible */
 }
 
+
+/* ------------------------------------- BOTONES -------------------------------------*/
 /* Botón de acción genérico */
 button {
     padding: 5px 10px; /* Espaciado interno */
@@ -129,30 +131,49 @@ button {
 
 /* Estilo del botón "VER" */
 .btn-ver {
-    background-color: #007bff; /* Azul */
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
+    background-color: #747bff; /* Azul más clarito*/
     color: white; /* Texto blanco */
 }
 
 .btn-ver:hover {
-    background-color: #0056b3; /* Azul oscuro */
+    /*background-color: #0056b3; !* Azul oscuro *!*/
+    background-color: #007bff; /* Azul oscuro */
+    color: white; /* Cambia el texto al color original del fondo */
+
 }
 
 /* Estilo del botón "MODIFICAR" */
 .btn-modificar {
-    background-color: #ffc107; /* Amarillo */
-    color: black; /* Texto negro */
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
+    background-color: #ffc107; /* Amarillo más clarito */
+    color: white; /* Texto blanco */
 }
 
 .btn-modificar:hover {
     background-color: #e0a800; /* Amarillo oscuro */
+    color: white; /* Texto blanco */
+
 }
 
 /* Estilo del botón "ELIMINAR" */
 .btn-eliminar {
     background-color: #dc3545; /* Rojo */
     color: white; /* Texto blanco */
+    margin: 0 5px; /* Espaciado entre botones */
 }
 
 .btn-eliminar:hover {
     background-color: #b02a37; /* Rojo oscuro */
 }
+
+/* ------------------------------------- FIN DE BOTONES -------------------------------------*/
+
