@@ -18,8 +18,8 @@ export const ListaAnimales = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListaAnimales.
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
-    const { animales, eliminarAnimal } = useContext(AnimalesContext);
-
+    const {animales} = useContext(AnimalesContext);
+    //, eliminarAnimal
     //Creación de busquedaID y tipoSeleccionado para realizar un filtrado en la tabla de animales.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de animales.
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de animales.

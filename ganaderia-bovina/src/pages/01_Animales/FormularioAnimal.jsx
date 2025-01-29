@@ -128,33 +128,6 @@ export const FormularioAnimal = () => {
                     </div>
                 )}
 
-                {/*<div className="cuadradoVisualizarAgregarModificar">*/}
-                {/*    {esVisualizar*/}
-                {/*    ? "VISUALIZAR ANIMAL"*/}
-
-                {/*    : esAgregar*/}
-                {/*        ? "AGREGAR ANIMAL"*/}
-                {/*        : "MODIFICAR ANIMAL"}</div>*/}
-
-
-                {/*<div>*/}
-                {/*    {!esAgregar && (*/}
-                {/*        <div className="contenedor-linea">*/}
-                {/*            <div className="cuadradoID">*/}
-                {/*                <span className="identificador">ID</span>*/}
-                {/*                <input*/}
-                {/*                    type="text"*/}
-                {/*                    className="cuadro-texto"*/}
-                {/*                    value={animal.id || ""}*/}
-                {/*                    disabled*/}
-                {/*                />*/}
-                {/*            </div>*/}
-
-                {/*        </div>*/}
-                {/*    )}*/}
-                {/*</div>*/}
-
-
             </div>
 
             <hr/>
@@ -192,6 +165,14 @@ export const FormularioAnimal = () => {
                                 <option value="Preñada">Preñada</option>
                                 <option value="No inseminar">No inseminar</option>
                                 <option value="Joven">Joven</option>
+                                {/*<option value="Muerta" disabled>Muerta</option>*/}
+                                {/*<option value="Vendida" disabled>Vendida</option>*/}
+
+
+                                {/* Opción oculta pero mostrada si ya estaba asignada */}
+                                {["Muerte", "Vendida"].includes(animal.estado) && (
+                                    <option value={animal.estado}>{animal.estado}</option>
+                                )}
                             </select>
                         </div>
                         <div className="contenedor-linea">
@@ -252,6 +233,11 @@ export const FormularioAnimal = () => {
                                 <option value="2">2 - Vacas</option>
                                 <option value="3">3 - Secar</option>
                                 <option value="4">4 - Enfermería</option>
+                                {/*<option value="5" disabled>Ninguno</option>*/}
+                                {/* Opción oculta pero mostrada si ya estaba asignada */}
+                                {["Ninguno"].includes(animal.corral) && (
+                                    <option value={animal.corral}>{animal.corral}</option>
+                                )}
                             </select>
                         </div>
                     </div>

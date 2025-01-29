@@ -20,12 +20,12 @@ export const  EliminarAnimal = () => {
 
     //Se obtiene al animal.
     const {animal: animalInicial } = location.state; // Se recupera  animal desde el state
-    const [animal, setAnimal] = useState(animalInicial);
-
+    const [animal] = useState(animalInicial);
+    //setAnimal
     /* Se obtiene la función eliminarAnimal para hacer D (eliminar).
          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
     */
-    const { eliminarAnimal } = useContext(AnimalesContext);
+    const { eliminarAnimal, modificarAnimal } = useContext(AnimalesContext);
 
 
     // Estado para almacenar el motivo de eliminación y comentarios
@@ -49,9 +49,29 @@ export const  EliminarAnimal = () => {
             return;
         }
 
-        eliminarAnimal(animal.id); // Se elimina el animal del contexto
+        /*
+            Si el animal ha sido eliminado por el motivo de ERROR, se elimina directamente del sistema.
+            Si el animal ha sido eliminado por el motivo de MUERTA o VENDIDA se actualizan sus campos de
+            estado y corral.
+        *
+        * */
+        if(motivo === "Error"){
+            eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
 
-        alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+            alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
+
+        }else{ //Motivo === MUERTA o VENDIDA
+
+            //Se actualiza el ESTADO del animal a "Muerta" o "Vendida" y el corral a "Ninguno".
+            const animalActualizado = {
+                ...animal,
+                estado: motivo,
+                corral: "Ninguno"
+            };
+            modificarAnimal(animalActualizado);
+            alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+
+        }
 
         navigate("/visualizar-animales"); // Redirige a la página que contiene la lista de animales.
     };
