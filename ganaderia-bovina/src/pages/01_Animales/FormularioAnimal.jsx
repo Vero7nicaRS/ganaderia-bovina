@@ -34,8 +34,8 @@ export const FormularioAnimal = () => {
     });
 
 
-    /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer UD (agregar y modificar).
-       Para ello se emplea useContext ----> Se utiliza AnimalesContext
+    /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
+       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
     const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
 
@@ -100,40 +100,66 @@ export const FormularioAnimal = () => {
                 - AGREGAR ANIMAL.
                 - MODIFICAR ANIMAL.
             */}
+
             <div className="contenedor">
+
                 <div className="cuadradoVisualizarAgregarModificar">
                     {esVisualizar
-                    ? "VISUALIZAR ANIMAL"
-
-                    : esAgregar
-                        ? "AGREGAR ANIMAL"
-                        : "MODIFICAR ANIMAL"}</div>
+                        ? "VISUALIZAR ANIMAL"
+                        : esAgregar
+                            ? "AGREGAR ANIMAL"
+                            : "MODIFICAR ANIMAL"}
+                </div>
 
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
                 se mostrará el ID del animal dentro de un cuadrado. */}
-                <div>
-                    {!esAgregar && (
-                        <div className="contenedor-linea">
-                            <div className="cuadradoID">
-                                <span className="identificador">ID</span>
-                                <input
-                                    type="text"
-                                    className="cuadro-texto"
-                                    value={animal.id || ""}
-                                    disabled
-                                />
-                            </div>
+                {!esAgregar && (
 
-                        </div>
-                    )}
-                </div>
+                        <div className="cuadradoID">
+                            <span className="identificador">ID</span>
+                            <input
+                                type="text"
+                                className="cuadro-texto"
+                                value={animal.id || ""}
+                                disabled
+                            />
+
+
+                    </div>
+                )}
+
+                {/*<div className="cuadradoVisualizarAgregarModificar">*/}
+                {/*    {esVisualizar*/}
+                {/*    ? "VISUALIZAR ANIMAL"*/}
+
+                {/*    : esAgregar*/}
+                {/*        ? "AGREGAR ANIMAL"*/}
+                {/*        : "MODIFICAR ANIMAL"}</div>*/}
+
+
+                {/*<div>*/}
+                {/*    {!esAgregar && (*/}
+                {/*        <div className="contenedor-linea">*/}
+                {/*            <div className="cuadradoID">*/}
+                {/*                <span className="identificador">ID</span>*/}
+                {/*                <input*/}
+                {/*                    type="text"*/}
+                {/*                    className="cuadro-texto"*/}
+                {/*                    value={animal.id || ""}*/}
+                {/*                    disabled*/}
+                {/*                />*/}
+                {/*            </div>*/}
+
+                {/*        </div>*/}
+                {/*    )}*/}
+                {/*</div>*/}
 
 
             </div>
 
             <hr/>
 
-            <form >
+            <form>
                 {/*onSubmit={handleSubmit}*/}
                 <div className="contenedor-flex">
                     <div className="contenedor-izquierda">

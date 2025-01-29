@@ -18,6 +18,7 @@ import {SimulacionCrias} from "./pages/05_SimulacionCrias/SimulacionCrias.jsx";
 import {VisualizarToros} from "./pages/06_Toros/VisualizarToros.jsx";
 import {AgregarToro} from "./pages/06_Toros/AgregarToro.jsx";
 import {FormularioAnimal} from "./pages/01_Animales/FormularioAnimal.jsx";
+import {EliminarAnimal} from "./pages/01_Animales/EliminarAnimal.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -31,14 +32,19 @@ export const App = () => {
              */}
              {/*<NavBar></NavBar>*/}
              <div>
+
+                 {/* Contiene todas las rutas que hay en la aplicación*/}
                  <div className="container">
                      <Routes>
                          <Route path="/" element={<Home/>}/>
                          <Route path="/gestion-vacas" element={<GestionVacas/>}/>
                          <Route path="/visualizar-animales" element={<ListaAnimales/>}/>
                          <Route path="/agregar-animal" element={<AgregarAnimal/>}/>
+                         <Route path="/eliminar-animal" element={<EliminarAnimal/>}/>
 
                          <Route path="/formulario-animal" element={<FormularioAnimal/>}/>
+
+
 
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
                          <Route path="/agregar-tipo-vt" element={<AgregarTipoVT/>}/>
@@ -50,6 +56,8 @@ export const App = () => {
                          <Route path="/simulacion-crias" element={<SimulacionCrias/>}/>
                          <Route path="/visualizar-toros" element={<VisualizarToros/>}/>
                          <Route path="/agregar-toro" element={<AgregarToro/>}/>
+
+
 
                          <Route path="/*" element={<Navigate to='/'/>}></Route>
 

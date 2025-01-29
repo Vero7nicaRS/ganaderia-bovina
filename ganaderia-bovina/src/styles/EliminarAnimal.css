@@ -1,19 +1,3 @@
-.cuadradoAgregarAnimal {
-    width: 300px;
-    height: 60px;
-    background-color: #ffffff;
-    border: 2px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    margin: 50px auto;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    padding: 0 10px; /* Agrega un poco de espacio alrededor del contenido */
-
-}
 /* Contenedor que agrupa el cuadrado y el botón */
 .contenedor {
     display: flex; /* Alinea los hijos horizontalmente */
@@ -25,7 +9,6 @@
     align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
     margin-bottom: 10px; /* Espaciado entre los elementos */
     flex-grow: 1; /* Permite que el espacio se distribuya mejor */
-
 }
 
 /* Establecemos un contenedor para los dos bloques: izquierdo y derecho */
@@ -35,21 +18,22 @@
     gap: 20px; /* Espacio entre los dos bloques */
 }
 
-/* Contenedor izquierdo (tiene 7 elementos) */
+/* Contenedor izquierdo */
 .contenedor-izquierda {
     width: 50%;
 }
 
-/* Contenedor derecho (tiene 5 elementos) */
-.contenedor-derecha {
-    width: 50%;
-}
+/* Contenedor derecho*/
+/*.contenedor-derecha {*/
+/*    width: 50%;*/
+/*}*/
 
 /* Para los select y los inputs, agregamos un espaciado vertical */
 .contenedor-linea {
     display: flex; /*Permite una mejor disposición de los elementos*/
     align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
     margin-bottom: 10px; /* Espaciado entre los elementos */
+
 }
 
 /* Se encarga de poner el texto a la izquierda y el campo de escribir a la derecha del mismo */
@@ -58,12 +42,7 @@
     white-space: nowrap; /* Evitamos que el texto se rompa */
 }
 
-/* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
-.cuadro-texto, .form-select {
-    width: auto;
-    max-width: 200px; /* Ajusta el tamaño máximo */
-    margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
-}
+
 
 .boton-volver {
     display: flex; /*Permite una mejor dispoición de los elementos*/
@@ -136,8 +115,9 @@
     font-size: 1.2em;
     justify-content: left;
     margin: 50px auto;
-}
 
+}
+/* Cuadrado que tiene el ID y el identificador V- C- */
 .cuadradoID{
     width: 300px;
     height: 60px;
@@ -153,7 +133,19 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.cuadradoVisualizarAgregarModificar {
+/* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
+/*.cuadro-texto, .form-select {*/
+/*    width: 100%;*/
+/*}*/
+
+.cuadro-id{
+    width: auto; /* Hace que solo ocupe lo necesario */
+    max-width: 200px; /* Ajusta el tamaño máximo */
+    margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
+}
+
+/* Cuadrados con títulos: Eliminar, Motivos y Comentarios*/
+.cuadradoEliminar {
     width: 300px;
     height: 60px;
     background-color: #ffffff;
@@ -167,3 +159,32 @@
     margin: 50px auto;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+.cuadradoMotivoComentario{
+    width: 700px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    padding-left: 15px; /* Se agrega un espacio a la izquierda del texto */
+}
+
+/* Para el checkbox */
+.form-check{
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Es la separación entre el botón y el texto*/
+    margin-bottom:  10px; /* Es la separación entre los botones de cada uno de los checkbox*/
+    margin-left: 10px; /* Deja un margen a la izquierda -> Desplaza los checkboxes a la derecha*/
+}
+.form-check-label {
+    margin-left: 0; /* Elimina cualquier margen que haya por la izquierda */
+}
+

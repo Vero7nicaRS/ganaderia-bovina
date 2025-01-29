@@ -15,9 +15,8 @@ import { AnimalesContext } from "../../DataAnimales/AnimalesContext";
 export const ListaAnimales = () => {
 
 
-    /* Obtener datos mocks para probar las funcionalidades CRUD de ListaAnimales. Además, se obtiene
-        la función de eliminar.
-       Para ello se emplea useContext ----> Se utiliza AnimalesContext
+    /* Obtener datos mocks para probar las funcionalidades CRUD de ListaAnimales.
+       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
     const { animales, eliminarAnimal } = useContext(AnimalesContext);
 
@@ -46,12 +45,12 @@ export const ListaAnimales = () => {
 
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
     // Manejadores de eliminar, modificar y agregar un nuevo animal (ternero/vaca)
-    const manejarEliminar = (id) => {
-        if (window.confirm("¿Estás seguro de eliminar este animal?")) {
-            console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
-            eliminarAnimal(id); // Llamada a la función eliminar de AnimalesContext: Se elimina el animal existente (vaca/ternero)
-        }
-    };
+    // const manejarEliminar = (id) => {
+    //     if (window.confirm("¿Estás seguro de eliminar este animal?")) {
+    //         eliminarAnimal(id); // Llamada a la función eliminar de AnimalesContext: Se elimina el animal existente (vaca/ternero)
+    //         console.log("Se ha eliminado el animal");
+    //     }
+    // };
 
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
     return (
@@ -122,25 +121,33 @@ export const ListaAnimales = () => {
 
                         <td>
                             <NavLink
-                                to ="/formulario-animal"
-                                state = {{modo:"ver", animal: item}} //Se le pasa el ANIMAL (item)
+                                to="/formulario-animal"
+                                state={{modo: "ver", animal: item}} //Se le pasa el ANIMAL (item)
                                 className="btn-ver">
                                 VER
                             </NavLink>
                             <NavLink
                                 to="/formulario-animal"
-                                state = {{modo: "modificar", animal:item}} //Se le pasa el ANIMAL (item)
+                                state={{modo: "modificar", animal: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
                                 className="btn-modificar"
 
                             >
                                 MODIFICAR
                             </NavLink>
-                            <button
+                            {/*<button*/}
+                            {/*    className="btn-eliminar"*/}
+                            {/*     onClick={ () => manejarEliminar(item.id)}*/}
+                            {/*>*/}
+                            {/*    ELIMINAR*/}
+                            {/*</button>*/}
+                            <NavLink
+                                to="/eliminar-animal"
+                                state={{animal: item}} //Se le pasa el ANIMAL (item)
                                 className="btn-eliminar"
-                                onClick={ () => manejarEliminar(item.id)}
+                                // onClick={ () => manejarEliminar(item.id)}
                             >
                                 ELIMINAR
-                            </button>
+                            </NavLink>
                         </td>
                     </tr>
                 ))}

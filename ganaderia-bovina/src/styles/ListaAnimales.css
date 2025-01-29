@@ -166,13 +166,19 @@ button {
 
 /* Estilo del botón "ELIMINAR" */
 .btn-eliminar {
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
     background-color: #dc3545; /* Rojo */
     color: white; /* Texto blanco */
-    margin: 0 5px; /* Espaciado entre botones */
 }
 
 .btn-eliminar:hover {
     background-color: #b02a37; /* Rojo oscuro */
+    color: white; /* Texto blanco */
+
 }
 
 /* ------------------------------------- FIN DE BOTONES -------------------------------------*/
