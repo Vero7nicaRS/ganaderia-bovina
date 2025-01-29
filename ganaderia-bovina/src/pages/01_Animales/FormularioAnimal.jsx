@@ -298,6 +298,17 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                         </div>
+
+                        {/*Si se ha añadido un comentario al animal cuando se ha eliminado,
+                         aparece la información en color rojo
+                         */}
+                        <div>
+                            {animal.comentario && (
+                                <div style={{ color: 'red', marginTop: '10px' }}>
+                                    <strong>Comentarios:</strong> {animal.comentario}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
