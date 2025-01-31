@@ -6,7 +6,6 @@ import GestionVacas from "./pages/GestionVacas.jsx"
 import {NavBar} from "./components/NavBar.jsx"
 import {Footer} from "./components/Footer.jsx"
 import {ListaAnimales} from "./pages/01_Animales/ListaAnimales.jsx";
-import {AgregarAnimal} from "./z_old/AgregarAnimal.jsx";
 import {InventarioVT} from "./pages/02_VacunacionesTratamientos/InventarioVT.jsx";
 import {AgregarTipoVT} from "./pages/02_VacunacionesTratamientos/AgregarTipoVT.jsx";
 import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAnimal.jsx";
@@ -15,10 +14,11 @@ import {AgregarCorral} from "./pages/03_MovimientosDeCorral/AgregarCorral.jsx";
 import {ListaInseminaciones} from "./pages/04_Inseminaciones/ListaInseminaciones.jsx";
 import {InseminacionAnimal} from "./pages/04_Inseminaciones/InseminacionAnimal.jsx";
 import {SimulacionCrias} from "./pages/05_SimulacionCrias/SimulacionCrias.jsx";
-import {VisualizarToros} from "./pages/06_Toros/VisualizarToros.jsx";
-import {AgregarToro} from "./pages/06_Toros/AgregarToro.jsx";
+import {ListaToros} from "./pages/06_Toros/ListaToros.jsx";
 import {FormularioAnimal} from "./pages/01_Animales/FormularioAnimal.jsx";
 import {EliminarAnimal} from "./pages/01_Animales/EliminarAnimal.jsx";
+import {FormularioToro} from "./pages/06_Toros/FormularioToro.jsx";
+import {EliminarToro} from "./pages/06_Toros/EliminarToro.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -38,10 +38,13 @@ export const App = () => {
                      <Routes>
                          <Route path="/" element={<Home/>}/>
                          <Route path="/gestion-vacas" element={<GestionVacas/>}/>
-                         <Route path="/visualizar-animales" element={<ListaAnimales/>}/>
-                         <Route path="/agregar-animal" element={<AgregarAnimal/>}/>
-                         <Route path="/eliminar-animal" element={<EliminarAnimal/>}/>
 
+                         {/* ---------- Páginas referentes a LISTA DE ANIMALES (Vacas/Terneros) ----------*/}
+                         <Route path="/visualizar-animales" element={<ListaAnimales/>}/>
+                         {/*<Route path="/agregar-animal" element={<AgregarAnimal/>}/>
+                            Cuando no estaba centralizado en el formularioAnimal
+                         */}
+                         <Route path="/eliminar-animal" element={<EliminarAnimal/>}/>
                          <Route path="/formulario-animal" element={<FormularioAnimal/>}/>
 
 
@@ -54,8 +57,14 @@ export const App = () => {
                          <Route path="/lista-inseminaciones" element={<ListaInseminaciones/>}/>
                          <Route path="/inseminacion-animal" element={<InseminacionAnimal/>}/>
                          <Route path="/simulacion-crias" element={<SimulacionCrias/>}/>
-                         <Route path="/visualizar-toros" element={<VisualizarToros/>}/>
-                         <Route path="/agregar-toro" element={<AgregarToro/>}/>
+
+
+                         {/* ---------- Páginas referentes a LISTA DE TOROS ----------*/}
+                         <Route path="/visualizar-toros" element={<ListaToros/>}/>
+                         <Route path="/formulario-toro" element={<FormularioToro/>}/>
+                         <Route path="/eliminar-toro" element={<EliminarToro/>}/>
+
+
 
 
 

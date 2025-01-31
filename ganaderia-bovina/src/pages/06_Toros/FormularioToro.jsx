@@ -1,22 +1,17 @@
 import "../../styles/FormularioAnimal.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
-import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
+import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 
 /*
-* ------------------------------------------ FormularioAnimal.jsx: ------------------------------------------
+* ------------------------------------------ FormularioToro.jsx: ------------------------------------------
 * Funcionalidad: se muestra un formulario para visualizar, agregar y modificar un animal (vaca/ternero).
 * con un determinado identificador (ID)
-* TODO: Se tiene que realizar la parte de visualización, ya que no está incluido la barra de
-*  tratamientos, vacunas, inseminaciones y árbol genealógico. Y por consiguiente, añadir el apartado de
-*  datos generales que sí está implementado.
 *
 * --------------------------------------------------------------------------------------------------------
 * */
 
-//import "../01_Animales/ListaAnimales.jsx"
-//export const FormularioAnimal = ({ modo, animal: animalInicial, onSubmit }) => {
-export const FormularioAnimal = () => {
+export const FormularioToro = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y animal)
     const location = useLocation();
@@ -30,13 +25,9 @@ export const FormularioAnimal = () => {
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [animal, setAnimal] = useState(animalInicial || {
-        tipo: "Vaca",
-        estado: "Vacía",
+        estado: "Vivo",
         nombre: "",
-        fechaNacimiento: "",
-        padre: "",
-        madre: "",
-        corral: "1",
+        cantidadSemen: "",
         celulasSomaticas: "",
         calidadPatas: "",
         calidadUbres: "",
@@ -46,9 +37,9 @@ export const FormularioAnimal = () => {
 
 
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
-       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
+       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
        */
-    const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
+    const {agregarAnimal, modificarAnimal} = useContext(TorosContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -65,7 +56,7 @@ export const FormularioAnimal = () => {
     };
 
 
-    /* ----------------------- MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
+    /* ----------------------- MANEJADOR TOROSCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal.
     const handleAgregar = (e) => {
@@ -74,18 +65,18 @@ export const FormularioAnimal = () => {
         e.preventDefault();
 
         if(esAgregar){
-            console.log("Se ha añadido el animal");
-            agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
+            console.log("Se ha añadido el toro");
+            agregarAnimal(animal); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (toro)
 
         }else if (esModificar){
-            console.log("Se ha modificado el animal");
-            modificarAnimal(animal); // Llamada a la función modificar de AnimalesContext: Se modifica el animal existente (vaca/ternero)
+            console.log("Se ha modificado el toro");
+            modificarAnimal(animal); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
         }
 
-        /* Una vez que se haya agregado un nuevo animal o se modifique un animal existente,
-         el usuario es redirigido a la página de "visualizar-animales".
+        /* Una vez que se haya agregado un nuevo animal (toro) o se modifique un animal existente (toro),
+         el usuario es redirigido a la página de "visualizar-toros".
          */
-        navigate("/visualizar-animales");
+        navigate("/visualizar-toros");
     };
 
     //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO un animal.
@@ -94,8 +85,8 @@ export const FormularioAnimal = () => {
         console.log(animal); // Verifica el estado de animal antes de validar
         e.preventDefault();
         if(esAgregar){
-            console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
-            agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
+            console.log("Se ha añadido el toro y se continua añadiendo nuevos toros");
+            agregarAnimal(animal); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (vaca/ternero)
             setAnimal({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
@@ -107,33 +98,33 @@ export const FormularioAnimal = () => {
         <>
 
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
-                - VISUALIZAR ANIMAL.
-                - AGREGAR ANIMAL.
-                - MODIFICAR ANIMAL.
+                - VISUALIZAR TORO.
+                - AGREGAR TORO.
+                - MODIFICAR TORO.
             */}
 
             <div className="contenedor">
 
                 <div className="cuadradoVisualizarAgregarModificar">
                     {esVisualizar
-                        ? "VISUALIZAR ANIMAL"
+                        ? "VISUALIZAR TORO"
                         : esAgregar
-                            ? "AGREGAR ANIMAL"
-                            : "MODIFICAR ANIMAL"}
+                            ? "AGREGAR TORO"
+                            : "MODIFICAR TORO"}
                 </div>
 
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
-                se mostrará el ID del animal dentro de un cuadrado. */}
+                se mostrará el ID del animal (toro) dentro de un cuadrado. */}
                 {!esAgregar && (
 
-                        <div className="cuadradoID">
-                            <span className="identificador">ID</span>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
-                                value={animal.id || ""}
-                                disabled
-                            />
+                    <div className="cuadradoID">
+                        <span className="identificador">ID</span>
+                        <input
+                            type="text"
+                            className="cuadro-texto"
+                            value={animal.id || ""}
+                            disabled
+                        />
 
 
                     </div>
@@ -149,45 +140,6 @@ export const FormularioAnimal = () => {
                     <div className="contenedor-izquierda">
 
                         <div className="contenedor-linea">
-                            <div className="label">Tipo</div>
-                            <select
-                                className="form-select"
-                                name="tipo"
-                                disabled={esVisualizar || esModificar}
-                                /*Se indica que el campo "Tipo" no se puede modificar cuando se Visualiza o se Modifica.*/
-                                value={animal.tipo || "Vaca"}
-                                onChange={handleChange}
-                            >
-                                <option value="Vaca">Vaca</option>
-                                <option value="Ternero">Ternero</option>
-                            </select>
-
-                        </div>
-                        <div className="contenedor-linea">
-                            <div className="label">Estado</div>
-                            <select
-                                className="form-select"
-                                name="estado"
-                                disabled={esVisualizar} //Se indica que el campo "Estado" no se puede modificar cuando se Visualiza.
-                                value={animal.estado || "Vacía"}
-                                onChange={handleChange}
-                            >
-                                <option value="Vacía">Vacía</option>
-                                <option value="Inseminada">Inseminada</option>
-                                <option value="Preñada">Preñada</option>
-                                <option value="No inseminar">No inseminar</option>
-                                <option value="Joven">Joven</option>
-                                {/*<option value="Muerta" disabled>Muerta</option>*/}
-                                {/*<option value="Vendida" disabled>Vendida</option>*/}
-
-
-                                {/* Opción oculta pero mostrada si ya estaba asignada */}
-                                {["Muerte", "Vendida"].includes(animal.estado) && (
-                                    <option value={animal.estado}>{animal.estado}</option>
-                                )}
-                            </select>
-                        </div>
-                        <div className="contenedor-linea">
                             <div className="label">Nombre</div>
                             <input
                                 type="text"
@@ -199,59 +151,34 @@ export const FormularioAnimal = () => {
                             />
                         </div>
                         <div className="contenedor-linea">
-                            <div className="label">Fecha de nacimiento</div>
-                            <input
-                                type="date"
-                                className="cuadro-texto"
-                                name="fechaNacimiento"
-                                disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
-                                value={animal.fechaNacimiento || ""}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="contenedor-linea">
-                            <div className="label">Identificador padre</div>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
-                                name="padre"
-                                disabled={esVisualizar} //Se indica que el campo "Identificador padre" no se puede modificar cuando se Visualiza.
-                                value={animal.padre || ""}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="contenedor-linea">
-                            <div className="label">Identificador madre</div>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
-                                name="madre"
-                                disabled={esVisualizar} //Se indica que el campo "Identificador padre" no se puede modificar cuando se Visualiza.
-                                value={animal.madre || ""}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="contenedor-linea">
-                            <div className="label">Corral:</div>
+                            <div className="label">Estado</div>
                             <select
                                 className="form-select"
-                                name="corral"
-                                disabled={esVisualizar} //Se indica que el campo "Corral" no se puede modificar cuando se Visualiza.
-                                value={animal.corral || "1"}
+                                name="estado"
+                                disabled={esVisualizar || esModificar} //Se indica que el campo "Estado" no se puede modificar cuando se Visualiza.
+                                value={animal.estado || "Vivo"}
                                 onChange={handleChange}
                             >
-                                <option value="0">0 - Crías</option>
-                                <option value="1">1 - Vacas</option>
-                                <option value="2">2 - Vacas</option>
-                                <option value="3">3 - Secar</option>
-                                <option value="4">4 - Enfermería</option>
-                                {/*<option value="5" disabled>Ninguno</option>*/}
+                                <option value="Vivo">Vivo</option>
+
                                 {/* Opción oculta pero mostrada si ya estaba asignada */}
-                                {["Ninguno"].includes(animal.corral) && (
-                                    <option value={animal.corral}>{animal.corral}</option>
+                                {["Muerte", "Otros"].includes(animal.estado) && (
+                                    <option value={animal.estado}>{animal.estado}</option>
                                 )}
                             </select>
                         </div>
+                        <div className="contenedor-linea">
+                            <div className="label">Cantidad de semen</div>
+                            <input
+                                type="text"
+                                className="cuadro-texto"
+                                name="cantidadSemen"
+                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                value={animal.cantidadSemen || ""}
+                                onChange={handleChange}
+                            />
+                        </div>
+
                     </div>
 
                     <div className="contenedor-derecha">
@@ -354,11 +281,18 @@ export const FormularioAnimal = () => {
                             {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
                             {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
-                            <NavLink to="/visualizar-animales" className="btn btn-info">CANCELAR</NavLink>
+                            <NavLink to="/visualizar-toros" className="btn btn-info">CANCELAR</NavLink>
 
                         </div>
 
 
+                    )}
+
+                    {esVisualizar && (
+
+                        <div className="boton-espacio">
+                            <NavLink to="/visualizar-toros" className="btn btn-info">VISUALIZAR OTROS TOROS</NavLink>
+                        </div>
                     )}
                 </>
 

@@ -6,7 +6,8 @@ import PropTypes from "prop-types"; //Se usa prop-types para definir children.
 /*
 * ------------------------------------------ AnimalesProvider.jsx: ------------------------------------------
 * Funcionalidad: importa el contexto.
-* Se emplea para que el listado de animales se encuentre disponible en las diferentes páginas.
+* Se emplea para que el listado de animales (vacas y/o terneros) se encuentre disponible
+* en las diferentes páginas.
 *
 * Se separa el Context del Provider porque se espera que cada archivo solo exporte componentes.
 * -----------------------------------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 import "../../styles/ListaAnimales.css";
 import { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
-import { AnimalesContext } from "../../DataAnimales/AnimalesContext";
+import { AnimalesContext } from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 
 export const ListaAnimales = () => {
 
