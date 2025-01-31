@@ -12,7 +12,9 @@ export const ListaToros = () => {
     //Realización del filtrado por ID y por TIPO
     const datosFiltrados = animales.filter((item) => {
         const coincideBusqueda =
-            busquedaID === "" || item.id.toString().includes(busquedaID); // Búsqueda por ID
+            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+            se convierten a mayúsculas (toUpperCase)*/
+            busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
         return coincideBusqueda ;
     });
     //Manejadores de las búsquedas realizadas por ID y por TIPO para encontrar al animal (vaca/ternero)

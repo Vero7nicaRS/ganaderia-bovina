@@ -28,7 +28,9 @@ export const ListaAnimales = () => {
     //Realización del filtrado por ID y por TIPO
     const datosFiltrados = animales.filter((item) => {
         const coincideBusqueda =
-            busquedaID === "" || item.id.toString().includes(busquedaID); // Búsqueda por ID
+            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+            se convierten a mayúsculas (toUpperCase)*/
+            busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
         const coincideTipo =
             tipoSeleccionado === "Sin filtro" || item.tipo === tipoSeleccionado; // Búsqueda por TIPO
         return coincideBusqueda && coincideTipo;
