@@ -7,7 +7,7 @@ import {NavBar} from "./components/NavBar.jsx"
 import {Footer} from "./components/Footer.jsx"
 import {ListaAnimales} from "./pages/01_Animales/ListaAnimales.jsx";
 import {InventarioVT} from "./pages/02_VacunacionesTratamientos/InventarioVT.jsx";
-import {AgregarTipoVT} from "./pages/02_VacunacionesTratamientos/AgregarTipoVT.jsx";
+import {FormularioTipoVT} from "./pages/02_VacunacionesTratamientos/FormularioTipoVT.jsx";
 import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAnimal.jsx";
 import {ListaCorrales} from "./pages/03_MovimientosDeCorral/ListaCorrales.jsx";
 import {AgregarCorral} from "./pages/03_MovimientosDeCorral/AgregarCorral.jsx";
@@ -50,7 +50,7 @@ export const App = () => {
 
 
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
-                         <Route path="/agregar-tipo-vt" element={<AgregarTipoVT/>}/>
+                         <Route path="/agregar-tipo-vt" element={<FormularioTipoVT/>}/>
                          <Route path="/insertar-vt-animal" element={<InsertarVTAnimal/>}/>
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/agregar-corral" element={<AgregarCorral/>}/>

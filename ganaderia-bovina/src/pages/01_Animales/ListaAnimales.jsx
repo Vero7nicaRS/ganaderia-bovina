@@ -2,7 +2,7 @@
 * ------------------------------------------ ListaAnimales.jsx: ------------------------------------------
 * Funcionalidad: Muestra el listado de animales existente, pudiendo acceder a la información de cada uno de
 * los animales (vacas y terneros), modificarlos o eliminarlos. Además, se pueden agregar nuevos animales (vacas y terneros).
-* Además, se puede realizar un filtrado de los mismos: (tipo y/o identificador)
+* Por otra parte, se puede realizar un filtrado de los mismos: (tipo y/o identificador)
 * --------------------------------------------------------------------------------------------------------
 * */
 

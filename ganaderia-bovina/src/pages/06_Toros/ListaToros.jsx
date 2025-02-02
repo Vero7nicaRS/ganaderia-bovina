@@ -1,3 +1,12 @@
+/*
+* ------------------------------------------ ListaToros.jsx: ------------------------------------------
+* Funcionalidad: Muestra el listado de toros existente, pudiendo acceder a la información de cada uno de
+* los toros, modificarlos o eliminarlos. Además, se pueden agregar nuevos toros.
+* Por otra parte, se puede realizar un filtrado de los mismos según su identificador.
+* --------------------------------------------------------------------------------------------------------
+* */
+
+
 import "../../styles/ListaToros.css";
 import {NavLink} from "react-router-dom";
 import {useContext, useState} from "react";

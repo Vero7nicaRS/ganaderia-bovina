@@ -130,8 +130,9 @@ export const NavBar = () => {
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>
-                                {/* Enlace a la página "Agregar toro" */}
-                                <li><NavLink to='/agregar-toro' className="dropdown-item">Agregar toro</NavLink></li>
+                                {/* Enlace a la página "Formulario toro" */}
+                                <li><NavLink to='/formulario-toro'  state={{ modo: "agregar" }} className="dropdown-item">Agregar toro</NavLink></li>
+
                             </ul>
 
                         </li>

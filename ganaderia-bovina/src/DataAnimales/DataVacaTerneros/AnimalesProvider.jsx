@@ -28,6 +28,9 @@ export const AnimalesProvider = ({children}) => {
         // Cálculo del identificador: es necesario que cada animal añadido tenga un identificador único (ID).
 
         // 1. Se obtiene el último identificador (ID) asignado al animal (vaca/ternero)
+        // Se emplea filter para poder agrupar a las vacas y terneros y seleccionar al último de estos
+        // permitiendo identificar al animal en base a su tipo.
+        // Ej: 12 vacas y 8 terneros --> El siguiente identificador será V-13 y T-9
         const animalesDeTipo = animales.filter(animal => animal.tipo === nuevoAnimal.tipo);
 
         // 2. El ID será el siguiente al último identificador, es decir, actúa de manera secuencial.
