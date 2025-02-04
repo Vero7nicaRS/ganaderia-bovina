@@ -5,6 +5,7 @@ import {App} from './App.jsx'
 import {BrowserRouter} from "react-router-dom";
 import {AnimalesProvider} from "./DataAnimales/DataVacaTerneros/AnimalesProvider.jsx";
 import {TorosProvider} from "./DataAnimales/DataToros/TorosProvider.jsx";
+import {VtProvider} from "./DataAnimales/DataVacunasTratamientos/VTProvider.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -15,7 +16,13 @@ createRoot(document.getElementById('root')).render(
 
               <TorosProvider> {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
                                 los datos de los animales (Toros) y por tanto, podrán modificarlos */}
-                  <App> </App>
+
+                  <VtProvider>   {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
+                                los datos de las vacunas y/o tratamientos y por tanto, podrán modificarlos */}
+
+                      <App> </App>
+                  </VtProvider>
+
               </TorosProvider>
 
           </AnimalesProvider>

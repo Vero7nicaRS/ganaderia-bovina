@@ -7,7 +7,7 @@ import {NavBar} from "./components/NavBar.jsx"
 import {Footer} from "./components/Footer.jsx"
 import {ListaAnimales} from "./pages/01_Animales/ListaAnimales.jsx";
 import {InventarioVT} from "./pages/02_VacunacionesTratamientos/InventarioVT.jsx";
-import {FormularioTipoVT} from "./pages/02_VacunacionesTratamientos/FormularioTipoVT.jsx";
+import {FormularioVT} from "./pages/02_VacunacionesTratamientos/FormularioVT.jsx";
 import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAnimal.jsx";
 import {ListaCorrales} from "./pages/03_MovimientosDeCorral/ListaCorrales.jsx";
 import {AgregarCorral} from "./pages/03_MovimientosDeCorral/AgregarCorral.jsx";
@@ -48,10 +48,14 @@ export const App = () => {
                          <Route path="/formulario-animal" element={<FormularioAnimal/>}/>
 
 
-
+                         {/* ---------- Páginas referentes a INVENTARIO DE VACUNAS Y/O TRATAMIENTOS ----------*/}
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
-                         <Route path="/agregar-tipo-vt" element={<FormularioTipoVT/>}/>
+                         <Route path="/formulario-vt" element={<FormularioVT/>}/>
+                         <Route path="/agregar-tipo-vt" element={<FormularioVT/>}/>
                          <Route path="/insertar-vt-animal" element={<InsertarVTAnimal/>}/>
+
+
+
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/agregar-corral" element={<AgregarCorral/>}/>
                          <Route path="/lista-inseminaciones" element={<ListaInseminaciones/>}/>

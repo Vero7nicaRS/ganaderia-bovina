@@ -34,12 +34,15 @@ export const VtProvider = ({children}) => {
         const existeVT = vt.some(v => v.nombre.toUpperCase() === nombreMayuscula);
 
         if(existeVT){
+
+
             console.error("Existe una vacuna/tratamiento con este mismo nombre.");
             return;
         }
 
         // 1. Se obtiene el último identificador (ID) asignado a las vacunas/tratamientos
-        const siguienteId = vt.length > 0 ? Math.max(...vt.map(v => parseInt(v.id.replace("VT-", "")))) : 0;
+        // const siguienteId = vt.length > 0 ? Math.max(...vt.map(v => parseInt(v.id.replace("VT-", "")))) : 0;
+        const siguienteId = vt.length > 0 ? Math.max(...vt.map(v => parseInt(v.id.replace("VT-", "")))) + 1 : 1;
 
         // 2. Se define el prefijo para una vacuna/tratamiento (VT-)
         const prefijoID = 'VT-';

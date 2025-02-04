@@ -20,7 +20,7 @@ export const FormularioToro = () => {
     const navigate = useNavigate();
 
 
-    const { modo, animal: animalInicial } = location.state || { tipo: "Vaca", estado:"Vacía", corral: "1 - Vacas"}; // Se recupera el modo y animal desde el state
+    const { modo, animal: animalInicial } = location.state; // Se recupera el modo y animal desde el state
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
