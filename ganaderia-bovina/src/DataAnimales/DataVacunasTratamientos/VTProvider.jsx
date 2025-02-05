@@ -34,8 +34,6 @@ export const VtProvider = ({children}) => {
         const existeVT = vt.some(v => v.nombre.toUpperCase() === nombreMayuscula);
 
         if(existeVT){
-
-
             console.error("Existe una vacuna/tratamiento con este mismo nombre.");
             return;
         }

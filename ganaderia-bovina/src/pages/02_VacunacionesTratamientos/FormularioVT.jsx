@@ -34,7 +34,8 @@ export const FormularioVT= () => {
         if (!vt.tipo) {
             setVT((prevVT) => ({ ...prevVT, tipo: "Tratamiento" }));
         }
-    }, []);
+    }, [vt.tipo]); // Añadir vt.tipo como dependencia
+
 
     /* Se obtiene las funciones: agregarVT y modificarVT para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
@@ -54,6 +55,8 @@ export const FormularioVT= () => {
             [name]: value,
         });
     };
+
+
 
 
     /* ----------------------- MANEJADOR VTCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */

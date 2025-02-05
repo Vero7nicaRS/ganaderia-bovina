@@ -12,6 +12,8 @@ import "../../styles/InventarioVT.css";
 import {useContext, useState} from "react";
 import {VTContext} from "../../DataAnimales/DataVacunasTratamientos/VTContext.jsx";
 import { useMemo } from "react";
+import Swal from 'sweetalert2'; // Se importa SweetAlert2 para llevar a cabo el mensaje de confirmación de eliminación.
+
 export const InventarioVT = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de InventarioVT.
       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTContext
@@ -19,19 +21,6 @@ export const InventarioVT = () => {
     const {vt} = useContext(VTContext);
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de vacunas/tratamientos.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de vacunas y/o tratamientos.
-
-
-    //Realización del filtrado por ID y por TIPO
-    // const datosFiltrados = vt.filter((item) => {
-    //     const coincideBusqueda =
-    //         /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
-    //         se convierten a mayúsculas (toUpperCase)*/
-    //         busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
-    //     const coincideTipo =
-    //         tipoSeleccionado === "Sin filtro" || item.tipo === tipoSeleccionado; // Búsqueda por TIPO
-    //     return coincideBusqueda && coincideTipo;
-    // });
-
 
     /* Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
@@ -54,6 +43,40 @@ export const InventarioVT = () => {
     //Manejadores de las búsquedas realizadas por TIPO para encontrar la vacuna/tratamiento
     const manejarTipoSeleccionado = (e) => {
         setTipoSeleccionado(e.target.value);
+    };
+
+    const {eliminarVT} = useContext(VTContext);
+    /* ----------------------- MANEJADOR FORMULARIOVTCONTEXT: ELIMINAR -----------------------*/
+    // Manejadores de eliminar una vacuna o tratamiento
+    // const manejarEliminar = (id) => {
+    //
+    //     if (window.confirm("¿Estás seguro de eliminar este tratamiento/vacuna?")) {
+    //         eliminarVT(id); // Llamada a la función eliminar de AnimalesContext: Se elimina el animal existente (vaca/ternero)
+    //         console.log("Se ha eliminado el tratamiento/vacuna");
+    //     }
+    // };
+
+
+    // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
+    const manejarEliminar = (id, tipo, nombre) => {
+        Swal.fire({
+            title: `¿Desea eliminar  ${tipo === "Vacuna" ? "la vacuna" : "el tratamiento"} ${id} ${nombre} seleccionada?`,
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'ELIMINAR',
+            cancelButtonText: 'CANCELAR',
+            reverseButtons: true // Cambia el orden de los botones
+        }).then((result) => {
+            if (result.isConfirmed) {
+                eliminarVT(id);
+                Swal.fire(
+                    'Eliminado!',
+                    `${tipo === "Vacuna" ? "La vacuna" : "El tratamiento"} ha sido eliminad${tipo === "Vacuna" ? "a" : "o"}.`,
+                    'success'
+                );
+            }
+        });
     };
 
     return (
@@ -142,23 +165,14 @@ export const InventarioVT = () => {
                                     >
                                         MODIFICAR
                                     </NavLink>
-                                    {/*<button*/}
-                                    {/*    className="btn-eliminar"*/}
-                                    {/*     onClick={ () => manejarEliminar(item.id)}*/}
-                                    {/*>*/}
-                                    {/*    ELIMINAR*/}
-                                    {/*</button>*/}
-
                                     {/* BOTÓN ELIMINAR */}
-
-                                    <NavLink
-                                        to="/eliminar-vt"
-                                        state={{vt: item}} //Se le pasa la vacuna/tratamiento (item)
+                                    <button
                                         className="btn-eliminar"
-                                        // onClick={ () => manejarEliminar(item.id)}
+                                         onClick={ () => manejarEliminar(item.id, item.tipo, item.nombre)}
                                     >
                                         ELIMINAR
-                                    </NavLink>
+                                    </button>
+
                                 </>
 
                             </td>
