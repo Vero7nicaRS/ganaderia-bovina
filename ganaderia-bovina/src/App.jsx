@@ -19,6 +19,7 @@ import {FormularioAnimal} from "./pages/01_Animales/FormularioAnimal.jsx";
 import {EliminarAnimal} from "./pages/01_Animales/EliminarAnimal.jsx";
 import {FormularioToro} from "./pages/06_Toros/FormularioToro.jsx";
 import {EliminarToro} from "./pages/06_Toros/EliminarToro.jsx";
+import {FormularioInseminacion} from "./pages/04_Inseminaciones/FormularioInseminacion.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -58,8 +59,15 @@ export const App = () => {
 
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/agregar-corral" element={<AgregarCorral/>}/>
+
+
+                         {/* ---------- Páginas referentes a LISTA DE INSEMINACIONES  ----------*/}
                          <Route path="/lista-inseminaciones" element={<ListaInseminaciones/>}/>
+                         <Route path="/formulario-inseminacion" element={<FormularioInseminacion/>}/>
+
                          <Route path="/inseminacion-animal" element={<InseminacionAnimal/>}/>
+
+
                          <Route path="/simulacion-crias" element={<SimulacionCrias/>}/>
 
 

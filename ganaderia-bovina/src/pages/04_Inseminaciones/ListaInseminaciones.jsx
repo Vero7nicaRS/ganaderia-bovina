@@ -38,9 +38,9 @@ export const ListaInseminaciones = () => {
 
     const {eliminarInseminacion} = useContext(InseminacionesContext);
     // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
-    const manejarEliminar = (id, tipo, nombre) => {
+    const manejarEliminar = (id, fecha, hora) => {
         Swal.fire({
-            title: `¿Desea eliminar la inseminación  ${tipo === "Vacuna" ? "la vacuna" : "el tratamiento"} ${id} ${nombre} seleccionada?`,
+            title: `¿Desea eliminar la inseminación  ${id} con fecha ${fecha} y hora ${hora} seleccionada?`,
             text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -52,7 +52,7 @@ export const ListaInseminaciones = () => {
                 eliminarInseminacion(id);
                 Swal.fire(
                     'Eliminado!',
-                    `${tipo === "Vacuna" ? "La vacuna" : "El tratamiento"} ha sido eliminad${tipo === "Vacuna" ? "a" : "o"}.`,
+                    `La inseminación ha sido eliminada`,
                     'success'
                 );
             }
@@ -65,7 +65,7 @@ export const ListaInseminaciones = () => {
 
                 {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
                 <NavLink
-                    to="/formulario-vt"
+                    to="/formulario-inseminacion"
                     state={{modo: "agregar"}} // Se pasa el estado "Agregar"
                     className="btn btn-info boton-derecha"
                 >
@@ -120,14 +120,14 @@ export const ListaInseminaciones = () => {
                         <tr key={item.id}>
                             <td>{item.id}</td>
                             <td>{item.fechaInseminacion}</td>
-                            <td>{item.hora}</td>
+                            <td>{item.horaInseminacion}</td>
                             <td>{item.idVaca}</td>
                             <td>{item.idToro}</td>
 
                             <td>
                                 {/* BOTÓN VER */}
                                 <NavLink
-                                    to="/formulario-vt"
+                                    to="/formulario-inseminacion"
                                     state={{modo: "ver", inseminaciones: item}} //Se le pasa la vacuna/tratamiento (item)
                                     className="btn-ver">
                                     VER
@@ -138,11 +138,11 @@ export const ListaInseminaciones = () => {
                                 <>
                                     {/* BOTÓN MODIFICAR */}
                                     <NavLink
-                                        to="/formulario-vt"
+                                        to="/formulario-inseminacion"
                                         state={{
                                             modo: "modificar",
                                             inseminaciones: item
-                                        }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                        }} //Se le pasa el MODO (modificar) y la inseminación (item)
                                         className="btn-modificar"
                                     >
                                         MODIFICAR
@@ -150,7 +150,7 @@ export const ListaInseminaciones = () => {
                                     {/* BOTÓN ELIMINAR */}
                                     <button
                                         className="btn-eliminar"
-                                        onClick={ () => manejarEliminar(item.id, item.tipo, item.nombre)}
+                                        onClick={ () => manejarEliminar(item.id, item.fechaInseminacion, item.horaInseminacion)}
                                     >
                                         ELIMINAR
                                     </button>

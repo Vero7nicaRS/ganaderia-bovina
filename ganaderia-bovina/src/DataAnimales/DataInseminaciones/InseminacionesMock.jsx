@@ -15,7 +15,7 @@ export const inseminacionesMock= [
         razon: "Celo",
         tipoSemen: "Sexado",
         fechaInseminacion: "12-04-2024",
-        hora: "13:05",
+        horaInseminacion: "13:05",
         responsable: "Juan"
     },
     {
@@ -26,7 +26,7 @@ export const inseminacionesMock= [
         razon: "Celo",
         tipoSemen: "No",
         fechaInseminacion: "13-04-2024",
-        hora: "14:05",
+        horaInseminacion: "14:05",
         responsable: "Juan"
     }, {
         id: "I-3",
@@ -36,7 +36,7 @@ export const inseminacionesMock= [
         razon: "Celo",
         tipoSemen: "Sexado",
         fechaInseminacion: "11-04-2024",
-        hora: "13:45",
+        horaInseminacion: "13:45",
         responsable: "Juan"
     }, {
         id: "I-4",
@@ -46,7 +46,7 @@ export const inseminacionesMock= [
         razon: "Celo",
         tipoSemen: "No",
         fechaInseminacion: "15-03-2024",
-        hora: "14:52",
+        horaInseminacion: "14:52",
         responsable: "Juan"
     },
 
