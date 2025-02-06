@@ -25,6 +25,7 @@ export const FormularioToro = () => {
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [animal, setAnimal] = useState(animalInicial || {
+        tipo: "Toro",
         estado: "Vivo",
         nombre: "",
         cantidadSemen: "",

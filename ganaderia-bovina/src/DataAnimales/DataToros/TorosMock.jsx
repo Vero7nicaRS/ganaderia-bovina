@@ -10,6 +10,7 @@
 export const torosMock = [
     {
         id: "T-1",
+        tipo: "Toro", //Añado el campo tipo por si en el futuro tengo todo en una misma tabla
         estado: "Vivo",
         nombre: "Manolo",
         cantidadSemen: "12000",
@@ -21,6 +22,7 @@ export const torosMock = [
     },
     {
         id: "T-2",
+        tipo: "Toro",
         estado: "Vivo",
         nombre: "Arturo",
         CantidadSemen: "12000",
@@ -32,6 +34,7 @@ export const torosMock = [
     },
     {
         id: "T-3",
+        tipo: "Toro",
         estado: "Vivo",
         nombre: "Torillo",
         CantidadSemen: "12000",
@@ -43,6 +46,7 @@ export const torosMock = [
     },
     {
         id: "T-4",
+        tipo: "Toro",
         estado: "Vivo",
         nombre: "Luisito",
         CantidadSemen: "12000",

@@ -17,30 +17,52 @@ export const TorosProvider = ({children}) => {
     const [animales, setAnimales] = useState(torosMock);
 
     const agregarAnimal = (nuevoAnimal) => {
-        // Para los toros no indicamos ningún tipo.
-        // if (!nuevoAnimal.tipo) {
-        //     console.error("El tipo de animal no está definido.");
-        //     return;
-        // }
-        // setAnimales([...animales, nuevoAnimal]); No le estoy asignando ningún identificador.
-
 
         // Cálculo del identificador: es necesario que cada animal añadido tenga un identificador único (ID).
+        setAnimales(prevAnimales => {
+            // 1. Se asegura que el tipo esté definido
+            const tipoAnimal = nuevoAnimal.tipo || "Toro";
 
-        // 1. Se obtiene el último identificador (ID) asignado al animal (toro)
-        const animalesDeTipo = animales.filter(animal => animal.tipo === nuevoAnimal.tipo);
+            // 2. Se fitra por los toros existentes
+            const idsNumericos = prevAnimales
+                .filter(animal => animal.id.startsWith("T-")) // Solo toros
+                .map(animal => parseInt(animal.id.split("-")[1])) // Se extrae el número del identificador (ID)
+                .filter(num => !isNaN(num));
 
-        // 2. El ID será el siguiente al último identificador, es decir, actúa de manera secuencial.
-        const siguienteId = animalesDeTipo.length + 1;
+            // 3. Definir el siguiente ID disponible
+            const siguienteId = idsNumericos.length > 0 ? Math.max(...idsNumericos) + 1 : 1;
 
-        // 3. Se define el prefijo par el TORO (T).
-        const prefijoID = "T-";
+            // 4. Se define cómo va a ser el identificador "T-num"
+            const idUnico = `T-${siguienteId}`;
 
-        // 4. Se define cómo va a ser el identificador "T-num"
-        const idUnico = `${prefijoID}${siguienteId}`;
+            // 5. Se crea el nuevo animal (TORO) con el identificador único y tipo correspondiente
+            return [...prevAnimales, { ...nuevoAnimal, id: idUnico, tipo: tipoAnimal }];
+        });
 
-        // 5. Se crea el nuevo animal (TORO) con el identificador único correspondiente.
-        setAnimales([...animales, { ...nuevoAnimal, id: idUnico}]);
+
+        /* FORMA ANTERIOR: La forma en la que se implementaba anteriormente podría dar problemas
+        con el identificador en el futuro (IDs duplicados), ya que se basaba en la CANTIDAD de toros y le sumaba uno.
+        Pero si se cambiara el modo en el que se hace la eliminación, podría dar problemas.
+        La solución a este problema es seleccionar el ID más alto y sumarle 1.
+
+        // Cálculo del identificador: es necesario que cada animal añadido tenga un identificador único (ID).
+        //
+        // // 1. Se obtiene el último identificador (ID) asignado al animal (toro)
+        // const animalesDeTipo = animales.filter(animal => animal.tipo === nuevoAnimal.tipo);
+        //
+        // // 2. El ID será el siguiente al último identificador, es decir, actúa de manera secuencial.
+        // const siguienteId = animalesDeTipo.length + 1;
+        //
+        // // 3. Se define el prefijo par el TORO (T).
+        // const prefijoID = "T-";
+        //
+        // // 4. Se define cómo va a ser el identificador "T-num"
+        // const idUnico = `${prefijoID}${siguienteId}`;
+        //
+        // // 5. Se crea el nuevo animal (TORO) con el identificador único correspondiente.
+        // setAnimales([...animales, { ...nuevoAnimal, id: idUnico}]);
+
+         */
     };
 
     const modificarAnimal = (animalModificado) => {
