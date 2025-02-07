@@ -27,7 +27,7 @@ export const FormularioInseminacion = () => {
         idVaca: "",
         idToro: "",
         razon: "Celo",
-        tipoSemen: "",
+        tipoSemen: "Sexado",
         fechaInseminacion: "",
         horaInseminacion: "",
         responsable: ""
@@ -240,12 +240,12 @@ export const FormularioInseminacion = () => {
                                     id="tipoSemen"
                                     name="tipoSemen"
                                     disabled={esVisualizar} /*Se indica que el campo "Tipo de semen" no se puede modificar cuando se Visualiza.*/
-                                    checked={inseminacion.tipoSemen === "Sí"} /*Cuando inseminacion.tipoSemen sea "Sí", el checkbox estará señalado.
-                                                                                Si esta en "No", no estará señalado el checkbox.*/
+                                    checked={inseminacion.tipoSemen === "Sexado"} /*Cuando inseminacion.tipoSemen sea "Sexado", el checkbox estará señalado.
+                                                                                Si esta en "No sexado", no estará señalado el checkbox.*/
                                     onChange={(e) => setInseminacion({ /*Cada vez que se seleccione o se inhabilite "Sexado",
                                                                                                                 se actualiza el valor de inseminacion.tipoSemen.*/
                                         ...inseminacion,
-                                        tipoSemen: e.target.checked ? "Sí" : "No"
+                                        tipoSemen: e.target.checked ? "Sexado" : "No sexado"
                                     })}
                                 />
                                 <label htmlFor="tipoSemen" className="checkbox-label">Es sexado</label>

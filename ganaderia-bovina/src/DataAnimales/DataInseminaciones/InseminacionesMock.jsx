@@ -10,8 +10,8 @@ export const inseminacionesMock= [
     {
         id: "I-1",
         tipo: "Inseminación",
-        idVaca: "V-4",
-        idToro: "T-3",
+        idVaca: "V-1",
+        idToro: "T-2",
         razon: "Celo",
         tipoSemen: "Sexado",
         fechaInseminacion: "2022-05-16",
@@ -21,10 +21,10 @@ export const inseminacionesMock= [
     {
         id: "I-2",
         tipo: "Inseminación",
-        idVaca: "V-3",
+        idVaca: "V-1",
         idToro: "T-1",
         razon: "Celo",
-        tipoSemen: "No",
+        tipoSemen: "No sexado",
         fechaInseminacion: "2021-10-21",
         horaInseminacion: "14:05",
         responsable: "Juan"
@@ -32,9 +32,9 @@ export const inseminacionesMock= [
         id: "I-3",
         tipo: "Inseminación",
         idVaca: "V-2",
-        idToro: "T-1",
+        idToro: "T-2",
         razon: "Celo",
-        tipoSemen: "Sexado",
+        tipoSemen: "No sexado",
         fechaInseminacion: "2024-01-09",
         horaInseminacion: "13:45",
         responsable: "Juan"
@@ -44,7 +44,7 @@ export const inseminacionesMock= [
         idVaca: "V-2",
         idToro: "T-1",
         razon: "Celo",
-        tipoSemen: "No",
+        tipoSemen: "Sexado",
         fechaInseminacion: "2019-02-07",
         horaInseminacion: "14:52",
         responsable: "Juan"
