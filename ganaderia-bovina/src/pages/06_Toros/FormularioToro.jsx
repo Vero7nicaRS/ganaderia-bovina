@@ -122,6 +122,7 @@ export const FormularioToro = () => {
                         <span className="identificador">ID</span>
                         <input
                             type="text"
+                            id="id"
                             className="cuadro-texto"
                             value={animalToro.id || ""}
                             disabled

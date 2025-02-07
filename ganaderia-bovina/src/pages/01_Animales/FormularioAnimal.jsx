@@ -30,6 +30,7 @@ export const FormularioAnimal = () => {
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [animal, setAnimal] = useState(animalInicial || {
+        id: "",
         tipo: "Vaca",
         estado: "Vacía",
         nombre: "",
@@ -44,6 +45,8 @@ export const FormularioAnimal = () => {
         proteinas: ""
     });
 
+    // console.log("Modo:", modo);
+    // console.log("Animal:", animal)
 
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
@@ -130,6 +133,7 @@ export const FormularioAnimal = () => {
                             <span className="identificador">ID</span>
                             <input
                                 type="text"
+                                name="id"
                                 className="cuadro-texto"
                                 value={animal.id || ""}
                                 disabled
@@ -359,6 +363,14 @@ export const FormularioAnimal = () => {
                         </div>
 
 
+                    )}
+
+
+                    {esVisualizar && (
+
+                        <div className="boton-espacio">
+                            <NavLink to="/visualizar-animales" className="btn btn-info">VISUALIZAR OTROS ANIMALES</NavLink>
+                        </div>
                     )}
                 </>
 

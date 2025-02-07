@@ -21,6 +21,7 @@ export const FormularioVT= () => {
     /* Se inicializa el tratamiento/vacuna con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [vt, setVT] = useState(vtInicial || {
+        id: "",
         tipo: "Tratamiento",
         nombre: "",
         unidades: "1",
@@ -55,9 +56,6 @@ export const FormularioVT= () => {
             [name]: value,
         });
     };
-
-
-
 
     /* ----------------------- MANEJADOR VTCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
@@ -124,6 +122,7 @@ export const FormularioVT= () => {
                         <span className="identificador">ID</span>
                         <input
                             type="text"
+                            name="id"
                             className="cuadro-texto"
                             value={vt.id || ""}
                             disabled

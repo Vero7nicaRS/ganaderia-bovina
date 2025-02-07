@@ -45,16 +45,7 @@ export const ListaAnimales = () => {
     };
 
 
-    /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
-    // Manejadores de eliminar, modificar y agregar un nuevo animal (ternero/vaca)
-    // const manejarEliminar = (id) => {
-    //     if (window.confirm("¿Estás seguro de eliminar este animal?")) {
-    //         eliminarAnimal(id); // Llamada a la función eliminar de AnimalesContext: Se elimina el animal existente (vaca/ternero)
-    //         console.log("Se ha eliminado el animal");
-    //     }
-    // };
 
-    /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
     return (
         <>
             <div className="contenedor">
@@ -312,4 +303,15 @@ export const ListaAnimales = () => {
 //         </>
 //
 //     );
+
 // };
+/* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
+// Manejadores de eliminar, modificar y agregar un nuevo animal (ternero/vaca)
+// const manejarEliminar = (id) => {
+//     if (window.confirm("¿Estás seguro de eliminar este animal?")) {
+//         eliminarAnimal(id); // Llamada a la función eliminar de AnimalesContext: Se elimina el animal existente (vaca/ternero)
+//         console.log("Se ha eliminado el animal");
+//     }
+// };
+
+/* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/

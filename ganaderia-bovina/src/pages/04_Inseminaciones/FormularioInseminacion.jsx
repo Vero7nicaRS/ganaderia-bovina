@@ -122,6 +122,7 @@ export const FormularioInseminacion = () => {
                         <span className="identificador">ID</span>
                         <input
                             type="text"
+                            name="id"
                             className="cuadro-texto"
                             value={inseminacion.id || ""}
                             disabled
@@ -323,7 +324,7 @@ export const FormularioInseminacion = () => {
                             {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
                             {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
-                            <NavLink to="/lista-inseminacion" className="btn btn-info">CANCELAR</NavLink>
+                            <NavLink to="/lista-inseminaciones" className="btn btn-info">CANCELAR</NavLink>
 
                         </div>
 
@@ -333,7 +334,7 @@ export const FormularioInseminacion = () => {
                     {esVisualizar && (
 
                         <div className="boton-espacio">
-                            <NavLink to="/lista-inseminaciones" className="btn btn-info">VISUALIZAR OTROS TRATAMIENTOS/VACUNAS DEL INVENTARIO</NavLink>
+                            <NavLink to="/lista-inseminaciones" className="btn btn-info">VOLVER AL LISTADO DE INSEMINACIONES</NavLink>
                         </div>
                     )}
                 </>
