@@ -14,7 +14,7 @@ export const inseminacionesMock= [
         idToro: "T-3",
         razon: "Celo",
         tipoSemen: "Sexado",
-        fechaInseminacion: "12-04-2024",
+        fechaInseminacion: "2021-01-15",
         horaInseminacion: "13:05",
         responsable: "Juan"
     },

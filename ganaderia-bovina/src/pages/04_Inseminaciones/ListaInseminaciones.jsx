@@ -128,7 +128,7 @@ export const ListaInseminaciones = () => {
                                 {/* BOTÓN VER */}
                                 <NavLink
                                     to="/formulario-inseminacion"
-                                    state={{modo: "ver", inseminaciones: item}} //Se le pasa la vacuna/tratamiento (item)
+                                    state={{modo: "ver", inseminacion: item}} //Se le pasa la vacuna/tratamiento (item)
                                     className="btn-ver">
                                     VER
                                 </NavLink>
@@ -141,7 +141,7 @@ export const ListaInseminaciones = () => {
                                         to="/formulario-inseminacion"
                                         state={{
                                             modo: "modificar",
-                                            inseminaciones: item
+                                            inseminacion: item
                                         }} //Se le pasa el MODO (modificar) y la inseminación (item)
                                         className="btn-modificar"
                                     >

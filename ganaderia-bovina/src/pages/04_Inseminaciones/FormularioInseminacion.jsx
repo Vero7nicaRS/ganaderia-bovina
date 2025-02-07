@@ -3,111 +3,100 @@ import {useContext, useEffect, useState} from "react";
 import "../../styles/FormularioInseminacion.css";
 import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/InseminacionesContext.jsx";
 export const FormularioInseminacion = () => {
-    //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (inseminación)
+
+//Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
     const location = useLocation();
 
     //Hook para navegar
     const navigate = useNavigate();
 
+    /*
+    * Desde ListaInseminaciones se le pasa un estado:
+    * state={{modo: "ver", inseminacion: item}}
+    * Por lo que tiene que tener el mismo nombre para referenciarlo correctamente.
+    * */
+    const { modo, inseminacion: inseminacionInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
 
-    const { modo, vt: vtInicial } = location.state || {}; // Se recupera el modo e inseminación desde el state
-
-    /* Se inicializa el tratamiento/vacuna con los datos del state.
+    /* Se inicializa la inseminacion con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [vt, setVT] = useState(vtInicial || {
-        id: "",
-        tipo: "Inseminación",
+    const [inseminacion, setInseminacion] = useState(inseminacionInicial || {
+        tipo: "",
         idVaca: "",
         idToro: "",
-        razon: "",
-        tipoSemen: "No",
+        razon: "Celo",
+        tipoSemen: "",
         fechaInseminacion: "",
-        hora: "",
+        horaInseminacion: "",
         responsable: ""
     });
-
-
-    // Si "tipo" se encuentra vacio, se establece "tipo: tratamiento" correctamente.
+// Si "tipo" se encuentra vacio, se establece "tipo: tratamiento" correctamente.
     // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
     useEffect(() => {
-        if (!vt.tipo) {
-            setVT((prevVT) => ({ ...prevVT, tipo: "Tratamiento" }));
+        if (!inseminacion.tipo) {
+            setInseminacion((prevInseminacion) => ({ ...prevInseminacion, tipo: "Inseminación" }));
         }
-    }, [vt.tipo]); // Añadir vt.tipo como dependencia
-
-
+    }, [inseminacion.tipo]); // Añadir inseminacion.tipo como dependencia
     /* Se obtiene las funciones: agregarInseminacion y modificarInseminacion para hacer CU (agregar y modificar).
-       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
-       */
+          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
+          */
     const {agregarInseminacion, modificarInseminacion} = useContext(InseminacionesContext);
-
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
     const esAgregar = modo === "agregar";
     const esModificar = modo === "modificar";
 
-    //Manejador para llevar acabo las modificaciones de los tratamientos/vacunas (actualizar el estado del tratamiento/vacuna)
+//Manejador para llevar acabo las modificaciones de las inseminaciones (actualizar el estado de la inseminacion)
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setVT({
-            ...vt,
+        setInseminacion({
+            ...inseminacion,
             [name]: value,
         });
     };
-
-
-
-
-    /* ----------------------- MANEJADOR INSEMINACIÓNCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
-
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una vacuna/tratamiento.
     const handleAgregar = (e) => {
-        console.log(vt); // Verifica el estado de la inseminación antes de validar
+        console.log(inseminacion); // Verifica el estado de la vacuna/tratamiento antes de validar
 
         e.preventDefault();
 
         if(esAgregar){
-            console.log("Se ha añadido la inseminación");
-            agregarInseminacion(vt); // Llamada a la función agregar de InseminaciónContext: Se añade la nueva inseminación al listado de inseminaciones
+            console.log("Se ha añadido la inseminación a la lista de inseminaciones");
+            agregarInseminacion(inseminacion); // Llamada a la función agregar de TorosContext: Se añade la nuevo inseminacion al listado de inseminaciones
 
         }else if (esModificar){
-            console.log("Se ha modificado la inseminación al inventario");
-            modificarInseminacion(vt); // Llamada a la función modificar de InseminaciónContext: Se modifica la inseminación
+            console.log("Se ha modificado la inseminación de la lista de inseminaciones");
+            modificarInseminacion(inseminacion); // Llamada a la función modificar de TorosContext: Se modifica la inseminacion existente
         }
 
-        /* Una vez que se haya agregado una nueva inseminación o se modifique una inseminación existente,
-         el usuario es redirigido a la página de "lista-inseminaciones".
+        /* Una vez que se haya agregado una nueva vacuna/tratamiento o se modifique una inseminacion existente,
+         el usuario es redirigido a la página de "inventario-inseminacion".
          */
         navigate("/lista-inseminaciones");
     };
 
-    //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO una inseminación.
-    //Le permite al usuario añadir una inseminación y continuar con el formulario vacio para añadir nuevas inseminaciones
     const handleAceptarYSeguir = (e) => {
-        console.log(vt); // Verifica el estado de la vacuna/tratamiento antes de validar
+        console.log(inseminacion); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
         if(esAgregar){
             console.log("Se ha añadido la inseminación y se continua añadiendo nuevas inseminaciones");
-            agregarInseminacion(vt); // Llamada a la función agregar de TorosContext: Se añade la nueva inseminación al listado de inseminaciones
-            setVT({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            agregarInseminacion(inseminacion); // Llamada a la función agregar de TorosContext: Se añade la nuevo inseminacion al inventario
+            setInseminacion({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
     }
-
-    /* ----------------------- FIN MANEJADOR INSEMINACIÓNCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR  -----------------------*/
 
     return (
         <>
 
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
-                - VISUALIZAR INSEMINACIÓN.
-                - AGREGAR INSEMINACIÓN.
-                - MODIFICAR INSEMINACIÓN.
+                - VISUALIZAR VACUNA/TRATAMIENTO.
+                - AGREGAR VACUNA/TRATAMIENTO.
+                - MODIFICAR VACUNA/TRATAMIENTO.
             */}
 
             <div className="contenedor">
 
-                <div className="cuadradoVisualizarAgregarModificarInseminacion">
+                <div className="cuadradoVisualizarAgregarModificarVT">
                     {esVisualizar
                         ? `VISUALIZAR INSEMINACIÓN`
                         : esAgregar
@@ -124,7 +113,7 @@ export const FormularioInseminacion = () => {
                         <input
                             type="text"
                             className="cuadro-texto"
-                            value={vt.id || ""}
+                            value={inseminacion.id || ""}
                             disabled
                         />
 
@@ -142,38 +131,49 @@ export const FormularioInseminacion = () => {
                     <div className="contenedor-izquierda">
 
                         <div className="contenedor-linea">
-                            <div className="label">Identificador vaca</div>
+                            <div className="label">Tipo</div>
                             <select
                                 className="form-select"
-                                name="identificadorVaca"
-                                disabled={esVisualizar}
-                                value={vt.idVaca || "Tratamiento"}
+                                name="tipo"
+                                disabled={esVisualizar || esModificar}
+                                /*Se indica que el campo "Tipo" no se puede modificar cuando se Visualiza o se Modifica.*/
+                                value={inseminacion.tipo || "Inseminacion"}
                                 onChange={handleChange}
                             >
-                                <option value="Tratamiento">y</option>
-                                <option value="Vacuna">x</option>
+                                <option value="Inseminacion">Inseminación</option>
                             </select>
+                        </div>
+                        <div className="contenedor-linea">
+                            <div className="label">Identificador vaca</div>
+                            <input
+                                type="text"
+                                className="cuadro-texto"
+                                name="idVaca"
+                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                value={inseminacion.idVaca || ""}
+                                onChange={handleChange}
+                            />
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador toro</div>
-                            <select
-                                className="form-select"
-                                name="identificadorToro"
-                                disabled={esVisualizar}
-                                value={vt.idToro || "Tratamiento"}
+                            <input
+                                type="text"
+                                className="cuadro-texto"
+                                name="idToro"
+                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                value={inseminacion.idToro || ""}
                                 onChange={handleChange}
-                            >
-                                <option value="Tratamiento">y</option>
-                                <option value="Vacuna">x</option>
-                            </select>
+                            />
                         </div>
+
                         <div className="contenedor-linea">
-                            <div className="label">Razón de inseminación</div>
+                            <div className="label">Razón</div>
                             <select
                                 className="form-select"
                                 name="razon"
-                                disabled={esVisualizar }
-                                value={vt.razon || "Celo"}
+                                disabled={esVisualizar}
+                                /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
+                                value={inseminacion.razon || "Celo"}
                                 onChange={handleChange}
                             >
                                 <option value="Celo">Celo</option>
@@ -181,56 +181,63 @@ export const FormularioInseminacion = () => {
                             </select>
                         </div>
 
+                        <div className="contenedor-linea">
+                            <div className="label">Tipo de semen</div>
+                            <div className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    id="tipoSemen"
+                                    name="tipoSemen"
+                                    disabled={esVisualizar}
+                                    checked={inseminacion.tipoSemen === "Sí"}
+                                    onChange={(e) => setInseminacion({
+                                        ...inseminacion,
+                                        tipoSemen: e.target.checked ? "Sí" : "No"
+                                    })}
+                                />
+                                <label htmlFor="tipoSemen" className="checkbox-label">Es sexado</label>
+                            </div>
+                        </div>
+
 
                     </div>
 
                     <div className="contenedor-derecha">
                         <div className="contenedor-linea">
-                            <div className="label">Fecha de inseminacion</div>
+                            <div className="label">Fecha de inseminación</div>
                             <input
                                 type="date"
                                 className="cuadro-texto"
                                 name="fechaInseminacion"
-                                disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
-                                value={vt.fechaInseminacion || ""}
+                                disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
+                                value={inseminacion.fechaInseminacion || ""}
                                 onChange={handleChange}
                             />
                         </div>
-
                         <div className="contenedor-linea">
                             <label htmlFor="horaInseminacion">Hora de inseminación</label>
                             <input
                                 type="time"
                                 id="horaInseminacion"
                                 name="horaInseminacion"
-                                value={vt.horaInseminacion || ''}
-                                onChange={(e) => setVT({...vt, horaInseminacion: e.target.value})}
+                                value={inseminacion.horaInseminacion || ''}
+                                onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
                                 disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
                             />
                         </div>
+
                         <div className="contenedor-linea">
-                            <div className="label">Responsable de inseminación</div>
+                            <div className="label">responsable</div>
                             <input
                                 type="text"
                                 className="cuadro-texto"
                                 name="responsable"
-                                disabled={esVisualizar} //Se indica que el campo "Responsable de inseminación" no se puede modificar cuando se Visualiza.
-                                value={vt.responsable || ""}
+                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                value={inseminacion.responsable || ""}
                                 onChange={handleChange}
                             />
                         </div>
-
-
-                        {/*Si se ha añadido un comentario a la inseminación cuando se ha eliminado,
-                         aparece la información en color rojo
-                         */}
-                        <div>
-                            {vt.comentario && (
-                                <div style={{color: 'red', marginTop: '10px'}}>
-                                    <strong>Comentarios:</strong> {vt.comentario}
-                                </div>
-                            )}
-                        </div>
+                       
                     </div>
                 </div>
 
@@ -246,7 +253,7 @@ export const FormularioInseminacion = () => {
                             <button type="button"
                                     className="btn btn-info"
                                     onClick={handleAgregar}>
-                            ACEPTAR
+                                ACEPTAR
                             </button>
                             <>
                                 {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
@@ -264,7 +271,7 @@ export const FormularioInseminacion = () => {
                             {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
                             {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
-                            <NavLink to="/lista-inseminaciones" className="btn btn-info">CANCELAR</NavLink>
+                            <NavLink to="/lista-inseminacion" className="btn btn-info">CANCELAR</NavLink>
 
                         </div>
 
@@ -274,7 +281,7 @@ export const FormularioInseminacion = () => {
                     {esVisualizar && (
 
                         <div className="boton-espacio">
-                            <NavLink to="/lista-inseminaciones" className="btn btn-info">VISUALIZAR OTROS TRATAMIENTOS/VACUNAS DEL INVENTARIO</NavLink>
+                            <NavLink to="/lista-inseminacion" className="btn btn-info">VISUALIZAR OTROS TRATAMIENTOS/VACUNAS DEL INVENTARIO</NavLink>
                         </div>
                     )}
                 </>
@@ -289,6 +296,7 @@ export const FormularioInseminacion = () => {
 };
 
 
+
 /*
 *
 * <div className="contenedor-linea">
@@ -299,9 +307,24 @@ export const FormularioInseminacion = () => {
                                     id="tipoSemen"
                                     name="tipoSemen"
                                     disabled={esVisualizar}
-                                    checked={vt.tipoSemen === "Sí"}
-                                    onChange={(e) => setVT({...vt, tipoSemen: e.target.checked ? "Sí" : "No"})}
+                                    checked={inseminacion.tipoSemen === "Sí"}
+                                    onChange={(e) => setInseminacion({...inseminacion, tipoSemen: e.target.checked ? "Sí" : "No"})}
                                 />
                                 <label htmlFor="tipoSemen" className="checkbox-label">Es sexado</label>
                             </div>
-                        </div>*/
+                        </div>
+
+    <div className="contenedor-linea">
+                            <label htmlFor="horaInseminacion">Hora de inseminación</label>
+                            <input
+                                type="time"
+                                id="horaInseminacion"
+                                name="horaInseminacion"
+                                value={inseminacion.horaInseminacion || ''}
+                                onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
+                                disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
+                            />
+                        </div>
+
+
+                        * */

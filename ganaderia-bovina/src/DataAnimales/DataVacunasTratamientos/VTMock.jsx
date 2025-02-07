@@ -12,21 +12,25 @@ export const vtMock= [
         id: "VT-1",
         tipo: "Tratamiento",
         nombre: "Somatotropina bovina (bST)",
+        cantidad: "Sobre"
     },
     {
         id: "VT-2",
         tipo: "Tratamiento",
         nombre: "Terapia selectiva de vacas secas",
+        cantidad: "Sobre"
     },
     {
         id: "VT-3",
         tipo: "Vacuna",
         nombre: "Leptóspira",
+        cantidad: "Botella"
     },
     {
         id: "VT-4",
         tipo: "Vacuna",
         nombre: "Bovisan Diar",
+        cantidad: "Botella"
     },
 
 ];
