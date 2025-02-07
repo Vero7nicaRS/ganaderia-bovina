@@ -110,7 +110,7 @@ export const NavBar = () => {
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Inseminación animal" */}
-                                <li><NavLink to='/inseminacion-animal' className="dropdown-item">Inseminación animal</NavLink></li>
+                                <li><NavLink to='/formulario-inseminacion'  state={{ modo: "agregar" }} className="dropdown-item">Inseminación animal</NavLink></li>
                             </ul>
                         </li>
 

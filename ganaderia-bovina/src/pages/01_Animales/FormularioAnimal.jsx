@@ -2,6 +2,7 @@ import "../../styles/FormularioAnimal.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
+import {ErrorCamposVacios} from "../../components/ErrorCamposVacios.jsx";
 
 /*
 * ------------------------------------------ FormularioAnimal.jsx: ------------------------------------------
@@ -24,7 +25,6 @@ export const FormularioAnimal = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-
     const { modo, animal: animalInicial } = location.state || { tipo: "Vaca", estado:"Vacía", corral: "1 - Vacas"}; // Se recupera el modo y animal desde el state
 
     /* Se inicializa el animal con los datos del state.
@@ -37,7 +37,7 @@ export const FormularioAnimal = () => {
         fechaNacimiento: "",
         padre: "",
         madre: "",
-        corral: "1",
+        corral: "1 - Vacas",
         celulasSomaticas: "",
         calidadPatas: "",
         calidadUbres: "",
@@ -67,19 +67,25 @@ export const FormularioAnimal = () => {
         });
     };
 
-
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
+
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal.
     const handleAgregar = (e) => {
         console.log(animal); // Verifica el estado de animal antes de validar
 
+
         e.preventDefault();
+        // if (!animal.nombre.trim()) {
+        //     setError("El nombre es obligatorio.");
+        //     return;
+        // }
+        // if (!validarCampos()) return;
+
 
         if(esAgregar){
             console.log("Se ha añadido el animal");
             agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
-
         }else if (esModificar){
             console.log("Se ha modificado el animal");
             modificarAnimal(animal); // Llamada a la función modificar de AnimalesContext: Se modifica el animal existente (vaca/ternero)
@@ -200,7 +206,10 @@ export const FormularioAnimal = () => {
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
                                 value={animal.nombre || ""}
                                 onChange={handleChange}
+                                required // Hace que el campo sea obligatorio
+
                             />
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Fecha de nacimiento</div>
@@ -320,11 +329,22 @@ export const FormularioAnimal = () => {
                          */}
                         <div>
                             {animal.comentario && (
-                                <div style={{ color: 'red', marginTop: '10px' }}>
+                                <div style={{color: 'red', marginTop: '10px'}}>
                                     <strong>Comentarios:</strong> {animal.comentario}
                                 </div>
                             )}
                         </div>
+                        {/* Mensaje de error */}
+                        <ErrorCamposVacios datos={animal}
+                                           camposObligatorios={
+                            [  "nombre", "fechaNacimiento", "padre", "madre",
+                                "celulasSomaticas", "calidadPatas", "calidadUbres",
+                                "grasa", "proteinas"]
+                        } />
+
+                        {/* AQUÍ ES DONDE QUIERO AÑADIR EL ERROR :) */}
+
+
                     </div>
                 </div>
 
