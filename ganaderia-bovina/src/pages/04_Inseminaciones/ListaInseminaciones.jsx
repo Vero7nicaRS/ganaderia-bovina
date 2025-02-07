@@ -12,17 +12,19 @@ export const ListaInseminaciones = () => {
     const [fechaSeleccionada, setFechaSeleccionada] = useState("Sin filtro"); //Busqueda por FECHA en la lista de inseminaciones.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID (vaca/toro) en la lista de inseminaciones.
 
-    /* Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
+
+    /* Se filtra la lista de inseminaciones por el ID de la vaca o toro y por la fecha de inseminación */
+    /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
         return inseminaciones.filter((item) => {
             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
                 busquedaID === "" || item.idVaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
-                || item.idToro.toString().toUpperCase().includes(busquedaID.toUpperCase());
-            const coincideTipo =
-                fechaSeleccionada === "Sin filtro" || item.tipo.toUpperCase() === fechaSeleccionada.toUpperCase();
-            return coincideBusqueda && coincideTipo;
+                                  || item.idToro.toString().toUpperCase().includes(busquedaID.toUpperCase());
+            const coincideFecha =
+                fechaSeleccionada === "Sin filtro" || item.fechaInseminacion === fechaSeleccionada;
+            return coincideBusqueda && coincideFecha;
         });
     }, [inseminaciones, busquedaID, fechaSeleccionada]);
 
@@ -32,8 +34,8 @@ export const ListaInseminaciones = () => {
         setBusquedaID(e.target.value);
     };
     //Manejadores de las búsquedas realizadas por TIPO para encontrar la vacuna/tratamiento
-    const manejarFechaSeleccionado = (e) => {
-        setFechaSeleccionada(e.target.value);
+    const manejarFechaSeleccionada = (e) => {
+        setFechaSeleccionada(e.target.value || "Sin filtro");
     };
 
     const {eliminarInseminacion} = useContext(InseminacionesContext);
@@ -86,17 +88,14 @@ export const ListaInseminaciones = () => {
                     />
                 </div>
                 <div className="contenedor-linea">
+                    {/* Se muestra un calendario para seleccionar que fecha es la que se desea*/}
                     <label>Filtrar por fecha:</label>
-                    <select
-                        className="form-select"
-                        aria-label="Default select example"
-                        value={fechaSeleccionada} // Maneja el valor que tiene el fechaSeleccionada
-                        onChange={manejarFechaSeleccionado}
-                    >
-                        <option value="Sin filtro">Sin filtro</option>
-                        <option value="Tratamiento">Tratamiento</option>
-                        <option value="Vacuna">Vacuna</option>
-                    </select>
+                    <input
+                        type="date"
+                        className="date"
+                        value={fechaSeleccionada === "Sin filtro" ? "" : fechaSeleccionada} // Maneja el valor que tiene el fechaSeleccionada
+                        onChange={manejarFechaSeleccionada}
+                    />
                 </div>
             </div>
             <div className="listaVacunasTratamientos">Lista de inseminaciones:</div>
@@ -170,7 +169,29 @@ export const ListaInseminaciones = () => {
                 <NavLink to="/" className="btn btn-info">
                     VOLVER AL MENÚ
                 </NavLink>
+
             </div>
         </>
     )
 }
+
+/*Si se desea filtrar por una fecha disponible en lista de inseminaciones:
+*
+*    const fechasUnicas = useMemo(() => {
+        const fechas = inseminaciones.map(item => item.fechaInseminacion);
+        return ["Sin filtro", ...new Set(fechas)];
+    }, [inseminaciones]);
+
+* <select
+                    className="date"
+                    aria-label="Default select example"
+                    value={fechaSeleccionada} // Maneja el valor que tiene el fechaSeleccionada
+                    onChange={manejarFechaSeleccionada}
+                >
+                    {fechasUnicas.map((fecha, index) => (
+                        <option key={index} value={fecha}>
+                            {fecha}
+                        </option>
+                    ))}
+                </select>
+* */
