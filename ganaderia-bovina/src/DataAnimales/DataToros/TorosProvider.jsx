@@ -14,17 +14,17 @@ import PropTypes from "prop-types";
 import {TorosContext} from "./TorosContext.jsx";
 
 export const TorosProvider = ({children}) => {
-    const [animales, setAnimales] = useState(torosMock);
+    const [animalesToros, setAnimalesToros] = useState(torosMock);
 
     const agregarAnimal = (nuevoAnimal) => {
 
         // Cálculo del identificador: es necesario que cada animal añadido tenga un identificador único (ID).
-        setAnimales(prevAnimales => {
+        setAnimalesToros(prevAnimalesToros => {
             // 1. Se asegura que el tipo esté definido
             const tipoAnimal = nuevoAnimal.tipo || "Toro";
 
             // 2. Se fitra por los toros existentes
-            const idsNumericos = prevAnimales
+            const idsNumericos = prevAnimalesToros
                 .filter(animal => animal.id.startsWith("T-")) // Solo toros
                 .map(animal => parseInt(animal.id.split("-")[1])) // Se extrae el número del identificador (ID)
                 .filter(num => !isNaN(num));
@@ -36,7 +36,7 @@ export const TorosProvider = ({children}) => {
             const idUnico = `T-${siguienteId}`;
 
             // 5. Se crea el nuevo animal (TORO) con el identificador único y tipo correspondiente
-            return [...prevAnimales, { ...nuevoAnimal, id: idUnico, tipo: tipoAnimal }];
+            return [...prevAnimalesToros, { ...nuevoAnimal, id: idUnico, tipo: tipoAnimal }];
         });
 
 
@@ -48,10 +48,10 @@ export const TorosProvider = ({children}) => {
         // Cálculo del identificador: es necesario que cada animal añadido tenga un identificador único (ID).
         //
         // // 1. Se obtiene el último identificador (ID) asignado al animal (toro)
-        // const animalesDeTipo = animales.filter(animal => animal.tipo === nuevoAnimal.tipo);
+        // const animalesDeTipo = animalesTorosToros.filter(animal => animal.tipo === nuevoAnimal.tipo);
         //
         // // 2. El ID será el siguiente al último identificador, es decir, actúa de manera secuencial.
-        // const siguienteId = animalesDeTipo.length + 1;
+        // const siguienteId = animalesTorosDeTipo.length + 1;
         //
         // // 3. Se define el prefijo par el TORO (T).
         // const prefijoID = "T-";
@@ -60,25 +60,25 @@ export const TorosProvider = ({children}) => {
         // const idUnico = `${prefijoID}${siguienteId}`;
         //
         // // 5. Se crea el nuevo animal (TORO) con el identificador único correspondiente.
-        // setAnimales([...animales, { ...nuevoAnimal, id: idUnico}]);
+        // setAnimalesToros([...animalesToros, { ...nuevoAnimal, id: idUnico}]);
 
          */
     };
 
     const modificarAnimal = (animalModificado) => {
-        setAnimales(
-            animales.map((animal) =>
+        setAnimalesToros(
+            animalesToros.map((animal) =>
                 animal.id === animalModificado.id ? animalModificado : animal
             )
         );
     };
 
     const eliminarAnimal = (id) => {
-        setAnimales(animales.filter((animal) => animal.id !== id));
+        setAnimalesToros(animalesToros.filter((animal) => animal.id !== id));
     };
 
     return (
-        <TorosContext.Provider value={{ animales, agregarAnimal, modificarAnimal, eliminarAnimal }}>
+        <TorosContext.Provider value={{ animalesToros, agregarAnimal, modificarAnimal, eliminarAnimal }}>
             {children}
         </TorosContext.Provider>
     );

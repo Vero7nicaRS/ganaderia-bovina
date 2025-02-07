@@ -77,9 +77,11 @@ export const ListaAnimales = () => {
             {/*Con el contenedor-filtro-tipo consigo que esté el texto y el campo para escribir en la misma línea*/}
             <div className="contenedor-filtro-tipo">
                 <div className="contenedor-linea">
-                    <label>Filtrar animal (ID):</label>
+                    <label htmlFor="filtroIDAnimal">Filtrar animal (ID):</label>
                     <input
                         type="text"
+                        id="filtroIDAnimal" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroIDAnimal"
                         className="cuadro-texto"
                         placeholder=""
                         value={busquedaID} //Maneja el valor que tiene el ID seleccionado
@@ -88,9 +90,11 @@ export const ListaAnimales = () => {
                 </div>
 
                 <div className="contenedor-linea">
-                    <label>Filtrar por tipo:</label>
+                    <label htmlFor="filtroTipoAnimal">Filtrar por tipo:</label>
                     <select
                         className="form-select"
+                        id="filtroTipoAnimal" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroTipoAnimal"
                         aria-label="Default select example"
                         value={tipoSeleccionado} // Maneja el valor que tiene el tipoSeleccionado
                         onChange={manejarTipoSeleccionado}

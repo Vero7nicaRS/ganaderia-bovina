@@ -20,9 +20,9 @@ export  const EliminarToro = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-    //Se obtiene al animal.
-    const {animal: animalInicial } = location.state; // Se recupera  animal desde el state
-    const [animal] = useState(animalInicial);
+    //Se obtiene al animal (toro).
+    const {animalToro: animalInicialToro } = location.state; // Se recupera  animal (toro) desde el state
+    const [animalToro] = useState(animalInicialToro);
     /* Se obtiene la función eliminarAnimal para hacer D (eliminar).
          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
     */
@@ -43,12 +43,12 @@ export  const EliminarToro = () => {
     };
 
     /* ----------------------- MANEJADOR TOROSCONTEXT: ELIMINAR -----------------------*/
-// Manejador para eliminar el animal
+// Manejador para eliminar el animal (toro)
     const handleEliminar = () => {
 
         {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/}
         if (!motivo) {
-            alert("ERROR: Selecciona un motivo antes de eliminar el animal.");
+            alert("ERROR: Selecciona un motivo antes de eliminar el animal (toro).");
             return;
         }
 
@@ -58,25 +58,25 @@ export  const EliminarToro = () => {
             estado.
         * */
         if(motivo === "Error"){
-            eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
+            eliminarAnimal(animalToro.id); // Se elimina directamente el animal (toro) del contexto
 
-            {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
-            alert(`El toro ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
+            {/*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo*/}
+            alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}`);
 
         }else{ //Motivo === MUERTA o VENDIDA
 
             /*Se actualiza el ESTADO del animal a "Muerta" o "Vendida" y el corral a "Ninguno".
             Además, se añade un comentario en caso de que haya introducido información el usuario*/
-            const animalActualizado = {
-                ...animal,
+            const animalToroActualizado = {
+                ...animalToro,
                 estado: motivo,
                 comentario: comentarios
             };
-            modificarAnimal(animalActualizado);
-            {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo
+            modificarAnimal(animalToroActualizado);
+            {/*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
                 y dado unos comentarios
             */}
-            alert(`El toro ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+            alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
 
         }
 
@@ -95,7 +95,7 @@ export  const EliminarToro = () => {
                     <input
                         type="text"
                         className="cuadro-id"
-                        value={animal.id || ""}
+                        value={animalToro.id || ""}
                         disabled
                     />
                 </div>

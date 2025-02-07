@@ -98,9 +98,11 @@ export const InventarioVT = () => {
             {/*Añade una línea/raya */}
             <div className="contenedor-filtro-tipo">
                 <div className="contenedor-linea">
-                    <label>Filtrar vacuna/tratamiento (ID):</label>
+                    <label htmlFor="filtroIDVT">Filtrar vacuna/tratamiento (ID):</label>
                     <input
                         type="text"
+                        id="filtroIDVT" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroIDVT"
                         className="cuadro-texto"
                         placeholder=""
                         value={busquedaID} //Maneja el valor que tiene el ID seleccionado
@@ -108,8 +110,10 @@ export const InventarioVT = () => {
                     />
                 </div>
                 <div className="contenedor-linea">
-                    <label>Filtrar por tipo:</label>
+                    <label htmlFor="filtroTipoVT" >Filtrar por tipo:</label>
                     <select
+                        id="filtroTipoVT" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroTipoVT"
                         className="form-select"
                         aria-label="Default select example"
                         value={tipoSeleccionado} // Maneja el valor que tiene el tipoSeleccionado

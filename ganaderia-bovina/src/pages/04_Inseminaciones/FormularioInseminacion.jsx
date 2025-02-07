@@ -18,6 +18,8 @@ export const FormularioInseminacion = () => {
     * Por lo que tiene que tener el mismo nombre para referenciarlo correctamente.
     * */
     const { modo, inseminacion: inseminacionInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
+
+
     /* Se inicializa la inseminacion con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [inseminacion, setInseminacion] = useState(inseminacionInicial || {
@@ -35,7 +37,7 @@ export const FormularioInseminacion = () => {
     * acceder al listado de los mismos. Para ello, se obtiene dicha información con
     * con "AnimalesContext" y TorosContext* */
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
-    const { listaToros } = useContext(TorosContext); // Lista de toros
+    const { animalesToros } = useContext(TorosContext); // Lista de toros
 
     // Si "tipo" se encuentra vacio, se establece "tipo: inseminación" correctamente.
     // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
@@ -169,7 +171,6 @@ export const FormularioInseminacion = () => {
                                         .filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()
                                             && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
                                             && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
-
                                         )
                                         //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
@@ -178,21 +179,41 @@ export const FormularioInseminacion = () => {
                                                 {vaca.id}
                                             </option>
                                         ))
-                                    ) : (
+                                ) : (
                                     <option>No hay vacas disponibles</option>
                                 )}
                             </select>
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador toro</div>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
+                            <select
+                                className="form-select"
                                 name="idToro"
-                                disabled={esVisualizar} //Se indica que el campo "Identificador toro" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar}
                                 value={inseminacion.idToro || ""}
                                 onChange={handleChange}
-                            />
+                            >
+                                <option value="">Selecciona un toro</option>
+                                {animalesToros && animalesToros.length > 0 ? (
+                                    animalesToros
+                                        /*Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
+                                        Además, el toro no debe estar con el estado "muerto" ni "otros", por lo tanto se añade a la
+                                        condición del filtro*/
+                                        .filter((animalToro) => animalToro.tipo.toUpperCase() === "Toro".toUpperCase()
+                                            && animalToro.estado.toUpperCase() !== "Muerte".toUpperCase()
+                                            && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
+                                        )
+                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
+                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
+                                        .map((toro) => (
+                                            <option key={toro.id} value={toro.id}>
+                                                {toro.id}
+                                            </option>
+                                        ))
+                                ) : (
+                                    <option>No hay toros disponibles</option>
+                                )}
+                            </select>
                         </div>
 
                         <div className="contenedor-linea">
@@ -312,7 +333,7 @@ export const FormularioInseminacion = () => {
                     {esVisualizar && (
 
                         <div className="boton-espacio">
-                            <NavLink to="/lista-inseminacion" className="btn btn-info">VISUALIZAR OTROS TRATAMIENTOS/VACUNAS DEL INVENTARIO</NavLink>
+                            <NavLink to="/lista-inseminaciones" className="btn btn-info">VISUALIZAR OTROS TRATAMIENTOS/VACUNAS DEL INVENTARIO</NavLink>
                         </div>
                     )}
                 </>

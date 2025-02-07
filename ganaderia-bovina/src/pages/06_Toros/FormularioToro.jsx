@@ -5,7 +5,7 @@ import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 
 /*
 * ------------------------------------------ FormularioToro.jsx: ------------------------------------------
-* Funcionalidad: se muestra un formulario para visualizar, agregar y modificar un animal (vaca/ternero).
+* Funcionalidad: se muestra un formulario para visualizar, agregar y modificar un toro
 * con un determinado identificador (ID)
 *
 * --------------------------------------------------------------------------------------------------------
@@ -20,11 +20,11 @@ export const FormularioToro = () => {
     const navigate = useNavigate();
 
 
-    const { modo, animal: animalInicial } = location.state; // Se recupera el modo y animal desde el state
+    const { modo, animalToro: animalInicialToro } = location.state; // Se recupera el modo y animal desde el state
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [animal, setAnimal] = useState(animalInicial || {
+    const [animalToro, setAnimalToro] = useState(animalInicialToro || {
         tipo: "Toro",
         estado: "Vivo",
         nombre: "",
@@ -50,8 +50,8 @@ export const FormularioToro = () => {
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setAnimal({
-            ...animal,
+        setAnimalToro({
+            ...animalToro,
             [name]: value,
         });
     };
@@ -59,19 +59,19 @@ export const FormularioToro = () => {
 
     /* ----------------------- MANEJADOR TOROSCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
-    //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal.
+    //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal (toro).
     const handleAgregar = (e) => {
-        console.log(animal); // Verifica el estado de animal antes de validar
+        console.log(animalToro); // Verifica el estado del animal (toro) antes de validar
 
         e.preventDefault();
 
         if(esAgregar){
             console.log("Se ha añadido el toro");
-            agregarAnimal(animal); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (toro)
+            agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (toro)
 
         }else if (esModificar){
             console.log("Se ha modificado el toro");
-            modificarAnimal(animal); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
+            modificarAnimal(animalToro); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
         }
 
         /* Una vez que se haya agregado un nuevo animal (toro) o se modifique un animal existente (toro),
@@ -83,12 +83,12 @@ export const FormularioToro = () => {
     //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO un animal.
     //Le permite al usuario añadir un animal y continuar con el formulario vacio para añadir nuevos animales.
     const handleAceptarYSeguir = (e) => {
-        console.log(animal); // Verifica el estado de animal antes de validar
+        console.log(animalToro); // Verifica el estado de animal antes de validar
         e.preventDefault();
         if(esAgregar){
             console.log("Se ha añadido el toro y se continua añadiendo nuevos toros");
-            agregarAnimal(animal); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (vaca/ternero)
-            setAnimal({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (tooro)
+            setAnimalToro({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
     }
@@ -123,7 +123,7 @@ export const FormularioToro = () => {
                         <input
                             type="text"
                             className="cuadro-texto"
-                            value={animal.id || ""}
+                            value={animalToro.id || ""}
                             disabled
                         />
 
@@ -147,7 +147,7 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="nombre"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
-                                value={animal.nombre || ""}
+                                value={animalToro.nombre || ""}
                                 onChange={handleChange}
                             />
                         </div>
@@ -157,14 +157,14 @@ export const FormularioToro = () => {
                                 className="form-select"
                                 name="estado"
                                 disabled={esVisualizar || esModificar} //Se indica que el campo "Estado" no se puede modificar cuando se Visualiza.
-                                value={animal.estado || "Vivo"}
+                                value={animalToro.estado || "Vivo"}
                                 onChange={handleChange}
                             >
                                 <option value="Vivo">Vivo</option>
 
                                 {/* Opción oculta pero mostrada si ya estaba asignada */}
-                                {["Muerte", "Otros"].includes(animal.estado) && (
-                                    <option value={animal.estado}>{animal.estado}</option>
+                                {["Muerte", "Otros"].includes(animalToro.estado) && (
+                                    <option value={animalToro.estado}>{animalToro.estado}</option>
                                 )}
                             </select>
                         </div>
@@ -175,7 +175,7 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="cantidadSemen"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
-                                value={animal.cantidadSemen || ""}
+                                value={animalToro.cantidadSemen || ""}
                                 onChange={handleChange}
                             />
                         </div>
@@ -190,7 +190,7 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="celulasSomaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
-                                value={animal.celulasSomaticas || ""}
+                                value={animalToro.celulasSomaticas || ""}
                                 onChange={handleChange}
                             />
                         </div>
@@ -201,7 +201,7 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="calidadPatas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
-                                value={animal.calidadPatas || ""}
+                                value={animalToro.calidadPatas || ""}
                                 onChange={handleChange}
                             />
                         </div>
@@ -212,7 +212,7 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="calidadUbres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
-                                value={animal.calidadUbres || ""}
+                                value={animalToro.calidadUbres || ""}
                                 onChange={handleChange}
                             />
                         </div>
@@ -223,7 +223,7 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="grasa"
                                 disabled={esVisualizar} //Se indica que el campo "Grasa" no se puede modificar cuando se Visualiza.
-                                value={animal.grasa || ""}
+                                value={animalToro.grasa || ""}
                                 onChange={handleChange}
                             />
                         </div>
@@ -234,18 +234,18 @@ export const FormularioToro = () => {
                                 className="cuadro-texto"
                                 name="proteinas"
                                 disabled={esVisualizar} //Se indica que el campo "Proteínas" no se puede modificar cuando se Visualiza.
-                                value={animal.proteinas || ""}
+                                value={animalToro.proteinas || ""}
                                 onChange={handleChange}
                             />
                         </div>
 
-                        {/*Si se ha añadido un comentario al animal cuando se ha eliminado,
+                        {/*Si se ha añadido un comentario al animal (toro) cuando se ha eliminado,
                          aparece la información en color rojo
                          */}
                         <div>
-                            {animal.comentario && (
+                            {animalToro.comentario && (
                                 <div style={{ color: 'red', marginTop: '10px' }}>
-                                    <strong>Comentarios:</strong> {animal.comentario}
+                                    <strong>Comentarios:</strong> {animalToro.comentario}
                                 </div>
                             )}
                         </div>

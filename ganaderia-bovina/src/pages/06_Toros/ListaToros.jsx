@@ -14,12 +14,12 @@ import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 
 export const ListaToros = () => {
 
-    const {animales} = useContext(TorosContext);
-    const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de animales.
+    const {animalesToros} = useContext(TorosContext);
+    const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de toros.
 
 
     //Realización del filtrado por ID
-    const datosFiltrados = animales.filter((item) => {
+    const datosFiltrados = animalesToros.filter((item) => {
         const coincideBusqueda =
             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
             se convierten a mayúsculas (toUpperCase)*/
@@ -50,8 +50,10 @@ export const ListaToros = () => {
             {/*Añade una línea/raya */}
             <div className="contenedor-filtro-tipoToro">
                 <div className="contenedor-lineaToro">
-                    <label>Filtrar toro (ID):</label>
+                    <label htmlFor="filtroIDToro">Filtrar toro (ID):</label>
                     <input
+                        id="filtroIDToro" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroIDToro"
                         type="text"
                         className="cuadro-texto"
                         placeholder=""
@@ -70,7 +72,7 @@ export const ListaToros = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
+                    {/* Botones que aparecen al lado de cada uno de los toros: VER - MODIFICAR - ELIMINAR*/}
                     {datosFiltrados.map((item) => (
                         <tr key={item.id}>
                             <td>{item.id}</td>
@@ -80,20 +82,20 @@ export const ListaToros = () => {
                                 {/* BOTÓN VER */}
                                 <NavLink
                                     to="/formulario-toro"
-                                    state={{modo: "ver", animal: item}} //Se le pasa el ANIMAL (item)
+                                    state={{modo: "ver", animalToro: item}} //Se le pasa el ANIMAL (item)
                                     className="btn-ver">
                                     VER
                                 </NavLink>
 
-                                {/*Si el animal ha sido eliminado (estado = "Muerte")*, NO se muestran
+                                {/*Si el animal (toro) ha sido eliminado (estado = "Muerte")*, NO se muestran
                             los botones MODIFICAR y ELIMINAR */}
 
-                                {item.estado !== "Muerte"  && (
+                                {item.estado !== "Muerte" && item.estado !== "Otros"  && (
                                     <>
                                         {/* BOTÓN MODIFICAR */}
                                         <NavLink
                                             to="/formulario-toro"
-                                            state={{modo: "modificar", animal: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
+                                            state={{modo: "modificar", animalToro: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
                                             className="btn-modificar"
                                         >
                                             MODIFICAR
@@ -103,7 +105,7 @@ export const ListaToros = () => {
 
                                         <NavLink
                                             to="/eliminar-toro"
-                                            state={{animal: item}} //Se le pasa el ANIMAL (item)
+                                            state={{animalToro: item}} //Se le pasa el ANIMAL (item)
                                             className="btn-eliminar"
 
                                         >

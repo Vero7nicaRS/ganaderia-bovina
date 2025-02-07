@@ -78,8 +78,10 @@ export const ListaInseminaciones = () => {
             {/*Añade una línea/raya */}
             <div className="contenedor-filtro-tipo">
                 <div className="contenedor-linea">
-                    <label>Filtrar animal (ID):</label>
+                    <label htmlFor="filtroIDVacasToros">Filtrar animal (ID):</label>
                     <input
+                        id="filtroIDVacasToros" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroIDVacasToros"
                         type="text"
                         className="cuadro-texto"
                         placeholder=""
@@ -89,8 +91,10 @@ export const ListaInseminaciones = () => {
                 </div>
                 <div className="contenedor-linea">
                     {/* Se muestra un calendario para seleccionar que fecha es la que se desea*/}
-                    <label>Filtrar por fecha:</label>
+                    <label htmlFor="filtroFecha">Filtrar por fecha:</label>
                     <input
+                        id="filtroFecha" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroFecha"
                         type="date"
                         className="date"
                         value={fechaSeleccionada === "Sin filtro" ? "" : fechaSeleccionada} // Maneja el valor que tiene el fechaSeleccionada
@@ -138,10 +142,7 @@ export const ListaInseminaciones = () => {
                                     {/* BOTÓN MODIFICAR */}
                                     <NavLink
                                         to="/formulario-inseminacion"
-                                        state={{
-                                            modo: "modificar",
-                                            inseminacion: item
-                                        }} //Se le pasa el MODO (modificar) y la inseminación (item)
+                                        state={{modo: "modificar", inseminacion: item}} //Se le pasa el MODO (modificar) y la inseminación (item)
                                         className="btn-modificar"
                                     >
                                         MODIFICAR
