@@ -38,7 +38,7 @@ export const FormularioVT= () => {
 
 
     /* Se obtiene las funciones: agregarVT y modificarVT para hacer CU (agregar y modificar).
-       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
+       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTContext
        */
     const {agregarVT, modificarVT} = useContext(VTContext);
 
@@ -69,11 +69,11 @@ export const FormularioVT= () => {
 
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento al inventario");
-            agregarVT(vt); // Llamada a la función agregar de TorosContext: Se añade el nuevo tratamiento/vacuna al inventario
+            agregarVT(vt); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
 
         }else if (esModificar){
             console.log("Se ha modificado la vacuna/tratamiento al inventario");
-            modificarVT(vt); // Llamada a la función modificar de TorosContext: Se modifica el tratamiento/vacuna existente
+            modificarVT(vt); // Llamada a la función modificar de VTContext: Se modifica el tratamiento/vacuna existente
         }
 
         /* Una vez que se haya agregado una nueva vacuna/tratamiento o se modifique un tratamiento/vacuna existente,
@@ -89,7 +89,7 @@ export const FormularioVT= () => {
         e.preventDefault();
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento y se continua añadiendo nuevas vacunas/tratamientos");
-            agregarVT(vt); // Llamada a la función agregar de TorosContext: Se añade el nuevo tratamiento/vacuna al inventario
+            agregarVT(vt); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
             setVT({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 

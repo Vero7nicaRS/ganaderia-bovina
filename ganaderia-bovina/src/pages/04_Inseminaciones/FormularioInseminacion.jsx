@@ -29,7 +29,7 @@ export const FormularioInseminacion = () => {
         horaInseminacion: "",
         responsable: ""
     });
-// Si "tipo" se encuentra vacio, se establece "tipo: tratamiento" correctamente.
+// Si "tipo" se encuentra vacio, se establece "tipo: inseminación" correctamente.
     // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
     useEffect(() => {
         if (!inseminacion.tipo) {
@@ -37,9 +37,10 @@ export const FormularioInseminacion = () => {
         }
     }, [inseminacion.tipo]); // Añadir inseminacion.tipo como dependencia
     /* Se obtiene las funciones: agregarInseminacion y modificarInseminacion para hacer CU (agregar y modificar).
-          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
+          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza InseminacionesContext
           */
     const {agregarInseminacion, modificarInseminacion} = useContext(InseminacionesContext);
+
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
     const esAgregar = modo === "agregar";
@@ -53,23 +54,22 @@ export const FormularioInseminacion = () => {
             [name]: value,
         });
     };
-    //Para llevar acabo las acciones de AGREGAR y MODIFICAR una vacuna/tratamiento.
+    //Para llevar acabo las acciones de AGREGAR y MODIFICAR una inseminacion.
     const handleAgregar = (e) => {
-        console.log(inseminacion); // Verifica el estado de la vacuna/tratamiento antes de validar
+        console.log(inseminacion); // Verifica el estado de la inseminacion antes de validar
 
         e.preventDefault();
 
         if(esAgregar){
             console.log("Se ha añadido la inseminación a la lista de inseminaciones");
-            agregarInseminacion(inseminacion); // Llamada a la función agregar de TorosContext: Se añade la nuevo inseminacion al listado de inseminaciones
-
+            agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al listado de inseminaciones
         }else if (esModificar){
             console.log("Se ha modificado la inseminación de la lista de inseminaciones");
-            modificarInseminacion(inseminacion); // Llamada a la función modificar de TorosContext: Se modifica la inseminacion existente
+            modificarInseminacion(inseminacion); // Llamada a la función modificar de InseminacionesContext: Se modifica la inseminacion existente
         }
 
-        /* Una vez que se haya agregado una nueva vacuna/tratamiento o se modifique una inseminacion existente,
-         el usuario es redirigido a la página de "inventario-inseminacion".
+        /* Una vez que se haya agregado una nueva inseminacion o se modifique una inseminacion existente,
+         el usuario es redirigido a la página de "lista-inseminaciones".
          */
         navigate("/lista-inseminaciones");
     };
@@ -79,7 +79,7 @@ export const FormularioInseminacion = () => {
         e.preventDefault();
         if(esAgregar){
             console.log("Se ha añadido la inseminación y se continua añadiendo nuevas inseminaciones");
-            agregarInseminacion(inseminacion); // Llamada a la función agregar de TorosContext: Se añade la nuevo inseminacion al inventario
+            agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al inventario
             setInseminacion({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
@@ -105,7 +105,7 @@ export const FormularioInseminacion = () => {
                 </div>
 
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
-                se mostrará el ID de la vacuna/tratamiento dentro de un cuadrado. */}
+                se mostrará el ID de la inseminación dentro de un cuadrado. */}
                 {!esAgregar && (
 
                     <div className="cuadradoID">
@@ -149,7 +149,7 @@ export const FormularioInseminacion = () => {
                                 type="text"
                                 className="cuadro-texto"
                                 name="idVaca"
-                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "Identificador vaca" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.idVaca || ""}
                                 onChange={handleChange}
                             />
@@ -160,7 +160,7 @@ export const FormularioInseminacion = () => {
                                 type="text"
                                 className="cuadro-texto"
                                 name="idToro"
-                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "Identificador toro" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.idToro || ""}
                                 onChange={handleChange}
                             />
@@ -172,7 +172,7 @@ export const FormularioInseminacion = () => {
                                 className="form-select"
                                 name="razon"
                                 disabled={esVisualizar}
-                                /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
+                                /*Se indica que el campo "Razón" no se puede modificar cuando se Visualiza.*/
                                 value={inseminacion.razon || "Celo"}
                                 onChange={handleChange}
                             >
@@ -188,9 +188,11 @@ export const FormularioInseminacion = () => {
                                     type="checkbox"
                                     id="tipoSemen"
                                     name="tipoSemen"
-                                    disabled={esVisualizar}
-                                    checked={inseminacion.tipoSemen === "Sí"}
-                                    onChange={(e) => setInseminacion({
+                                    disabled={esVisualizar} /*Se indica que el campo "Tipo de semen" no se puede modificar cuando se Visualiza.*/
+                                    checked={inseminacion.tipoSemen === "Sí"} /*Cuando inseminacion.tipoSemen sea "Sí", el checkbox estará señalado.
+                                                                                Si esta en "No", no estará señalado el checkbox.*/
+                                    onChange={(e) => setInseminacion({ /*Cada vez que se seleccione o se inhabilite "Sexado",
+                                                                                                                se actualiza el valor de inseminacion.tipoSemen.*/
                                         ...inseminacion,
                                         tipoSemen: e.target.checked ? "Sí" : "No"
                                     })}
@@ -209,7 +211,7 @@ export const FormularioInseminacion = () => {
                                 type="date"
                                 className="cuadro-texto"
                                 name="fechaInseminacion"
-                                disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.fechaInseminacion || ""}
                                 onChange={handleChange}
                             />
@@ -220,24 +222,24 @@ export const FormularioInseminacion = () => {
                                 type="time"
                                 id="horaInseminacion"
                                 name="horaInseminacion"
-                                value={inseminacion.horaInseminacion || ''}
+                                value={inseminacion.horaInseminacion || ''} /*Cada vez que se cambie de hora, se actualizará inseminacion.horaInseminacion*/
                                 onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
                                 disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
                             />
                         </div>
 
                         <div className="contenedor-linea">
-                            <div className="label">responsable</div>
+                            <div className="label">Responsable</div>
                             <input
                                 type="text"
                                 className="cuadro-texto"
                                 name="responsable"
-                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "Responsable" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.responsable || ""}
                                 onChange={handleChange}
                             />
                         </div>
-                       
+
                     </div>
                 </div>
 
@@ -294,37 +296,3 @@ export const FormularioInseminacion = () => {
         </>
     );
 };
-
-
-
-/*
-*
-* <div className="contenedor-linea">
-                            <div className="label">Tipo de semen</div>
-                            <div className="checkbox-container">
-                                <input
-                                    type="checkbox"
-                                    id="tipoSemen"
-                                    name="tipoSemen"
-                                    disabled={esVisualizar}
-                                    checked={inseminacion.tipoSemen === "Sí"}
-                                    onChange={(e) => setInseminacion({...inseminacion, tipoSemen: e.target.checked ? "Sí" : "No"})}
-                                />
-                                <label htmlFor="tipoSemen" className="checkbox-label">Es sexado</label>
-                            </div>
-                        </div>
-
-    <div className="contenedor-linea">
-                            <label htmlFor="horaInseminacion">Hora de inseminación</label>
-                            <input
-                                type="time"
-                                id="horaInseminacion"
-                                name="horaInseminacion"
-                                value={inseminacion.horaInseminacion || ''}
-                                onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
-                                disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
-                            />
-                        </div>
-
-
-                        * */
