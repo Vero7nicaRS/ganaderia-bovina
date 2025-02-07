@@ -2,9 +2,11 @@ import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import "../../styles/FormularioInseminacion.css";
 import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/InseminacionesContext.jsx";
+import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
+import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 export const FormularioInseminacion = () => {
 
-//Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
+    //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
     const location = useLocation();
 
     //Hook para navegar
@@ -16,7 +18,6 @@ export const FormularioInseminacion = () => {
     * Por lo que tiene que tener el mismo nombre para referenciarlo correctamente.
     * */
     const { modo, inseminacion: inseminacionInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
-
     /* Se inicializa la inseminacion con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [inseminacion, setInseminacion] = useState(inseminacionInicial || {
@@ -29,7 +30,14 @@ export const FormularioInseminacion = () => {
         horaInseminacion: "",
         responsable: ""
     });
-// Si "tipo" se encuentra vacio, se establece "tipo: inseminación" correctamente.
+
+    /* Para que haya un desplegable con el listado de toros y vacas disponibles, es necesario
+    * acceder al listado de los mismos. Para ello, se obtiene dicha información con
+    * con "AnimalesContext" y TorosContext* */
+    const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
+    const { listaToros } = useContext(TorosContext); // Lista de toros
+
+    // Si "tipo" se encuentra vacio, se establece "tipo: inseminación" correctamente.
     // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
     useEffect(() => {
         if (!inseminacion.tipo) {
@@ -46,7 +54,7 @@ export const FormularioInseminacion = () => {
     const esAgregar = modo === "agregar";
     const esModificar = modo === "modificar";
 
-//Manejador para llevar acabo las modificaciones de las inseminaciones (actualizar el estado de la inseminacion)
+    //Manejador para llevar acabo las modificaciones de las inseminaciones (actualizar el estado de la inseminacion)
     const handleChange = (e) => {
         const { name, value } = e.target;
         setInseminacion({
@@ -145,14 +153,35 @@ export const FormularioInseminacion = () => {
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador vaca</div>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
+                            <select
+                                className="form-select"
                                 name="idVaca"
-                                disabled={esVisualizar} //Se indica que el campo "Identificador vaca" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar}
                                 value={inseminacion.idVaca || ""}
                                 onChange={handleChange}
-                            />
+                            >
+                                <option value="">Selecciona una vaca</option>
+                                {animales && animales.length > 0 ? (
+                                    animales
+                                        /*Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
+                                        Además, la vaca no debe estar muerta ni vendida, por lo tanto se añade a la
+                                        condición del filtro*/
+                                        .filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()
+                                            && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
+                                            && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
+
+                                        )
+                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
+                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
+                                        .map((vaca) => (
+                                            <option key={vaca.id} value={vaca.id}>
+                                                {vaca.id}
+                                            </option>
+                                        ))
+                                    ) : (
+                                    <option>No hay vacas disponibles</option>
+                                )}
+                            </select>
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador toro</div>

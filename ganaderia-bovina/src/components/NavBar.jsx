@@ -71,7 +71,7 @@ export const NavBar = () => {
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Agregar nuevo tipo" */}
-                                <li><NavLink to='/formulario-vt' className="dropdown-item">Agregar nuevo tipo</NavLink></li>
+                                <li><NavLink to='/formulario-vt' state={{ modo: "agregar" }} className="dropdown-item">Agregar nuevo tipo</NavLink></li>
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>

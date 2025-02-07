@@ -127,5 +127,5 @@ export const ListaToros = () => {
                     </NavLink>
                 </div>
             </>
-            );
-            };
+    );
+};
