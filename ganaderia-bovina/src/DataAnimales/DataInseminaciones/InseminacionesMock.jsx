@@ -14,7 +14,7 @@ export const inseminacionesMock= [
         idToro: "T-3",
         razon: "Celo",
         tipoSemen: "Sexado",
-        fechaInseminacion: "2021-01-15",
+        fechaInseminacion: "2022-05-16",
         horaInseminacion: "13:05",
         responsable: "Juan"
     },
@@ -25,7 +25,7 @@ export const inseminacionesMock= [
         idToro: "T-1",
         razon: "Celo",
         tipoSemen: "No",
-        fechaInseminacion: "13-04-2024",
+        fechaInseminacion: "2021-10-21",
         horaInseminacion: "14:05",
         responsable: "Juan"
     }, {
@@ -35,7 +35,7 @@ export const inseminacionesMock= [
         idToro: "T-1",
         razon: "Celo",
         tipoSemen: "Sexado",
-        fechaInseminacion: "11-04-2024",
+        fechaInseminacion: "2024-01-09",
         horaInseminacion: "13:45",
         responsable: "Juan"
     }, {
@@ -45,7 +45,7 @@ export const inseminacionesMock= [
         idToro: "T-1",
         razon: "Celo",
         tipoSemen: "No",
-        fechaInseminacion: "15-03-2024",
+        fechaInseminacion: "2019-02-07",
         horaInseminacion: "14:52",
         responsable: "Juan"
     },

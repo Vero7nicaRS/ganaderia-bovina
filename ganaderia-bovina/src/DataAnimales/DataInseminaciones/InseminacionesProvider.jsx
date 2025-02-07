@@ -27,7 +27,7 @@ export const InseminacionesProvider = ({children}) => {
             // 2. Se fitra por las inseminaciones existentes
             const idsNumericos = prevInseminaciones
                 .filter(inseminacion => inseminacion.id.startsWith("I-")) // Solo inseminaciones
-                .map(inseminacion => parseInt(inseminacion.id.split("-")[1])) // Se extrae el número del identificador (ID)
+                .map(inseminacion => parseInt(inseminacion.id.split("-")[1])) // Se extrae el número del identificador (ID) pasándolo a entero.
                 .filter(num => !isNaN(num));
 
             // 3. Definir el siguiente ID disponible: se escoge el último Identificador y se le añade 1.
@@ -36,7 +36,9 @@ export const InseminacionesProvider = ({children}) => {
             // 4. Se define cómo va a ser el identificador "I-num"
             const idUnico = `I-${siguienteId}`;
 
-            // 5. Se crea la nueva inseminación con el identificador único y tipo correspondiente
+            // 5. Se añade la nueva inseminación a la lista de inseminaciones existentes (prevInseminaciones) y
+            // esa inseminación nueva (nuevaInseminacion) contiene los datos pasados por el argumento y se le indica
+            // el identificador único y tipo correspondiente.
             return [...prevInseminaciones, { ...nuevaInseminacion, id: idUnico, tipo: tipoInseminacion }];
         });
     };
