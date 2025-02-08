@@ -68,17 +68,10 @@ export const FormularioAnimal = () => {
             [name]: value,
         });
     };
-    const [errores, setErrores] = useState({});
 
-    // const validarFormulario = () => {
-    //     const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo); // Revisa todos los campos
-    //     setErrores(erroresTemp);
-    //
-    //     console.log("Errores detectados:", erroresTemp);
-    //     console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
-    //
-    //     return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
-    // };
+
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
 
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo); // Revisa todos los campos

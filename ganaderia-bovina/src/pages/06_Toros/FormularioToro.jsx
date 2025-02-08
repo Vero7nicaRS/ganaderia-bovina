@@ -2,6 +2,7 @@ import "../../styles/FormularioAnimal.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
+import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
 
 /*
 * ------------------------------------------ FormularioToro.jsx: ------------------------------------------
@@ -56,7 +57,17 @@ export const FormularioToro = () => {
         });
     };
 
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposFormularioAnimal(animalToro, animalToro.tipo); // Revisa todos los campos
+        setErrores(erroresTemp);
 
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    };
     /* ----------------------- MANEJADOR TOROSCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal (toro).
@@ -64,6 +75,7 @@ export const FormularioToro = () => {
         console.log(animalToro); // Verifica el estado del animal (toro) antes de validar
 
         e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
 
         if(esAgregar){
             console.log("Se ha añadido el toro");
@@ -85,6 +97,9 @@ export const FormularioToro = () => {
     const handleAceptarYSeguir = (e) => {
         console.log(animalToro); // Verifica el estado de animal antes de validar
         e.preventDefault();
+
+        if (!validarFormulario()) return; // Si hay errores, no continúa
+
         if(esAgregar){
             console.log("Se ha añadido el toro y se continua añadiendo nuevos toros");
             agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (tooro)
@@ -145,12 +160,14 @@ export const FormularioToro = () => {
                             <div className="label">Nombre</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
                                 name="nombre"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
                                 value={animalToro.nombre || ""}
                                 onChange={handleChange}
                             />
+                            {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Estado</div>
@@ -173,12 +190,14 @@ export const FormularioToro = () => {
                             <div className="label">Cantidad de semen</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.cantidadSemen ? "error" : ""}`}
                                 name="cantidadSemen"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
                                 value={animalToro.cantidadSemen || ""}
                                 onChange={handleChange}
                             />
+                            {errores.cantidadSemen && <div className="mensaje-error">{errores.cantidadSemen}</div>}
+
                         </div>
 
                     </div>
@@ -188,56 +207,67 @@ export const FormularioToro = () => {
                             <div className="label">Células somáticas</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.celulasSomaticas ? "error" : ""}`}
                                 name="celulasSomaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
                                 value={animalToro.celulasSomaticas || ""}
                                 onChange={handleChange}
                             />
+                            {errores.celulasSomaticas && <div className="mensaje-error">{errores.celulasSomaticas}</div>}
+
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de patas</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.calidadPatas ? "error" : ""}`}
                                 name="calidadPatas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
                                 value={animalToro.calidadPatas || ""}
                                 onChange={handleChange}
                             />
+                            {errores.calidadPatas && <div className="mensaje-error">{errores.calidadPatas}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de ubres</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.calidadUbres ? "error" : ""}`}
                                 name="calidadUbres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
                                 value={animalToro.calidadUbres || ""}
                                 onChange={handleChange}
                             />
+                            {errores.calidadUbres && <div className="mensaje-error">{errores.calidadUbres}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Grasa</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.grasa ? "error" : ""}`}
                                 name="grasa"
                                 disabled={esVisualizar} //Se indica que el campo "Grasa" no se puede modificar cuando se Visualiza.
                                 value={animalToro.grasa || ""}
                                 onChange={handleChange}
                             />
+                            {errores.grasa && <div className="mensaje-error">{errores.grasa}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Proteínas</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.proteinas ? "error" : ""}`}
                                 name="proteinas"
                                 disabled={esVisualizar} //Se indica que el campo "Proteínas" no se puede modificar cuando se Visualiza.
                                 value={animalToro.proteinas || ""}
                                 onChange={handleChange}
                             />
+                            {errores.proteinas && <div className="mensaje-error">{errores.proteinas}</div>}
+
                         </div>
 
                         {/*Si se ha añadido un comentario al animal (toro) cuando se ha eliminado,

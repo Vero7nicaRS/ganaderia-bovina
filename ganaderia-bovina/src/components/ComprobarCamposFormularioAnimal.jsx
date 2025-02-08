@@ -3,7 +3,7 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
 
     // Validaciones comunes para todos los animales
     if (!datosAnimal.nombre?.trim()) {
-        erroresTemp.nombre = "El nombre es obligatorio";
+        erroresTemp.nombre = "El campo nombre es obligatorio";
     }
     if (!datosAnimal.celulasSomaticas) {
         erroresTemp.celulasSomaticas = "El campo células somáticas es obligatorio";

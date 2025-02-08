@@ -8,6 +8,7 @@ import "../../styles/FormularioVT.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {VTContext} from "../../DataAnimales/DataVacunasTratamientos/VTContext.jsx";
+import {ComprobarCamposFormularioVT} from "../../components/ComprobarCamposFormularioVT.jsx";
 export const FormularioVT= () => {
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
     const location = useLocation();
@@ -57,6 +58,19 @@ export const FormularioVT= () => {
         });
     };
 
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
+
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposFormularioVT(vt); // Revisa todos los campos
+        setErrores(erroresTemp);
+
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    };
+
     /* ----------------------- MANEJADOR VTCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una vacuna/tratamiento.
@@ -64,6 +78,7 @@ export const FormularioVT= () => {
         console.log(vt); // Verifica el estado de la vacuna/tratamiento antes de validar
 
         e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
 
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento al inventario");
@@ -85,6 +100,8 @@ export const FormularioVT= () => {
     const handleAceptarYSeguir = (e) => {
         console.log(vt); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
+
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento y se continua añadiendo nuevas vacunas/tratamientos");
             agregarVT(vt); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
@@ -159,12 +176,13 @@ export const FormularioVT= () => {
                             <div className="label">Nombre</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
-                                name="nombre"
+                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}                                name="nombre"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
                                 value={vt.nombre || ""}
                                 onChange={handleChange}
                             />
+                            {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Unidades</div>
