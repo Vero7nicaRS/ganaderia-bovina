@@ -167,3 +167,15 @@
     margin: 50px auto;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+/* MANEJO DE ERRORES: Cuadrado del campo se vuelve en color rojo*/
+.error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.mensaje-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}

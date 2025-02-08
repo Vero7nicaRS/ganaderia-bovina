@@ -2,7 +2,8 @@ import "../../styles/FormularioAnimal.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
-import {ErrorCamposVacios} from "../../components/ErrorCamposVacios.jsx";
+import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
+import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 
 /*
 * ------------------------------------------ FormularioAnimal.jsx: ------------------------------------------
@@ -45,13 +46,14 @@ export const FormularioAnimal = () => {
         proteinas: ""
     });
 
-    // console.log("Modo:", modo);
-    // console.log("Animal:", animal)
-
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
     const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
+
+
+    const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
+    const { animalesToros } = useContext(TorosContext); // Lista de toros
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -66,23 +68,37 @@ export const FormularioAnimal = () => {
             [name]: value,
         });
     };
+    const [errores, setErrores] = useState({});
 
+    // const validarFormulario = () => {
+    //     const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo); // Revisa todos los campos
+    //     setErrores(erroresTemp);
+    //
+    //     console.log("Errores detectados:", erroresTemp);
+    //     console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+    //
+    //     return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    // };
+
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo); // Revisa todos los campos
+        setErrores(erroresTemp);
+
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    };
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal.
     const handleAgregar = (e) => {
-        console.log(animal); // Verifica el estado de animal antes de validar
-
 
         e.preventDefault();
-        // if (!animal.nombre.trim()) {
-        //     setError("El nombre es obligatorio.");
-        //     return;
-        // }
-        // if (!validarCampos()) return;
+        if (!validarFormulario()) return; // Si hay errores, no continúa
 
-
+        console.log(animal); // Verifica el estado de animal antes de validar
         if(esAgregar){
             console.log("Se ha añadido el animal");
             agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
@@ -102,6 +118,8 @@ export const FormularioAnimal = () => {
     const handleAceptarYSeguir = (e) => {
         console.log(animal); // Verifica el estado de animal antes de validar
         e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
+
         if(esAgregar){
             console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
             agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
@@ -201,7 +219,8 @@ export const FormularioAnimal = () => {
                             <div className="label">Nombre</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                // className="cuadro-texto"
+                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
                                 name="nombre"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
                                 value={animal.nombre || ""}
@@ -209,40 +228,86 @@ export const FormularioAnimal = () => {
                                 required // Hace que el campo sea obligatorio
 
                             />
+                            {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
 
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Fecha de nacimiento</div>
                             <input
                                 type="date"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.fechaNacimiento ? "error" : ""}`}
                                 name="fechaNacimiento"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
                                 value={animal.fechaNacimiento || ""}
                                 onChange={handleChange}
                             />
+                            {errores.fechaNacimiento && <div className="mensaje-error">{errores.fechaNacimiento}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador padre</div>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
-                                name="padre"
-                                disabled={esVisualizar} //Se indica que el campo "Identificador padre" no se puede modificar cuando se Visualiza.
-                                value={animal.padre || ""}
+                            <select
+                                className="form-select"
+                                name="idToro"
+                                disabled={esVisualizar}
+                                value={animal.idToro || ""}
                                 onChange={handleChange}
-                            />
+                            >
+                                <option value="">Selecciona un toro</option>
+                                {animalesToros && animalesToros.length > 0 ? (
+                                    animalesToros
+                                        /*Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
+                                        Además, el toro no debe estar con el estado "muerto" ni "otros", por lo tanto se añade a la
+                                        condición del filtro*/
+                                        .filter((animalToro) => animalToro.tipo.toUpperCase() === "Toro".toUpperCase()
+                                            && animalToro.estado.toUpperCase() !== "Muerte".toUpperCase()
+                                            && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
+                                        )
+                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
+                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
+                                        .map((toro) => (
+                                            <option key={toro.id} value={toro.id}>
+                                                {toro.id}
+                                            </option>
+                                        ))
+                                ) : (
+                                    <option>No hay toros disponibles</option>
+                                )}
+                            </select>
+                            {errores.idToro && <div className="mensaje-error">{errores.idToro}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador madre</div>
-                            <input
-                                type="text"
-                                className="cuadro-texto"
-                                name="madre"
-                                disabled={esVisualizar} //Se indica que el campo "Identificador padre" no se puede modificar cuando se Visualiza.
-                                value={animal.madre || ""}
+                            <select
+                                className="form-select"
+                                name="idVaca"
+                                disabled={esVisualizar}
+                                value={animal.idVaca || ""}
                                 onChange={handleChange}
-                            />
+                            >
+                                <option value="">Selecciona una vaca</option>
+                                {animales && animales.length > 0 ? (
+                                    animales
+                                        /*Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
+                                        Además, la vaca no debe estar muerta ni vendida, por lo tanto se añade a la
+                                        condición del filtro*/
+                                        .filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()
+                                            && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
+                                            && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
+                                        )
+                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
+                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
+                                        .map((vaca) => (
+                                            <option key={vaca.id} value={vaca.id}>
+                                                {vaca.id}
+                                            </option>
+                                        ))
+                                ) : (
+                                    <option>No hay vacas disponibles</option>
+                                )}
+                            </select>
+                            {errores.idVaca && <div className="mensaje-error">{errores.idVaca}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Corral:</div>
@@ -272,56 +337,67 @@ export const FormularioAnimal = () => {
                             <div className="label">Células somáticas</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.celulasSomaticas ? "error" : ""}`}
                                 name="celulasSomaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
                                 value={animal.celulasSomaticas || ""}
                                 onChange={handleChange}
                             />
+
+                            {errores.celulasSomaticas && <div className="mensaje-error">{errores.celulasSomaticas}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de patas</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.calidadPatas ? "error" : ""}`}
                                 name="calidadPatas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
                                 value={animal.calidadPatas || ""}
                                 onChange={handleChange}
                             />
+                            {errores.calidadPatas && <div className="mensaje-error">{errores.calidadPatas}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de ubres</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.calidadUbres ? "error" : ""}`}
                                 name="calidadUbres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
                                 value={animal.calidadUbres || ""}
                                 onChange={handleChange}
                             />
+                            {errores.calidadUbres && <div className="mensaje-error">{errores.calidadUbres}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Grasa</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.grasa ? "error" : ""}`}
                                 name="grasa"
                                 disabled={esVisualizar} //Se indica que el campo "Grasa" no se puede modificar cuando se Visualiza.
                                 value={animal.grasa || ""}
                                 onChange={handleChange}
                             />
+                            {errores.grasa && <div className="mensaje-error">{errores.grasa}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Proteínas</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.proteinas ? "error" : ""}`}
                                 name="proteinas"
                                 disabled={esVisualizar} //Se indica que el campo "Proteínas" no se puede modificar cuando se Visualiza.
                                 value={animal.proteinas || ""}
                                 onChange={handleChange}
                             />
+                            {errores.proteinas && <div className="mensaje-error">{errores.proteinas}</div>}
+
                         </div>
 
                         {/*Si se ha añadido un comentario al animal cuando se ha eliminado,
@@ -334,16 +410,6 @@ export const FormularioAnimal = () => {
                                 </div>
                             )}
                         </div>
-                        {/* Mensaje de error */}
-                        <ErrorCamposVacios datos={animal}
-                                           camposObligatorios={
-                            [  "nombre", "fechaNacimiento", "padre", "madre",
-                                "celulasSomaticas", "calidadPatas", "calidadUbres",
-                                "grasa", "proteinas"]
-                        } />
-
-                        {/* AQUÍ ES DONDE QUIERO AÑADIR EL ERROR :) */}
-
 
                     </div>
                 </div>
