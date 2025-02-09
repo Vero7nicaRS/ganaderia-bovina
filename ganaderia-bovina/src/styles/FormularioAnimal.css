@@ -20,6 +20,8 @@
     align-items: center; /* Alinea los hijos verticalmente */
     justify-content: center; /* Opcional: centra el contenido en la página */
 }
+/* Para los select y los inputs, agregamos un espaciado vertical */
+
 .contenedor-linea {
     display: flex;
     align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
@@ -27,6 +29,11 @@
     flex-grow: 1; /* Permite que el espacio se distribuya mejor */
 
 }
+/*.contenedor-linea {*/
+/*    display: flex; !*Permite una mejor disposición de los elementos*!*/
+/*    align-items: center; !* Alineamos el texto y el campo de entrada verticalmente *!*/
+/*    margin-bottom: 10px; !* Espaciado entre los elementos *!*/
+/*}*/
 
 /* Establecemos un contenedor para los dos bloques: izquierdo y derecho */
 .contenedor-flex {
@@ -37,20 +44,19 @@
 
 /* Contenedor izquierdo (tiene 7 elementos) */
 .contenedor-izquierda {
-    width: 50%;
+    width: 100%; /*OJO: Antes 50*/
+    flex: 1;
+    min-width: 300px; /* Evita que se reduzcan demasiado */
 }
 
 /* Contenedor derecho (tiene 5 elementos) */
 .contenedor-derecha {
-    width: 50%;
+    width: 100%; /*OJO: Antes 50*/
+    flex: 1;
+    min-width: 300px; /* Evita que se reduzcan demasiado */
 }
 
-/* Para los select y los inputs, agregamos un espaciado vertical */
-.contenedor-linea {
-    display: flex; /*Permite una mejor disposición de los elementos*/
-    align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
-    margin-bottom: 10px; /* Espaciado entre los elementos */
-}
+
 
 /* Se encarga de poner el texto a la izquierda y el campo de escribir a la derecha del mismo */
 .label {
@@ -60,8 +66,8 @@
 
 /* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
 .cuadro-texto, .form-select {
-    width: auto;
-    max-width: 200px; /* Ajusta el tamaño máximo */
+    width: 100%;
+    max-width: 300px; /* Ajusta el tamaño máximo */
     margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
 }
 
@@ -87,7 +93,7 @@
     border: 1px solid #007bff; /* Añade un borde del color original */
 }
 
-{/* Afecta a todos los elementos de boton-espacio*/}
+/*Afecta a todos los elementos de boton-espacio*/
 .boton-espacio{
     display: flex; /*Permite una mejor dispoición de los elementos*/
     justify-content: center; /* Alinea el botón a la derecha */
@@ -95,7 +101,7 @@
 
 }
 
-{/*Afecta al elemento botón*/}
+/*Afecta al elemento botón*/
 .boton-espacio .btn{
 
     font-size: 14px;/* Tamaño del texto */
@@ -106,7 +112,7 @@
     margin-top: 15px; /* Espacio entre la tabla y el botón */
 }
 
-{/*Cuando pasas el puntero del ratón por encima del botón*/}
+/*Cuando pasas el puntero del ratón por encima del botón*/
 .boton-espacio .btn:hover {
     background-color: white; /* Cambia el fondo a blanco */
     color: #007bff; /* Cambia el texto al color original del fondo */
@@ -149,7 +155,7 @@
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    margin: 50px auto;
+    margin: 50px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -164,7 +170,7 @@
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    margin: 50px auto;
+    margin: 50px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -177,5 +183,7 @@
 .mensaje-error {
     color: red;
     font-size: 12px;
-    margin-top: 4px;
+    margin-top: 2px;
+    height: 16px; /* Fijar la altura para que el formulario no se desplace */
+    white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
 }

@@ -40,3 +40,18 @@
 .read-the-docs {
   color: #888;
 }
+
+.navbar{
+  position: fixed; /* Fija el NavBar en la parte superior */
+  top: 0; /* Colócalo en la parte superior */
+  left: 0;
+  right: 0;
+  width: 100%; /* Asegura que ocupe todo el ancho de la página */
+  background-color: #333; /* Color de fondo (puedes cambiarlo) */
+  z-index: 1000; /* Asegura que el NavBar quede por encima de otros elementos */
+  padding: 10px 0; /* Espaciado para el contenido */
+  box-shadow: 0 4px 2px -2px gray; /* Agrega una sombra si lo deseas */
+}
+body {
+  margin-top: 60px; /* Ajusta esto según la altura de tu NavBar */
+}

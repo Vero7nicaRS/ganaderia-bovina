@@ -67,6 +67,12 @@ export const FormularioAnimal = () => {
             ...animal,
             [name]: value,
         });
+
+        // Se elimina el error (error + mensaje de error) cuando el usuario seleccione una opción válida en el campo correspondiente.
+        setErrores((prevErrores) => ({
+            ...prevErrores,
+            [name]: value ? "" : prevErrores[name], // Si hay un valor en el campo, borra el error (error + mensaje de error)
+        }));
     };
 
 
@@ -240,10 +246,10 @@ export const FormularioAnimal = () => {
                         <div className="contenedor-linea">
                             <div className="label">Identificador padre</div>
                             <select
-                                className="form-select"
-                                name="idToro"
+                                className={`form-select ${errores.padre ? "error" : ""}`}
+                                name="padre"
                                 disabled={esVisualizar}
-                                value={animal.idToro || ""}
+                                value={animal.padre || ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un toro</option>
@@ -267,16 +273,16 @@ export const FormularioAnimal = () => {
                                     <option>No hay toros disponibles</option>
                                 )}
                             </select>
-                            {errores.idToro && <div className="mensaje-error">{errores.idToro}</div>}
+                            {errores.padre && <div className="mensaje-error">{errores.padre}</div>}
 
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador madre</div>
                             <select
-                                className="form-select"
-                                name="idVaca"
+                                className={`form-select ${errores.madre ? "error" : ""}`}
+                                name="madre"
                                 disabled={esVisualizar}
-                                value={animal.idVaca || ""}
+                                value={animal.madre || ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona una vaca</option>
@@ -300,7 +306,7 @@ export const FormularioAnimal = () => {
                                     <option>No hay vacas disponibles</option>
                                 )}
                             </select>
-                            {errores.idVaca && <div className="mensaje-error">{errores.idVaca}</div>}
+                            {errores.madre && <div className="mensaje-error">{errores.madre}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Corral:</div>

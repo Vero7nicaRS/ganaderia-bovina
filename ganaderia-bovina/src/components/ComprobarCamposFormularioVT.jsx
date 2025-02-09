@@ -3,7 +3,8 @@ export const ComprobarCamposFormularioVT = (datosVT) => {
 
     // Validaciones comunes para todos las vacunas/tratamientos
     if (!datosVT.nombre?.trim()) {
-        erroresTemp.nombre = "El campo nombre es obligatorio";
+        // erroresTemp.nombre = "El campo nombre es obligatorio";
+        erroresTemp.nombre = "Campo obligatorio";
     }
 
     return erroresTemp; // Devuelve los errores encontrados
