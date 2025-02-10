@@ -128,62 +128,73 @@ export const InventarioVT = () => {
             <div className="listaVacunasTratamientos">Lista de vacunas y/o tratamientos:</div>
 
             <div>
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">TIPO</th>
-                        <th scope="col">NOMBRE</th>
-                        <th scope="col">ACCIONES</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div className="contenedor-tablaVT">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">TIPO</th>
+                            <th scope="col">NOMBRE</th>
+                            <th scope="col">ACCIONES</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                    {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
-                    {datosFiltrados.map((item) => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.tipo}</td>
-                            <td>{item.nombre}</td>
+                        {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
+                        {
+                            datosFiltrados.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4" className="mensaje-no-hay-elementos">
+                                        No hay vacunas/tratamientos existentes
+                                    </td>
+                                </tr>
+                            ) : (
+                            datosFiltrados.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.id}</td>
+                                <td>{item.tipo}</td>
+                                <td>{item.nombre}</td>
 
-                            <td>
-                                {/* BOTÓN VER */}
-                                <NavLink
-                                    to="/formulario-vt"
-                                    state={{modo: "ver", vt: item}} //Se le pasa la vacuna/tratamiento (item)
-                                    className="btn-ver">
-                                    VER
-                                </NavLink>
-
-                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
-
-                                <>
-                                    {/* BOTÓN MODIFICAR */}
+                                <td>
+                                    {/* BOTÓN VER */}
                                     <NavLink
                                         to="/formulario-vt"
-                                        state={{
-                                            modo: "modificar",
-                                            vt: item
-                                        }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                        className="btn-modificar"
-                                    >
-                                        MODIFICAR
+                                        state={{modo: "ver", vt: item}} //Se le pasa la vacuna/tratamiento (item)
+                                        className="btn-ver">
+                                        VER
                                     </NavLink>
-                                    {/* BOTÓN ELIMINAR */}
-                                    <button
-                                        className="btn-eliminar"
-                                         onClick={ () => manejarEliminar(item.id, item.tipo, item.nombre)}
-                                    >
-                                        ELIMINAR
-                                    </button>
 
-                                </>
+                                    {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
 
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                                    <>
+                                        {/* BOTÓN MODIFICAR */}
+                                        <NavLink
+                                            to="/formulario-vt"
+                                            state={{
+                                                modo: "modificar",
+                                                vt: item
+                                            }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                            className="btn-modificar"
+                                        >
+                                            MODIFICAR
+                                        </NavLink>
+                                        {/* BOTÓN ELIMINAR */}
+                                        <button
+                                            className="btn-eliminar"
+                                             onClick={ () => manejarEliminar(item.id, item.tipo, item.nombre)}
+                                        >
+                                            ELIMINAR
+                                        </button>
+
+                                    </>
+
+                                </td>
+                            </tr>
+                            ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
 

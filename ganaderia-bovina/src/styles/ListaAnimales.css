@@ -3,7 +3,15 @@
     display: flex; /* Alinea los hijos horizontalmente */
     align-items: center; /* Alinea los hijos verticalmente */
     justify-content: center; /* Opcional: centra el contenido en la página */
+
+
 }
+/*
+   display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 500px; /* Ajusta este valor según el diseño */
+
 
 /* Estilo del cuadrado */
 .cuadradoVisualizarLista {
@@ -182,4 +190,23 @@ button {
 }
 
 /* ------------------------------------- FIN DE BOTONES -------------------------------------*/
+
+/* Empleado para fijar un tamaño de tabla. */
+.contenedor-tablaLA {
+    min-height: 300px;
+    max-width: 100%; /* Limita el tamaño máximo */
+    min-width: 50px;
+    overflow-y: auto; /* Activa el scroll vertical */
+}
+.contenedor-tablaLA .table {
+}
+
+/* Mensaje que aparece en caso de que la tabla no contenga ningún dato (tanto filtro como tabla vacía).*/
+.mensaje-no-hay-elementos {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    padding: 20px 0;
+    font-style: italic;
+}
 

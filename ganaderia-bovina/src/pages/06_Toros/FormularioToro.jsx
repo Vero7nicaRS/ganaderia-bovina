@@ -55,6 +55,12 @@ export const FormularioToro = () => {
             ...animalToro,
             [name]: value,
         });
+
+        // Se elimina el error (error + mensaje de error) cuando el usuario seleccione una opción válida en el campo correspondiente.
+        setErrores((prevErrores) => ({
+            ...prevErrores,
+            [name]: value ? "" : prevErrores[name], // Si hay un valor en el campo, borra el error (error + mensaje de error)
+        }));
     };
 
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.

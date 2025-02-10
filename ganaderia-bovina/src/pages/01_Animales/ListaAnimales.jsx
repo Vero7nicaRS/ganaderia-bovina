@@ -115,60 +115,73 @@ export const ListaAnimales = () => {
             </div>
             {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
             <div className="listaAnimales">Lista de animales:</div>
-            <table className="table">
-                <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">TIPO</th>
-                    <th scope="col">NOMBRE</th>
-                    <th scope="col">ACCIONES</th>
-                </tr>
-                </thead>
-                <tbody>
-                {/* Cada fila consta de un identificador único, en este caso es el ID del animal (vaca/ternero)*/}
-                {animalesFiltrados.map((item) => (
-                    <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.tipo}</td>
-                        <td>{item.nombre}</td>
-                        <td>
-                            {/* BOTÓN VER */}
-                            <NavLink
-                                to="/formulario-animal"
-                                state={{modo: "ver", animal: item}} //Se le pasa el modo (ver) y ANIMAL (item)
-                                className="btn-ver"
-                            >
-                                VER
-                            </NavLink>
-                            {/*Si el animal ha sido eliminado (estado = "Muerte" o "Vendida")*, NO se muestran
-                             los botones MODIFICAR y ELIMINAR */}
-                            {item.estado !== "Muerte" && item.estado !== "Vendida" && (
-                                <>
-                                    {/* BOTÓN MODIFICAR */}
-                                    <NavLink
-                                        to="/formulario-animal"
-                                        state={{modo: "modificar", animal: item}} //Se le pasa el modo (modificar) y ANIMAL (item)
-                                        className="btn-modificar"
-                                    >
-                                        MODIFICAR
-                                    </NavLink>
 
-                                    {/* BOTÓN ELIMINAR */}
-                                    <NavLink
-                                        to="/eliminar-animal"
-                                        state={{animal: item}} //Se le pasa el ANIMAL (item)
-                                        className="btn-eliminar"
-                                        // onClick={ () => manejarEliminar(item.id)
-                                    >
-                                        ELIMINAR
-                                    </NavLink>
-                                </>
-                            )}
-                        </td>
+            <div className="contenedor-tablaLA">
+
+                <table className="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">TIPO</th>
+                        <th scope="col">NOMBRE</th>
+                        <th scope="col">ACCIONES</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {/* Cada fila consta de un identificador único, en este caso es el ID del animal (vaca/ternero)*/}
+                    { /* Si la tabla no contiene ningún elemento, aparece un mensaje indicando que no hay elementos disponibles*/
+                        animalesFiltrados.length === 0 ? (
+                            <tr>
+                                <td colSpan="4" className="mensaje-no-hay-elementos">
+                                    No hay animales existentes
+                                </td>
+                            </tr>
+                        ) : (
+                        animalesFiltrados.map((item) => (
+                        <tr key={item.id}>
+                            <td>{item.id}</td>
+                            <td>{item.tipo}</td>
+                            <td>{item.nombre}</td>
+                            <td>
+                                {/* BOTÓN VER */}
+                                <NavLink
+                                    to="/formulario-animal"
+                                    state={{modo: "ver", animal: item}} //Se le pasa el modo (ver) y ANIMAL (item)
+                                    className="btn-ver"
+                                >
+                                    VER
+                                </NavLink>
+                                {/*Si el animal ha sido eliminado (estado = "Muerte" o "Vendida")*, NO se muestran
+                                 los botones MODIFICAR y ELIMINAR */}
+                                {item.estado !== "Muerte" && item.estado !== "Vendida" && (
+                                    <>
+                                        {/* BOTÓN MODIFICAR */}
+                                        <NavLink
+                                            to="/formulario-animal"
+                                            state={{modo: "modificar", animal: item}} //Se le pasa el modo (modificar) y ANIMAL (item)
+                                            className="btn-modificar"
+                                        >
+                                            MODIFICAR
+                                        </NavLink>
+
+                                        {/* BOTÓN ELIMINAR */}
+                                        <NavLink
+                                            to="/eliminar-animal"
+                                            state={{animal: item}} //Se le pasa el ANIMAL (item)
+                                            className="btn-eliminar"
+                                            // onClick={ () => manejarEliminar(item.id)
+                                        >
+                                            ELIMINAR
+                                        </NavLink>
+                                    </>
+                                )}
+                            </td>
+                        </tr>
+                        ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
 
             {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
             <div className="boton-volver">

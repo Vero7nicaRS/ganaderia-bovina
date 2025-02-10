@@ -60,6 +60,9 @@ export const FormularioAnimal = () => {
     const esAgregar = modo === "agregar";
     const esModificar = modo === "modificar";
 
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
+
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -74,10 +77,6 @@ export const FormularioAnimal = () => {
             [name]: value ? "" : prevErrores[name], // Si hay un valor en el campo, borra el error (error + mensaje de error)
         }));
     };
-
-
-    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
-    const [errores, setErrores] = useState({});
 
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo); // Revisa todos los campos

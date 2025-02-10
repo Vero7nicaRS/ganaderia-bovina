@@ -6,7 +6,7 @@
 }
 
 /* Estilo del cuadrado */
-.cuadradoVisualizarListaVT {
+.cuadradoVisualizarListaInseminaciones {
     width: 500px;
     height: 60px;
     background-color: #ffffff;
@@ -183,14 +183,15 @@ button {
 
 /* ------------------------------------- FIN DE BOTONES -------------------------------------*/
 
+
 /* Empleado para fijar un tamaño de tabla. */
-.contenedor-tablaVT {
+.contenedor-tablaLI {
     min-height: 300px;
     max-width: 100%; /* Limita el tamaño máximo */
     min-width: 50px;
     overflow-y: auto; /* Activa el scroll vertical */
 }
-.contenedor-tablaVT .table {
+.contenedor-tablaLI .table {
 }
 
 /* Mensaje que aparece en caso de que la tabla no contenga ningún dato (tanto filtro como tabla vacía).*/

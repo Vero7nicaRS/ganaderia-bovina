@@ -9,23 +9,35 @@
 
 import "../../styles/ListaToros.css";
 import {NavLink} from "react-router-dom";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 
 export const ListaToros = () => {
 
     const {animalesToros} = useContext(TorosContext);
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de toros.
-
+    const [animalesTorosFiltrados, setAnimalesTorosFiltrados] = useState(animalesToros); //Para almacenar los animales que han sido filtrados.
 
     //Realización del filtrado por ID
-    const datosFiltrados = animalesToros.filter((item) => {
-        const coincideBusqueda =
-            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
-            se convierten a mayúsculas (toUpperCase)*/
-            busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
-        return coincideBusqueda ;
-    });
+    // const datosFiltrados = animalesToros.filter((item) => {
+    //     const coincideBusqueda =
+    //         /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+    //         se convierten a mayúsculas (toUpperCase)*/
+    //         busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
+    //     return coincideBusqueda ;
+    // });
+    useEffect(() => {
+        const datosFiltrados = animalesToros.filter((item) => {
+            const coincideBusqueda =
+                /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+                se convierten a mayúsculas (toUpperCase)*/
+                busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
+            return coincideBusqueda ;
+        });
+        // Actualizar el estado de los animales filtrados
+        setAnimalesTorosFiltrados(datosFiltrados);
+    }, [busquedaID, animalesToros]);
+
     //Manejadores de las búsquedas realizadas por ID para encontrar al animal (toro)
     const manejarBusquedaID = (e) => {
         setBusquedaID(e.target.value);
@@ -63,64 +75,76 @@ export const ListaToros = () => {
                 </div>
             </div>
                 <div className="listaToros">Lista de toros:</div>
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">NOMBRE</th>
-                        <th scope="col">ACCIONES</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {/* Botones que aparecen al lado de cada uno de los toros: VER - MODIFICAR - ELIMINAR*/}
-                    {datosFiltrados.map((item) => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.nombre}</td>
 
-                            <td>
-                                {/* BOTÓN VER */}
-                                <NavLink
-                                    to="/formulario-toro"
-                                    state={{modo: "ver", animalToro: item}} //Se le pasa el ANIMAL (item)
-                                    className="btn-ver">
-                                    VER
-                                </NavLink>
-
-                                {/*Si el animal (toro) ha sido eliminado (estado = "Muerte")*, NO se muestran
-                            los botones MODIFICAR y ELIMINAR */}
-
-                                {item.estado !== "Muerte" && item.estado !== "Otros"  && (
-                                    <>
-                                        {/* BOTÓN MODIFICAR */}
-                                        <NavLink
-                                            to="/formulario-toro"
-                                            state={{modo: "modificar", animalToro: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
-                                            className="btn-modificar"
-                                        >
-                                            MODIFICAR
-                                        </NavLink>
-
-                                        {/* BOTÓN ELIMINAR */}
-
-                                        <NavLink
-                                            to="/eliminar-toro"
-                                            state={{animalToro: item}} //Se le pasa el ANIMAL (item)
-                                            className="btn-eliminar"
-
-                                        >
-                                            ELIMINAR
-                                        </NavLink>
-                                    </>
-
-                                )}
-
-
-                            </td>
+                <div className="contenedor-tablaLT">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">NOMBRE</th>
+                            <th scope="col">ACCIONES</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {/* Botones que aparecen al lado de cada uno de los toros: VER - MODIFICAR - ELIMINAR*/}
+                        {
+                            animalesTorosFiltrados.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="mensaje-no-hay-elementos">
+                                        No hay toros existentes
+                                    </td>
+                                </tr>
+                            ) : (
+                            animalesTorosFiltrados.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.id}</td>
+                                <td>{item.nombre}</td>
+
+                                <td>
+                                    {/* BOTÓN VER */}
+                                    <NavLink
+                                        to="/formulario-toro"
+                                        state={{modo: "ver", animalToro: item}} //Se le pasa el ANIMAL (item)
+                                        className="btn-ver">
+                                        VER
+                                    </NavLink>
+
+                                    {/*Si el animal (toro) ha sido eliminado (estado = "Muerte")*, NO se muestran
+                                los botones MODIFICAR y ELIMINAR */}
+
+                                    {item.estado !== "Muerte" && item.estado !== "Otros"  && (
+                                        <>
+                                            {/* BOTÓN MODIFICAR */}
+                                            <NavLink
+                                                to="/formulario-toro"
+                                                state={{modo: "modificar", animalToro: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
+                                                className="btn-modificar"
+                                            >
+                                                MODIFICAR
+                                            </NavLink>
+
+                                            {/* BOTÓN ELIMINAR */}
+
+                                            <NavLink
+                                                to="/eliminar-toro"
+                                                state={{animalToro: item}} //Se le pasa el ANIMAL (item)
+                                                className="btn-eliminar"
+
+                                            >
+                                                ELIMINAR
+                                            </NavLink>
+                                        </>
+
+                                    )}
+
+
+                                </td>
+                            </tr>
+                            ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
                 <div className="boton-volver">

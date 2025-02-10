@@ -2,7 +2,7 @@ import {NavLink} from "react-router-dom";
 import {useContext, useMemo, useState} from "react";
 import Swal from "sweetalert2";
 import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/InseminacionesContext.jsx";
-
+import "../../styles/ListaInseminaciones.css"
 export const ListaInseminaciones = () => {
 
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListaInseminaciones.
@@ -63,7 +63,7 @@ export const ListaInseminaciones = () => {
     return (
         <>
             <div className="contenedor">
-                <div className="cuadradoVisualizarListaVT">VISUALIZAR LISTA DE INSEMINACIONES</div>
+                <div className="cuadradoVisualizarListaInseminaciones">VISUALIZAR LISTA DE INSEMINACIONES</div>
 
                 {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
                 <NavLink
@@ -105,63 +105,74 @@ export const ListaInseminaciones = () => {
             <div className="listaVacunasTratamientos">Lista de inseminaciones:</div>
 
             <div>
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">FECHA DE INSEMINACION</th>
-                        <th scope="col">HORA</th>
-                        <th scope="col">ID VACA</th>
-                        <th scope="col">ID TORO</th>
-                        <th scope="col">ACCIONES</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div className = "contenedor-tablaLI">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">FECHA DE INSEMINACION</th>
+                            <th scope="col">HORA</th>
+                            <th scope="col">ID VACA</th>
+                            <th scope="col">ID TORO</th>
+                            <th scope="col">ACCIONES</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                    {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
-                    {datosFiltrados.map((item) => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.fechaInseminacion}</td>
-                            <td>{item.horaInseminacion}</td>
-                            <td>{item.idVaca}</td>
-                            <td>{item.idToro}</td>
+                        {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
+                        {
+                            datosFiltrados.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="mensaje-no-hay-elementos">
+                                        No hay inseminaciones existentes
+                                    </td>
+                                </tr>
+                            ) : (
+                            datosFiltrados.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.id}</td>
+                                <td>{item.fechaInseminacion}</td>
+                                <td>{item.horaInseminacion}</td>
+                                <td>{item.idVaca}</td>
+                                <td>{item.idToro}</td>
 
-                            <td>
-                                {/* BOTÓN VER */}
-                                <NavLink
-                                    to="/formulario-inseminacion"
-                                    state={{modo: "ver", inseminacion: item}} //Se le pasa la vacuna/tratamiento (item)
-                                    className="btn-ver">
-                                    VER
-                                </NavLink>
-
-                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
-
-                                <>
-                                    {/* BOTÓN MODIFICAR */}
+                                <td>
+                                    {/* BOTÓN VER */}
                                     <NavLink
                                         to="/formulario-inseminacion"
-                                        state={{modo: "modificar", inseminacion: item}} //Se le pasa el MODO (modificar) y la inseminación (item)
-                                        className="btn-modificar"
-                                    >
-                                        MODIFICAR
+                                        state={{modo: "ver", inseminacion: item}} //Se le pasa la vacuna/tratamiento (item)
+                                        className="btn-ver">
+                                        VER
                                     </NavLink>
-                                    {/* BOTÓN ELIMINAR */}
-                                    <button
-                                        className="btn-eliminar"
-                                        onClick={ () => manejarEliminar(item.id, item.fechaInseminacion, item.horaInseminacion)}
-                                    >
-                                        ELIMINAR
-                                    </button>
 
-                                </>
+                                    {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
 
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                                    <>
+                                        {/* BOTÓN MODIFICAR */}
+                                        <NavLink
+                                            to="/formulario-inseminacion"
+                                            state={{modo: "modificar", inseminacion: item}} //Se le pasa el MODO (modificar) y la inseminación (item)
+                                            className="btn-modificar"
+                                        >
+                                            MODIFICAR
+                                        </NavLink>
+                                        {/* BOTÓN ELIMINAR */}
+                                        <button
+                                            className="btn-eliminar"
+                                            onClick={ () => manejarEliminar(item.id, item.fechaInseminacion, item.horaInseminacion)}
+                                        >
+                                            ELIMINAR
+                                        </button>
+
+                                    </>
+
+                                </td>
+                            </tr>
+                        ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
 

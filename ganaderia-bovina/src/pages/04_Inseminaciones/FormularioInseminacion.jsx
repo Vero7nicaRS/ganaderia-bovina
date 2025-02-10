@@ -4,6 +4,7 @@ import "../../styles/FormularioInseminacion.css";
 import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/InseminacionesContext.jsx";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
+import {ComprobarCamposFormularioInseminacion} from "../../components/ComprobarCamposFormularioInseminacion.jsx";
 export const FormularioInseminacion = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
@@ -56,6 +57,9 @@ export const FormularioInseminacion = () => {
     const esAgregar = modo === "agregar";
     const esModificar = modo === "modificar";
 
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
+
     //Manejador para llevar acabo las modificaciones de las inseminaciones (actualizar el estado de la inseminacion)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -63,12 +67,30 @@ export const FormularioInseminacion = () => {
             ...inseminacion,
             [name]: value,
         });
+
+        // Se elimina el error (error + mensaje de error) cuando el usuario seleccione una opción válida en el campo correspondiente.
+        setErrores((prevErrores) => ({
+            ...prevErrores,
+            [name]: value ? "" : prevErrores[name], // Si hay un valor en el campo, borra el error (error + mensaje de error)
+        }));
     };
+
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposFormularioInseminacion(inseminacion); // Revisa todos los campos
+        setErrores(erroresTemp);
+
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    };
+
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una inseminacion.
     const handleAgregar = (e) => {
         console.log(inseminacion); // Verifica el estado de la inseminacion antes de validar
 
         e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
 
         if(esAgregar){
             console.log("Se ha añadido la inseminación a la lista de inseminaciones");
@@ -87,6 +109,8 @@ export const FormularioInseminacion = () => {
     const handleAceptarYSeguir = (e) => {
         console.log(inseminacion); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
+
         if(esAgregar){
             console.log("Se ha añadido la inseminación y se continua añadiendo nuevas inseminaciones");
             agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al inventario
@@ -260,12 +284,15 @@ export const FormularioInseminacion = () => {
                             <div className="label">Fecha de inseminación</div>
                             <input
                                 type="date"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.fechaInseminacion ? "error" : ""}`}
+
                                 name="fechaInseminacion"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.fechaInseminacion || ""}
                                 onChange={handleChange}
                             />
+                            {errores.fechaInseminacion && <div className="mensaje-error">{errores.fechaInseminacion}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <label htmlFor="horaInseminacion">Hora de inseminación</label>
@@ -277,18 +304,22 @@ export const FormularioInseminacion = () => {
                                 onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
                                 disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
                             />
+                            {errores.horaInseminacion && <div className="mensaje-error">{errores.horaInseminacion}</div>}
+
                         </div>
 
                         <div className="contenedor-linea">
                             <div className="label">Responsable</div>
                             <input
                                 type="text"
-                                className="cuadro-texto"
+                                className = {`cuadro-texto ${errores.responsable ? "error" : ""}`}
                                 name="responsable"
                                 disabled={esVisualizar} //Se indica que el campo "Responsable" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.responsable || ""}
                                 onChange={handleChange}
                             />
+                            {errores.responsable && <div className="mensaje-error">{errores.responsable}</div>}
+
                         </div>
 
                     </div>

@@ -163,3 +163,17 @@
 .checkbox-label {
     margin-left: 4px; /* Reduce el espacio entre el checkbox y "Es sexado" */
 }
+
+/* MANEJO DE ERRORES: Cuadrado del campo se vuelve en color rojo*/
+.error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.mensaje-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 2px;
+    height: 16px; /* Fijar la altura para que el formulario no se desplace */
+    white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
+}
