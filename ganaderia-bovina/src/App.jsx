@@ -20,6 +20,9 @@ import {EliminarAnimal} from "./pages/01_Animales/EliminarAnimal.jsx";
 import {FormularioToro} from "./pages/06_Toros/FormularioToro.jsx";
 import {EliminarToro} from "./pages/06_Toros/EliminarToro.jsx";
 import {FormularioInseminacion} from "./pages/04_Inseminaciones/FormularioInseminacion.jsx";
+import {ListadoVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Listado_VT_Animales/ListadoVT_Animales.jsx";
+import {FormularioVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Listado_VT_Animales/FormularioVT_Animales.jsx";
+import {ArbolGenealogico} from "./pages/07_ArbolGenealogico/ArbolGenealogico.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -56,6 +59,11 @@ export const App = () => {
                          <Route path="/insertar-vt-animal" element={<InsertarVTAnimal/>}/>
 
 
+                         {/* ---------- Páginas referentes a LISTADO DE VACUNAS Y/O TRATAMIENTOS EN ANIMALES ----------*/}
+                         <Route path="/listado-vt-animal" element={<ListadoVT_Animales/>}/>
+                         <Route path="/formulario-vt-animal" element={<FormularioVT_Animales/>}/>
+
+
 
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/agregar-corral" element={<AgregarCorral/>}/>
@@ -78,6 +86,8 @@ export const App = () => {
 
 
 
+                         {/* ---------- Páginas referentes a ARBOL GENEALÓGICO ----------*/}
+                         <Route path="/arbol-genealogico" element={<ArbolGenealogico/>}/>
 
 
                          <Route path="/*" element={<Navigate to='/'/>}></Route>

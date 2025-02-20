@@ -40,7 +40,8 @@ export const NavBar = () => {
                             </a>
                             <ul className="dropdown-menu">
                                 {/* Enlace a la página "Visualizar animales" */}
-                                <li><NavLink to='/visualizar-animales' className="dropdown-item">Visualizar animales</NavLink></li>
+                                <li><NavLink to='/visualizar-animales' className="dropdown-item">Visualizar
+                                    animales</NavLink></li>
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>
@@ -49,10 +50,18 @@ export const NavBar = () => {
                                     {/*<NavLink to='/agregar-animal' className="dropdown-item">Agregar animal</NavLink>*/}
 
                                     <NavLink to="/formulario-animal"
-                                             state={{ modo: "agregar" }}
+                                             state={{modo: "agregar"}}
                                              className="dropdown-item">
                                         Agregar animal
                                     </NavLink>
+                                </li>
+
+                                <li>
+                                    <hr className="dropdown-divider"/>
+                                </li>
+                                {/* Enlace a la página "ÁRBOL GENEALÓGICO" */}
+                                <li><NavLink to='/arbol-genealogico' className="dropdown-item">Árbol genealógico
+                                </NavLink>
                                 </li>
 
                             </ul>
@@ -71,12 +80,27 @@ export const NavBar = () => {
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Agregar nuevo tipo" */}
-                                <li><NavLink to='/formulario-vt' state={{ modo: "agregar" }} className="dropdown-item">Agregar nuevo tipo</NavLink></li>
+                                <li><NavLink to='/formulario-vt' state={{modo: "agregar"}} className="dropdown-item">Agregar
+                                    nuevo tipo</NavLink></li>
+                                <li>
+                                    <hr className="dropdown-divider"/>
+                                </li>
+                                {/* Enlace a la página "Listado de animales" */}
+                                <li>
+                                    <NavLink to='/listado-vt-animal' className="dropdown-item">Listado de
+                                        animales</NavLink>
+                                </li>
+
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Insertar tipo al animal" */}
-                                <li><NavLink to='/insertar-vt-animal' className="dropdown-item">Insertar tipo al animal</NavLink></li>
+                                <li>
+                                    <NavLink to='/formulario-vt-animal' className="dropdown-item">Insertar tipo al
+                                        animal
+                                    </NavLink>
+                                </li>
+
 
                             </ul>
 
@@ -89,12 +113,14 @@ export const NavBar = () => {
                             </a>
                             <ul className="dropdown-menu">
                                 {/* Enlace a la página "Lista de corrales" */}
-                                <li><NavLink to='/lista-corrales' className="dropdown-item">Lista de corrales</NavLink></li>
+                                <li><NavLink to='/lista-corrales' className="dropdown-item">Lista de corrales</NavLink>
+                                </li>
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Agregar corral" */}
-                                <li><NavLink to='/agregar-corral' className="dropdown-item">Agregar corral</NavLink></li>
+                                <li><NavLink to='/agregar-corral' className="dropdown-item">Agregar corral</NavLink>
+                                </li>
                             </ul>
                         </li>
                         <li className="nav-item dropdown">
@@ -105,12 +131,14 @@ export const NavBar = () => {
                             </a>
                             <ul className="dropdown-menu">
                                 {/* Enlace a la página "Lista de inseminaciones" */}
-                                <li><NavLink to='/lista-inseminaciones' className="dropdown-item">Lista de inseminaciones</NavLink></li>
+                                <li><NavLink to='/lista-inseminaciones' className="dropdown-item">Lista de
+                                    inseminaciones</NavLink></li>
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Inseminación animal" */}
-                                <li><NavLink to='/formulario-inseminacion'  state={{ modo: "agregar" }} className="dropdown-item">Inseminación animal</NavLink></li>
+                                <li><NavLink to='/formulario-inseminacion' state={{modo: "agregar"}}
+                                             className="dropdown-item">Inseminación animal</NavLink></li>
                             </ul>
                         </li>
 
@@ -126,15 +154,36 @@ export const NavBar = () => {
                             </a>
                             <ul className="dropdown-menu">
                                 {/* Enlace a la página "Visualizar toros" */}
-                                <li><NavLink to='/visualizar-toros' className="dropdown-item">Visualizar toros</NavLink></li>
+                                <li><NavLink to='/visualizar-toros' className="dropdown-item">Visualizar toros</NavLink>
+                                </li>
                                 <li>
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Formulario toro" */}
-                                <li><NavLink to='/formulario-toro'  state={{ modo: "agregar" }} className="dropdown-item">Agregar toro</NavLink></li>
+                                <li><NavLink to='/formulario-toro' state={{modo: "agregar"}} className="dropdown-item">Agregar
+                                    toro</NavLink></li>
 
                             </ul>
 
+                        </li>
+                    </ul>
+
+                    <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+                        {/* Desplegable de la sección "Usuarios" posicionada a la derecha */}
+                        <li className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">Usuarios</a>
+                            <ul className="dropdown-menu dropdown-menu-end">
+                                {/* Enlace a la página "Perfil de usuario" --> NO IMPLEMENTADO */}
+                                <li>
+                                    <NavLink to='/perfil-usuario' className="dropdown-item">Perfil de usuario</NavLink>
+                                </li>
+                                <li>
+                                    <hr className="dropdown-divider"/>
+                                </li>
+                                {/* Enlace a la página "Cerrar sesión"  --> NO IMPLEMENTADO */}
+                                <li><NavLink to='/cerrar-sesion' className="dropdown-item">Cerrar sesión</NavLink></li>
+                            </ul>
                         </li>
                     </ul>
                     {/*<form className="d-flex" role="search">*/}

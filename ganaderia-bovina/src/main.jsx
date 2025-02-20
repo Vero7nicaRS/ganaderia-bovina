@@ -7,6 +7,7 @@ import {AnimalesProvider} from "./DataAnimales/DataVacaTerneros/AnimalesProvider
 import {TorosProvider} from "./DataAnimales/DataToros/TorosProvider.jsx";
 import {VtProvider} from "./DataAnimales/DataVacunasTratamientos/VTProvider.jsx";
 import {InseminacionesProvider} from "./DataAnimales/DataInseminaciones/InseminacionesProvider.jsx";
+import {VTListadoProvider} from "./DataAnimales/DataVacunasTratamientos/DataListadoVTAnimales/VTListadoProvider.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -22,7 +23,10 @@ createRoot(document.getElementById('root')).render(
                                 los datos de las vacunas y/o tratamientos y por tanto, podrán modificarlos */}
 
                       <InseminacionesProvider>
-                          <App> </App>
+                          <VTListadoProvider>
+                              <App> </App>
+                          </VTListadoProvider>
+
                       </InseminacionesProvider>
 
                   </VtProvider>
