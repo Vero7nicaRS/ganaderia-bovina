@@ -181,7 +181,7 @@ export const FormularioInseminacion = () => {
                         <div className="contenedor-linea">
                             <div className="label">Identificador vaca</div>
                             <select
-                                className="form-select"
+                                className={`form-select ${errores.idVaca ? "error" : ""}`}
                                 name="idVaca"
                                 disabled={esVisualizar}
                                 value={inseminacion.idVaca || ""}
@@ -208,11 +208,13 @@ export const FormularioInseminacion = () => {
                                     <option>No hay vacas disponibles</option>
                                 )}
                             </select>
+                            {errores.idVaca && <div className="mensaje-error">{errores.idVaca}</div>}
+
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Identificador toro</div>
                             <select
-                                className="form-select"
+                                className={`form-select ${errores.idToro ? "error" : ""}`}
                                 name="idToro"
                                 disabled={esVisualizar}
                                 value={inseminacion.idToro || ""}
@@ -239,6 +241,8 @@ export const FormularioInseminacion = () => {
                                     <option>No hay toros disponibles</option>
                                 )}
                             </select>
+                            {errores.idToro && <div className="mensaje-error">{errores.idToro}</div>}
+
                         </div>
 
                         <div className="contenedor-linea">
@@ -299,6 +303,7 @@ export const FormularioInseminacion = () => {
                             <input
                                 type="time"
                                 id="horaInseminacion"
+                                className={`cuadro-texto ${errores.horaInseminacion ? "error" : ""}`}
                                 name="horaInseminacion"
                                 value={inseminacion.horaInseminacion || ''} /*Cada vez que se cambie de hora, se actualizará inseminacion.horaInseminacion*/
                                 onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
