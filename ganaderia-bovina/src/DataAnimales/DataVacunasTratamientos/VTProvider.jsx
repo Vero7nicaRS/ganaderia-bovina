@@ -15,6 +15,7 @@ import {useState} from "react";
 export const VtProvider = ({children}) => {
     const [vt, setVT] = useState(vtMock);
 
+    const listaVT=vt;
     const agregarVT = (nuevoVT) => {
 
         if (!nuevoVT.nombre) {

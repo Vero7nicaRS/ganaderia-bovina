@@ -18,7 +18,6 @@ export const FormularioVT= () => {
 
 
     const { modo, vt: vtInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
-
     /* Se inicializa el tratamiento/vacuna con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [vt, setVT] = useState(vtInicial || {
@@ -42,7 +41,7 @@ export const FormularioVT= () => {
     /* Se obtiene las funciones: agregarVT y modificarVT para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTContext
        */
-    const {agregarVT, modificarVT} = useContext(VTContext);
+    const {agregarVT, modificarVT, errorNombreVT} = useContext(VTContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -120,6 +119,7 @@ export const FormularioVT= () => {
 
     return (
         <>
+            {errorNombreVT && <div className="mensaje-error">{errorNombreVT}</div>} {/* Muestra el mensaje de error en la interfaz */}
 
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
                 - VISUALIZAR VACUNA/TRATAMIENTO.
@@ -199,13 +199,13 @@ export const FormularioVT= () => {
                                 /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
                                 value={vt.unidades || "1"}
                                 onChange={handleChange}
+
                             >
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
+                                {Array.from({ length: 30 }, (_, i) => (
+                                    <option key={i + 1} value={i + 1}>
+                                        {i + 1}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="contenedor-linea">

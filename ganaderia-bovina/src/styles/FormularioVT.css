@@ -59,7 +59,13 @@
 }
 
 /* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
-.cuadro-texto, .form-select {
+.cuadro-texto{
+    width: auto;
+    max-width: 200px; /* Ajusta el tamaño máximo */
+    margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
+}
+
+.form-select {
     width: auto;
     max-width: 200px; /* Ajusta el tamaño máximo */
     margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
