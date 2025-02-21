@@ -67,7 +67,8 @@ export const FormularioVT= () => {
     const [errores, setErrores] = useState({});
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioVT(vt); // Revisa todos los campos
+        const erroresTemp = ComprobarCamposFormularioVT(vt, "inventario"); // Revisa todos los campos y le indicamos que es un inventario
+        //ya que estamos usando ComprobarCamposFormularioVT para el inventario de VT y el listado de VT en animales.
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);

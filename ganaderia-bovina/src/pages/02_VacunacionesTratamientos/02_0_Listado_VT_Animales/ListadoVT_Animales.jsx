@@ -22,6 +22,7 @@ export const ListadoVT_Animales = () => {
     const {vt_animal} = useContext(VTListadoContext);
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de vacunas/tratamientos.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de vacunas y/o tratamientos.
+    const [fechaSeleccionada, setFechaSeleccionada] = useState("Sin filtro"); //Busqueda por FECHA en la lista de inseminaciones.
 
     /* Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
@@ -29,12 +30,14 @@ export const ListadoVT_Animales = () => {
             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
-                busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === "" || item.idAnimal.toString().toUpperCase().includes(busquedaID.toUpperCase())
+            const coincideFecha =
+                fechaSeleccionada === "Sin filtro" || item.fechaInseminacion === fechaSeleccionada;
             const coincideTipo =
                 tipoSeleccionado === "Sin filtro" || item.tipo.toUpperCase() === tipoSeleccionado.toUpperCase();
-            return coincideBusqueda && coincideTipo;
+            return coincideBusqueda && coincideFecha&& coincideTipo;
         });
-    }, [vt_animal, busquedaID, tipoSeleccionado]);
+    }, [vt_animal,busquedaID,  fechaSeleccionada, tipoSeleccionado]);
 
 
     //Manejadores de las búsquedas realizadas por ID y por TIPO para encontrar la vacuna/tratamiento
@@ -44,6 +47,11 @@ export const ListadoVT_Animales = () => {
     //Manejadores de las búsquedas realizadas por TIPO para encontrar la vacuna/tratamiento
     const manejarTipoSeleccionado = (e) => {
         setTipoSeleccionado(e.target.value);
+    };
+
+    //Manejadores de las búsquedas realizadas por TIPO para encontrar la vacuna/tratamiento
+    const manejarFechaSeleccionada = (e) => {
+        setFechaSeleccionada(e.target.value || "Sin filtro");
     };
 
     const {eliminarVT_Animal} = useContext(VTListadoContext);
@@ -89,7 +97,7 @@ export const ListadoVT_Animales = () => {
             {/*Añade una línea/raya */}
             <div className="contenedor-filtro-tipo">
                 <div className="contenedor-linea">
-                    <label htmlFor="filtroIDVT_Animal">Filtrar vacuna/tratamiento (ID):</label>
+                    <label htmlFor="filtroIDVT_Animal">Filtrar animal (ID):</label>
                     <input
                         type="text"
                         id="filtroIDVT_Animal" //Obligatoriamente debe coincidir con htmlFor
@@ -101,7 +109,19 @@ export const ListadoVT_Animales = () => {
                     />
                 </div>
                 <div className="contenedor-linea">
-                    <label htmlFor="filtroTipoVT_Animal" >Filtrar por tipo:</label>
+                    {/* Se muestra un calendario para seleccionar que fecha es la que se desea*/}
+                    <label htmlFor="filtroFecha">Filtrar por fecha:</label>
+                    <input
+                        id="filtroFecha" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroFecha"
+                        type="date"
+                        className="date"
+                        value={fechaSeleccionada === "Sin filtro" ? "" : fechaSeleccionada} // Maneja el valor que tiene el fechaSeleccionada
+                        onChange={manejarFechaSeleccionada}
+                    />
+                </div>
+                <div className="contenedor-linea">
+                    <label htmlFor="filtroTipoVT_Animal">Filtrar por tipo:</label>
                     <select
                         id="filtroTipoVT_Animal" //Obligatoriamente debe coincidir con htmlFor
                         name="filtroTipoVT_Animal"
@@ -127,6 +147,7 @@ export const ListadoVT_Animales = () => {
                             <th scope="col">FECHA</th>
                             <th scope="col">TIPO</th>
                             <th scope="col">NOMBRE</th>
+                            <th scope="col">ID VACA</th>
                             <th scope="col">ACCIONES</th>
                         </tr>
                         </thead>
@@ -136,7 +157,7 @@ export const ListadoVT_Animales = () => {
                         {
                             datosFiltrados.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="mensaje-no-hay-elementos">
+                                    <td colSpan="6" className="mensaje-no-hay-elementos">
                                         No hay vacunas/tratamientos existentes en animales
                                     </td>
                                 </tr>
@@ -147,6 +168,7 @@ export const ListadoVT_Animales = () => {
                                         <td>{item.fechaInicio}</td>
                                         <td>{item.tipo}</td>
                                         <td>{item.nombre}</td>
+                                        <td>{item.idAnimal}</td>
 
                                         <td>
                                             {/* BOTÓN VER */}

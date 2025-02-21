@@ -95,7 +95,7 @@
     display: flex;
     justify-content: space-between;
     gap: 20px; /* Espacio entre los dos bloques */
-    flex-wrap: wrap; /* Permite que los elementos se acomoden en una nueva línea si no caben */
+    flex-wrap: nowrap; /* Evita que los elementos que no quepan se sitúen a la siguiente línea */
 
 }
 
@@ -104,6 +104,8 @@
     align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
     margin-bottom: 10px; /* Espaciado entre los elementos */
     flex-grow: 1; /* Permite que el espacio se distribuya mejor */
+    white-space: nowrap; /* Evita que se produzca un salto de línea en los textos */
+
 
 }
 .contenedor-linea label {
