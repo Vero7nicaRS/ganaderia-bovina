@@ -20,7 +20,9 @@ export const FormularioVT= () => {
     const { modo, vt: vtInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
     /* Se inicializa el tratamiento/vacuna con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [vt, setVT] = useState(vtInicial || {
+
+    //TODO: me he quedado aquí.
+    const [vtForm, setVTForm] = useState(vtInicial || {
         id: "",
         tipo: "Tratamiento",
         nombre: "",
@@ -32,16 +34,16 @@ export const FormularioVT= () => {
     // Si "tipo" se encuentra vacio, se establece "tipo: tratamiento" correctamente.
     // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
     useEffect(() => {
-        if (!vt.tipo) {
-            setVT((prevVT) => ({ ...prevVT, tipo: "Tratamiento" }));
+        if (!vtForm.tipo) {
+            setVTForm((prevVT) => ({ ...prevVT, tipo: "Tratamiento" }));
         }
-    }, [vt.tipo]); // Añadir vt.tipo como dependencia
+    }, [vtForm.tipo]); // Añadir vt.tipo como dependencia
 
 
     /* Se obtiene las funciones: agregarVT y modificarVT para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTContext
        */
-    const {agregarVT, modificarVT, errorNombreVT} = useContext(VTContext);
+    const {agregarVT, modificarVT, vt} = useContext(VTContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -51,8 +53,8 @@ export const FormularioVT= () => {
     //Manejador para llevar acabo las modificaciones de los tratamientos/vacunas (actualizar el estado del tratamiento/vacuna)
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setVT({
-            ...vt,
+        setVTForm({
+            ...vtForm,
             [name]: value,
         });
         // Se elimina el error (error + mensaje de error) cuando el usuario seleccione una opción válida en el campo correspondiente.
@@ -66,7 +68,7 @@ export const FormularioVT= () => {
     const [errores, setErrores] = useState({});
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioVT(vt, "inventario"); // Revisa todos los campos y le indicamos que es un inventario
+        const erroresTemp = ComprobarCamposFormularioVT(vtForm, "inventario",vt); // Revisa todos los campos y le indicamos que es un inventario
         //ya que estamos usando ComprobarCamposFormularioVT para el inventario de VT y el listado de VT en animales.
         setErrores(erroresTemp);
 
@@ -80,18 +82,18 @@ export const FormularioVT= () => {
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una vacuna/tratamiento.
     const handleAgregar = (e) => {
-        console.log(vt); // Verifica el estado de la vacuna/tratamiento antes de validar
+        console.log(vtForm); // Verifica el estado de la vacuna/tratamiento antes de validar
 
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento al inventario");
-            agregarVT(vt); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
+            agregarVT(vtForm); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
 
         }else if (esModificar){
             console.log("Se ha modificado la vacuna/tratamiento al inventario");
-            modificarVT(vt); // Llamada a la función modificar de VTContext: Se modifica el tratamiento/vacuna existente
+            modificarVT(vtForm); // Llamada a la función modificar de VTContext: Se modifica el tratamiento/vacuna existente
         }
 
         /* Una vez que se haya agregado una nueva vacuna/tratamiento o se modifique un tratamiento/vacuna existente,
@@ -103,14 +105,14 @@ export const FormularioVT= () => {
     //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO una vacuna/tratamiento.
     //Le permite al usuario añadir un tratamiento/vacuna y continuar con el formulario vacio para añadir nuevos tratamientos/vacunas.
     const handleAceptarYSeguir = (e) => {
-        console.log(vt); // Verifica el estado de la vacuna/tratamiento antes de validar
+        console.log(vtForm); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento y se continua añadiendo nuevas vacunas/tratamientos");
-            agregarVT(vt); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
-            setVT({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            agregarVT(vtForm); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
+            setVTForm({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
     }
@@ -119,7 +121,6 @@ export const FormularioVT= () => {
 
     return (
         <>
-            {errorNombreVT && <div className="mensaje-error">{errorNombreVT}</div>} {/* Muestra el mensaje de error en la interfaz */}
 
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
                 - VISUALIZAR VACUNA/TRATAMIENTO.
@@ -131,10 +132,10 @@ export const FormularioVT= () => {
 
                 <div className="cuadradoVisualizarAgregarModificarVT">
                     {esVisualizar
-                        ? `VISUALIZAR ${vt.tipo.toUpperCase()} DEL INVENTARIO`
+                        ? `VISUALIZAR ${vtForm.tipo.toUpperCase()} DEL INVENTARIO`
                         : esAgregar
                             ? "AÑADIR TRATAMIENTO/VACUNA AL INVENTARIO"
-                            : `MODIFICAR ${vt.tipo.toUpperCase()} DEL INVENTARIO`}
+                            : `MODIFICAR ${vtForm.tipo.toUpperCase()} DEL INVENTARIO`}
                 </div>
 
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
@@ -147,7 +148,7 @@ export const FormularioVT= () => {
                             type="text"
                             name="id"
                             className="cuadro-texto"
-                            value={vt.id || ""}
+                            value={vtForm.id || ""}
                             disabled
                         />
 
@@ -171,7 +172,7 @@ export const FormularioVT= () => {
                                 name="tipo"
                                 disabled={esVisualizar || esModificar}
                                 /*Se indica que el campo "Tipo" no se puede modificar cuando se Visualiza o se Modifica.*/
-                                value={vt.tipo || "Tratamiento"}
+                                value={vtForm.tipo || "Tratamiento"}
                                 onChange={handleChange}
                             >
                                 <option value="Tratamiento">Tratamiento</option>
@@ -184,7 +185,7 @@ export const FormularioVT= () => {
                                 type="text"
                                 className={`cuadro-texto ${errores.nombre ? "error" : ""}`}                                name="nombre"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
-                                value={vt.nombre || ""}
+                                value={vtForm.nombre || ""}
                                 onChange={handleChange}
                             />
                             {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
@@ -197,7 +198,7 @@ export const FormularioVT= () => {
                                 name="unidades"
                                 disabled={esVisualizar}
                                 /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
-                                value={vt.unidades || "1"}
+                                value={vtForm.unidades || "1"}
                                 onChange={handleChange}
 
                             >
@@ -215,7 +216,7 @@ export const FormularioVT= () => {
                                 name="cantidad"
                                 disabled={esVisualizar}
                                 /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
-                                value={vt.cantidad || "Sobre"}
+                                value={vtForm.cantidad || "Sobre"}
                                 onChange={handleChange}
                             >
                                 <option value="Sobre">Sobre</option>
@@ -232,9 +233,9 @@ export const FormularioVT= () => {
                          aparece la información en color rojo
                          */}
                         <div>
-                            {vt.comentario && (
+                            {vtForm.comentario && (
                                 <div style={{color: 'red', marginTop: '10px'}}>
-                                    <strong>Comentarios:</strong> {vt.comentario}
+                                    <strong>Comentarios:</strong> {vtForm.comentario}
                                 </div>
                             )}
                         </div>

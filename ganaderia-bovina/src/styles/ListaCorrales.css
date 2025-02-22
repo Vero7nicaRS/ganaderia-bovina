@@ -1,0 +1,204 @@
+/* Contenedor que agrupa el cuadrado y el botón */
+.contenedor {
+    display: flex; /* Alinea los hijos horizontalmente */
+    align-items: center; /* Alinea los hijos verticalmente */
+    justify-content: center; /* Opcional: centra el contenido en la página */
+}
+
+/* Estilo del cuadrado */
+.cuadradoVisualizarListaCorrales {
+    width: 500px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+/* Estilo del botón */
+.boton-derecha {
+    font-size: 14px; /* Tamaño del texto */
+    padding: 5px 10px; /* Tamaño del botón */
+    background-color: #007bff; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: 1px solid #007bff; /* Borde sólido*/
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Manita al pasar por el botón */
+    transition: background-color 0.3s, color 0.3s; /* Transición suave */
+}
+
+.boton-derecha:hover {
+    background-color: white; /* Cambia el fondo a blanco */
+    color: #007bff; /* Cambia el texto al color original del fondo */
+    border: 1px solid #007bff; /* Añade un borde del color original */
+}
+
+.form-select {
+    width: 150px; /* Ajusta el ancho */
+    height: 30px; /* Ajusta la altura */
+    font-size: 14px; /* Tamaño de texto más pequeño */
+    padding: 5px; /* Espaciado interno */
+    border-radius: 5px; /* Bordes redondeados */
+    border: 1px solid #ccc; /* Color del borde */
+    background-color: #f9f9f9; /* Color de fondo */
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.form-select:focus {
+    outline: none; /* Elimina el borde azul por defecto */
+    border-color: #007bff; /* Color del borde en foco */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Sombra en foco */
+}
+
+/*.contenedor-filtros {*/
+/*    display: flex; !* Alinea los elementos horizontalmente *!*/
+/*    gap: 15px; !* Espaciado entre los elementos *!*/
+/*    align-items: center; !* Alinea los elementos verticalmente al centro *!*/
+/*    justify-content: space-between; !* Distribuye los elementos horizontalmente *!*/
+/*    padding: 10px; !* Espaciado interno del contenedor *!*/
+/*}*/
+
+.listaVacunasTratamientos {
+    text-align: left; /* Alinea el texto a la izquierda */
+    font-size: 15px; /* Opcional: Ajusta el tamaño del texto */
+    margin-bottom: 10px; /* Espacio entre el texto y la tabla */
+}
+
+.boton-volver {
+    display: flex; /* Flexbox para posicionar el botón */
+    justify-content: flex-end; /* Alinea el botón a la derecha */
+    margin-top: 15px; /* Espacio entre la tabla y el botón */
+}
+
+.boton-volver .btn {
+    font-size: 14px;/* Tamaño del texto */
+    padding: 5px 10px;/* Tamaño del botón */
+    background-color: #007bff; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: 1px solid #007bff; /* Borde sólido*/
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Manita al pasar por el botón */
+}
+
+.boton-volver .btn:hover {
+    background-color: white; /* Cambia el fondo a blanco */
+    color: #007bff; /* Cambia el texto al color original del fondo */
+    border: 1px solid #007bff; /* Añade un borde del color original */
+}
+
+.contenedor-filtro-tipo {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Espacio entre los dos bloques */
+    flex-wrap: wrap; /* Permite que los elementos se acomoden en una nueva línea si no caben */
+
+}
+
+.contenedor-linea {
+    display: flex;
+    align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
+    margin-bottom: 10px; /* Espaciado entre los elementos */
+    flex-grow: 1; /* Permite que el espacio se distribuya mejor */
+
+}
+.contenedor-linea label {
+    margin-right: 10px; /* Añade espacio entre el texto y el campo de entrada */
+}
+
+.contenedor-linea input,
+.contenedor-linea select {
+    flex-shrink: 1; /* Permite que los campos se encojan si es necesario */
+    max-width: 200px; /* Limita el tamaño máximo de los campos */
+    width: 100%; /* Asegura que los campos tomen todo el espacio disponible */
+}
+
+
+/* ------------------------------------- BOTONES -------------------------------------*/
+/* Botón de acción genérico */
+button {
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
+    font-size: 14px; /* Tamaño del texto */
+}
+
+/* Estilo del botón "VER" */
+.btn-ver {
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
+    background-color: #747bff; /* Azul más clarito*/
+    color: white; /* Texto blanco */
+}
+
+.btn-ver:hover {
+    /*background-color: #0056b3; !* Azul oscuro *!*/
+    background-color: #007bff; /* Azul oscuro */
+    color: white; /* Cambia el texto al color original del fondo */
+
+}
+
+/* Estilo del botón "MODIFICAR" */
+.btn-modificar {
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
+    background-color: #ffc107; /* Amarillo más clarito */
+    color: white; /* Texto blanco */
+}
+
+.btn-modificar:hover {
+    background-color: #e0a800; /* Amarillo oscuro */
+    color: white; /* Texto blanco */
+
+}
+
+/* Estilo del botón "ELIMINAR" */
+.btn-eliminar {
+    padding: 5px 10px; /* Espaciado interno */
+    margin: 0 2px; /* Espaciado entre botones */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor a manita */
+    background-color: #dc3545; /* Rojo */
+    color: white; /* Texto blanco */
+}
+
+.btn-eliminar:hover {
+    background-color: #b02a37; /* Rojo oscuro */
+    color: white; /* Texto blanco */
+
+}
+
+/* ------------------------------------- FIN DE BOTONES -------------------------------------*/
+
+
+/* Empleado para fijar un tamaño de tabla. */
+.contenedor-tablaLI {
+    min-height: 300px;
+    max-width: 100%; /* Limita el tamaño máximo */
+    min-width: 50px;
+    overflow-y: auto; /* Activa el scroll vertical */
+}
+.contenedor-tablaLI .table {
+}
+
+/* Mensaje que aparece en caso de que la tabla no contenga ningún dato (tanto filtro como tabla vacía).*/
+.mensaje-no-hay-elementos {
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    padding: 20px 0;
+    font-style: italic;
+}

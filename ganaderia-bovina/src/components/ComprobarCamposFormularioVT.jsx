@@ -1,16 +1,39 @@
-export const ComprobarCamposFormularioVT = (datosVT, tipo) => {
+/*
+* ------------------------------------------ ComprobarCamposFormularioVT.jsx: ------------------------------------------
+* Funcionalidad: se emplea para mostrar un mensaje de error y el campo en rojo.
+* Se le pasa por argumento datosVT (objeto), tipo (inventario o VTAnimal) y listadoVT
+* (lista de todas las vacunas y tratamientos)
+* Hay que diferenciar errores GLOBALES o específicos del tipo.
+*
+* ERRORES GLOBALES Y VTAnimal:
+*  - Indicar que el campo es obligatorio.
+*
+* ERRORES INVENTARIO:
+*  - El campo "nombre" debe ser único, es decir, no puede haber más corrales con el mismo nombre.
+*
+* -----------------------------------------------------------------------------------------------------------
+* */
+export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
     const erroresTemp = {};
 
-    // Validaciones comunes para todos las vacunas/tratamientos
-    if (!datosVT.nombre?.trim()) {
-        // erroresTemp.nombre = "El campo nombre es obligatorio";
-        erroresTemp.nombre = "Campo obligatorio";
-    }
-
-
     // Validaciones específicas para el Inventario de vacunas y/o tratamientos.
-    if(tipo === "VTanimal"){
+    if(tipo === "inventario"){
 
+        if (!datosVT.nombre?.trim()) {
+            // erroresTemp.nombre = "El campo nombre es obligatorio";
+            erroresTemp.nombre = "Campo obligatorio";
+        }else {
+            // Verificar si el nombre ya existe en la lista de vacunas/tratamientos
+            const nombreMayuscula = datosVT.nombre.toUpperCase();
+            const existeVT = listadoVT.some(v => v.nombre.toUpperCase() === nombreMayuscula);
+            if (existeVT) {
+                erroresTemp.nombre = "Ya existe una vacuna o tratamiento con este nombre";
+                // erroresTemp.nombre = `Ya existe  ${datosVT.tipo === "Vacuna" ? "una vacuna " : "un tratamiento"} con este nombre`
+                //erroresTemp.nombre = `Ya existe una ${datosVT.tipo}con este nombre.`;
+            }
+        }
+    // Validaciones para agregar una vacuna/tratamiento al animal.
+    }else if(tipo === "VTanimal"){
         if (!datosVT.idAnimal?.trim()) {
             // erroresTemp.idAnimal = "El campo idAnimal es obligatorio";
             erroresTemp.idAnimal = "Campo obligatorio";

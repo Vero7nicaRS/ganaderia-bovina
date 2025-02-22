@@ -12,7 +12,6 @@ import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAn
 import {ListaCorrales} from "./pages/03_MovimientosDeCorral/ListaCorrales.jsx";
 import {AgregarCorral} from "./pages/03_MovimientosDeCorral/AgregarCorral.jsx";
 import {ListaInseminaciones} from "./pages/04_Inseminaciones/ListaInseminaciones.jsx";
-import {InseminacionAnimal} from "./pages/04_Inseminaciones/InseminacionAnimal.jsx";
 import {SimulacionCrias} from "./pages/05_SimulacionCrias/SimulacionCrias.jsx";
 import {ListaToros} from "./pages/06_Toros/ListaToros.jsx";
 import {FormularioAnimal} from "./pages/01_Animales/FormularioAnimal.jsx";
@@ -23,6 +22,7 @@ import {FormularioInseminacion} from "./pages/04_Inseminaciones/FormularioInsemi
 import {ListadoVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Listado_VT_Animales/ListadoVT_Animales.jsx";
 import {FormularioVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Listado_VT_Animales/FormularioVT_Animales.jsx";
 import {ArbolGenealogico} from "./pages/07_ArbolGenealogico/ArbolGenealogico.jsx";
+import {FormularioCorral} from "./pages/03_MovimientosDeCorral/FormularioCorral.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -65,15 +65,15 @@ export const App = () => {
 
 
 
+                         {/* ---------- Páginas referentes a LISTA DE CORRALES ----------*/}
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/agregar-corral" element={<AgregarCorral/>}/>
+                         <Route path="/formulario-corral" element={<FormularioCorral/>}/>
 
 
                          {/* ---------- Páginas referentes a LISTA DE INSEMINACIONES  ----------*/}
                          <Route path="/lista-inseminaciones" element={<ListaInseminaciones/>}/>
                          <Route path="/formulario-inseminacion" element={<FormularioInseminacion/>}/>
-
-                         <Route path="/inseminacion-animal" element={<InseminacionAnimal/>}/>
 
 
                          <Route path="/simulacion-crias" element={<SimulacionCrias/>}/>
