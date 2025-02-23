@@ -41,6 +41,7 @@ export const CorralesProvider = ({children}) => {
         });
     };
 
+    //modificarCorral: Se reemplaza el objeto corral por otro en la lista de corrales.
     const modificarCorral = (corralModificado) => {
         setCorrales(
             corrales.map((corral) =>

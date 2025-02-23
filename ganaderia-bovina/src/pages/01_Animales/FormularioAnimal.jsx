@@ -322,11 +322,12 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un corral</option>
+                                {/* Aparece un listado de los nombres de los corrales existentes.*/}
                                 {corrales && corrales.length > 0 ? (
                                     corrales
                                         .map((corral) => (
-                                            <option key={corral.id} value={corral.id}>
-                                                {corral.id}
+                                            <option key={corral.nombre} value={corral.nombre}>
+                                                {corral.nombre}
                                             </option>
                                         ))
                                 ) : (
