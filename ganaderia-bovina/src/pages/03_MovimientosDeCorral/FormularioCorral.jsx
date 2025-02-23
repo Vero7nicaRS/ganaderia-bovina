@@ -66,8 +66,18 @@ export const FormularioCorral = () => {
         }));
     };
 
+
+    //Para hacer el check-box de animales.
+    const toggleSeleccionAnimal = (id) => {
+        setAnimalesSeleccionados((prev) =>
+            prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
+        );
+    };
+
+
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposFormularioCorral(corral, corrales); // Revisa todos los campos
+        if (animalesSeleccionados.length === 0) erroresTemp.listaAnimales = "Debes seleccionar al menos un animal.";
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);
@@ -128,6 +138,8 @@ export const FormularioCorral = () => {
         setAnimalesSeleccionados(animalesSeleccionados.filter((a) => a !== animal));
     };
 
+
+
     return (
         <>
 
@@ -177,8 +189,9 @@ export const FormularioCorral = () => {
                             <div className="label">Nombre del corral </div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
+                                id = "nombre"
                                 name="nombre" //Debe coincidir con el nombre de const[corral, ...]
+                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
                                 disabled={esVisualizar} //Se indica que el campo "Responsable" no se puede modificar cuando se Visualiza.
                                 value={corral.nombre || ""}
                                 onChange={handleChange}
@@ -193,35 +206,66 @@ export const FormularioCorral = () => {
                                     <div className="label">Añadir Animales:</div>
                                     <div className="lista-animales">
                                         {animales.map((animal) => (
-                                            <button
-                                                key={animal.id}
-                                                type="button"
-                                                className="btn btn-secondary"
-                                                onClick={() => handleAgregarAnimal(animal)}
-                                            >
+                                            <label key={animal.id} className="item-animal">
+                                                <input
+                                                    type="checkbox"
+                                                    name="Anyadir-animales-lista"
+                                                    checked={animalesSeleccionados.includes(animal.id)}
+                                                    onChange={() => toggleSeleccionAnimal(animal.id)}
+                                                    disabled={esVisualizar}
+                                                />
                                                 {animal.nombre} ({animal.id})
-                                            </button>
+                                            </label>
                                         ))}
                                     </div>
+                                    {errores.listaAnimales && <div className="mensaje-error">{errores.listaAnimales}
+                                    </div>}
+
                                 </div>
 
-                                <div className="contenedor-linea">
-                                    <div className="label">Lista de animales agregados:</div>
-                                    <div className="lista-seleccionados">
-                                        {animalesSeleccionados.map((animal) => (
-                                            <div key={animal.id} className="animal-seleccionado">
-                                                {animal.nombre} ({animal.id})
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-danger btn-sm"
-                                                    onClick={() => handleQuitarAnimal(animal)}
-                                                >
-                                                    ✖
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                {/* Lista de animales que han sido seleccionados.*/}
+                                {/* LISTA DE ANIMALES SELECCIONADOS */}
+                                    <div className="listaAnimalesAgregadosEnCorral">Lista de animales en el corral</div>
+
+                                    <table className="tabla-corrales">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>NOMBRE</th>
+                                            <th>ACCIÓN</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {
+                                            animalesSeleccionados.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan="3" className="mensaje-no-animales">No hay animales
+                                                            seleccionados
+                                                        </td>
+                                                    </tr>
+                                            ) : (
+                                                animalesSeleccionados.map((id) => {
+                                                    const animal = animales.find((a) => a.id === id);
+                                                    return animal ? (
+                                                    <tr key={id}>
+                                                        <td>{animal.id}</td>
+                                                        <td>{animal.nombre}</td>
+                                                        <td>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-danger btn-sm"
+                                                                onClick={() => handleQuitarAnimal(id)}
+                                                            >
+                                                                Quitar
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ) : null;
+                                            })
+                                        )}
+                                        </tbody>
+                                    </table>
+
                             </>
                         )}
 

@@ -119,7 +119,7 @@ export const ListaCorrales = () => {
                                             {/* BOTÓN VER */}
                                             <NavLink
                                                 to="/formulario-corral"
-                                                state={{modo: "ver", corral: item}} //Se le pasa la vacuna/tratamiento (item)
+                                                state={{modo: "ver", corral: item}} //Se le pasa el corral (item)
                                                 className="btn-ver">
                                                 VER
                                             </NavLink>

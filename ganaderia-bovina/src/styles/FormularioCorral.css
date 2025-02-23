@@ -177,3 +177,56 @@
     height: 16px; /* Fijar la altura para que el formulario no se desplace */
     white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
 }
+
+
+.lista-animales {
+    display: flex;
+    flex-direction: column; /* Esto hace que los elementos aparezcan en vertical */
+    gap: 5px; /* Espaciado entre los elementos */
+}
+
+.item-animal {
+    align-items: center;
+}
+
+.tabla-corrales {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.tabla-corrales th, .tabla-corrales td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.tabla-corrales th {
+    background-color: #f2f2f2;
+}
+.mensaje-no-animales {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+}
+
+.btn-eliminar {
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.btn-eliminar:hover {
+    background-color: darkred;
+}
+
+
+.listaAnimalesAgregadosEnCorral {
+    text-align: left; /* Alinea el texto a la izquierda */
+    font-size: 16px; /* Opcional: Ajusta el tamaño del texto */
+    margin-bottom: 10px; /* Espacio entre el texto y la tabla */
+}
+
