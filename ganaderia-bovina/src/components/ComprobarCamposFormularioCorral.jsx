@@ -16,13 +16,35 @@ export const ComprobarCamposFormularioCorral = (datosCorral, listadoCorral) => {
         // erroresTemp.nombre = "El campo nombre es obligatorio";
         erroresTemp.nombre = "Campo obligatorio";
     }else {
+
         // Verificar si el nombre ya existe en la lista de corrales
         const nombreMayuscula = datosCorral.nombre.toUpperCase();
-        const existeCorral = listadoCorral.some(v => v.nombre.toUpperCase() === nombreMayuscula);
+
+        /* OJO: cuando se modifica un corral puede ser que el nombre se mantenga, por tanto
+        * hay que contemplar que el nombre puede ser igual que el que se esta modificando.
+        * Ejemplo:
+        *                               VISUALIZAR
+        * Nombre: Corral 01
+        * Animales: Lola V-1, Sol V-32
+        *
+        *                                MODIFICAR
+        * Nombre: Corral 01
+        * Animales: Lola V-1, Sol T-32, Girasol T-12, Pepa V-5
+        *
+        * En esta situación, cuando guarde los cambios de modificar, me lo debe aceptar ya que
+        * quiero que el nombre "Corral 01" se mantenga y no tenga que ponerle un nuevo nombre.
+        * */
+
+        // Filtrar los corrales que no sean el que se está editando
+        const listadoFiltrado = listadoCorral.filter(v => v.id !== datosCorral.id);
+        // Verificar si el nombre ya existe en la lista filtrada
+        const existeCorral = listadoFiltrado.some(v => v.nombre.toUpperCase() === nombreMayuscula);
+        // const existeCorral = listadoCorral.some(v => v.nombre.toUpperCase() === nombreMayuscula);
         if (existeCorral) {
             erroresTemp.nombre = "Ya existe un corral con este nombre.";
         }
     }
+
 
     return erroresTemp; // Devuelve los errores encontrados
 };

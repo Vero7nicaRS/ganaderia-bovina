@@ -4,6 +4,7 @@ import {useContext, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
+import {CorralesContext} from "../../DataAnimales/DataCorrales/CorralesContext.jsx";
 
 /*
 * ------------------------------------------ FormularioAnimal.jsx: ------------------------------------------
@@ -38,7 +39,7 @@ export const FormularioAnimal = () => {
         fechaNacimiento: "",
         padre: "",
         madre: "",
-        corral: "1 - Vacas",
+        corral: "",
         celulasSomaticas: "",
         calidadPatas: "",
         calidadUbres: "",
@@ -52,8 +53,12 @@ export const FormularioAnimal = () => {
     const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
 
 
+    /* Se extrae la información de las vacas, terneros, toros y corrales existentes para poder
+    * utilizarlo en el formulario y seleccionar animales dichos animales. */
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
+
+    const { corrales } = useContext(CorralesContext); // Lista de corrales
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -308,25 +313,28 @@ export const FormularioAnimal = () => {
                             {errores.madre && <div className="mensaje-error">{errores.madre}</div>}
                         </div>
                         <div className="contenedor-linea">
-                            <div className="label">Corral:</div>
+                            <div className="label">Corral</div>
                             <select
-                                className="form-select"
+                                className={`form-select ${errores.corral ? "error" : ""}`}
                                 name="corral"
                                 disabled={esVisualizar} //Se indica que el campo "Corral" no se puede modificar cuando se Visualiza.
-                                value={animal.corral || "1"}
+                                value={animal.corral}
                                 onChange={handleChange}
                             >
-                                <option value="0">0 - Crías</option>
-                                <option value="1">1 - Vacas</option>
-                                <option value="2">2 - Vacas</option>
-                                <option value="3">3 - Secar</option>
-                                <option value="4">4 - Enfermería</option>
-                                {/*<option value="5" disabled>Ninguno</option>*/}
-                                {/* Opción oculta pero mostrada si ya estaba asignada */}
-                                {["Ninguno"].includes(animal.corral) && (
-                                    <option value={animal.corral}>{animal.corral}</option>
+                                <option value="">Selecciona un corral</option>
+                                {corrales && corrales.length > 0 ? (
+                                    corrales
+                                        .map((corral) => (
+                                            <option key={corral.id} value={corral.id}>
+                                                {corral.id}
+                                            </option>
+                                        ))
+                                ) : (
+                                    <option>No hay corrales disponibles</option>
                                 )}
                             </select>
+                            {errores.corral && <div className="mensaje-error">{errores.corral}</div>}
+
                         </div>
                     </div>
 
@@ -342,7 +350,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
 
-                            {errores.celulasSomaticas && <div className="mensaje-error">{errores.celulasSomaticas}</div>}
+                            {errores.celulasSomaticas &&
+                                <div className="mensaje-error">{errores.celulasSomaticas}</div>}
 
                         </div>
                         <div className="contenedor-linea">

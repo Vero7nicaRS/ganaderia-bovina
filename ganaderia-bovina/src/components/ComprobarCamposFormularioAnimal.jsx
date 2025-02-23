@@ -57,6 +57,11 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
             erroresTemp.madre = "Campo obligatorio";
         }
 
+        if(!datosAnimal.corral){
+            // erroresTemp.corral = "El corral es obligatorio";
+            erroresTemp.corral = "Campo obligatorio";
+        }
+
     }
 
     // Validaciones específicas para Toros

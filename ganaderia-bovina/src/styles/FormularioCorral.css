@@ -193,6 +193,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    background-color: white;
 }
 
 .tabla-corrales th, .tabla-corrales td {
@@ -202,7 +203,7 @@
 }
 
 .tabla-corrales th {
-    background-color: #f2f2f2;
+
 }
 .mensaje-no-animales {
     text-align: center;

@@ -77,7 +77,8 @@ export const FormularioCorral = () => {
 
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposFormularioCorral(corral, corrales); // Revisa todos los campos
-        if (animalesSeleccionados.length === 0) erroresTemp.listaAnimales = "Debes seleccionar al menos un animal.";
+        // Contemplamos que puede haber corrales vacios.
+        // if (animalesSeleccionados.length === 0) erroresTemp.listaAnimales = "Debes seleccionar al menos un animal.";
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);
@@ -186,10 +187,10 @@ export const FormularioCorral = () => {
                 <div className="contenedor-flex">
                     <div className="contenedor-izquierda">
                         <div className="contenedor-linea">
-                            <div className="label">Nombre del corral </div>
+                            <div className="label">Nombre del corral</div>
                             <input
                                 type="text"
-                                id = "nombre"
+                                id="nombre"
                                 name="nombre" //Debe coincidir con el nombre de const[corral, ...]
                                 className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
                                 disabled={esVisualizar} //Se indica que el campo "Responsable" no se puede modificar cuando se Visualiza.
@@ -199,7 +200,17 @@ export const FormularioCorral = () => {
                             {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
 
                         </div>
-                        {/* Sección de selección de animales */}
+
+                        {/* En caso de que sea una acción de VISUALIZAR, MODIFICAR O AGREGAR,
+                        se mostrará el número total de animales que hay en el corral y los seleccionados. */}
+                            <div className="contenedor-linea">
+                                <div className="label">Número de animales</div>
+                                {animalesSeleccionados.length}
+                            </div>
+
+                        {/* En caso de que sea una acción de AGREGAR o MODIFICAR  (!esVisualizar),
+                        se mostrará un listado de nombres de vacas/terneros con sus identificadores para poder
+                        añadirlos al corral. */}
                         {!esVisualizar && (
                             <>
                                 <div className="contenedor-linea">
@@ -209,65 +220,87 @@ export const FormularioCorral = () => {
                                             <label key={animal.id} className="item-animal">
                                                 <input
                                                     type="checkbox"
-                                                    name="Anyadir-animales-lista"
+                                                    name="listaAnimales"
                                                     checked={animalesSeleccionados.includes(animal.id)}
                                                     onChange={() => toggleSeleccionAnimal(animal.id)}
                                                     disabled={esVisualizar}
                                                 />
-                                                {animal.nombre} ({animal.id})
+                                                {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra*/}
+                                              {animal.id} ({animal.corral})
                                             </label>
                                         ))}
                                     </div>
-                                    {errores.listaAnimales && <div className="mensaje-error">{errores.listaAnimales}
-                                    </div>}
+                                        {errores.listaAnimales && <div className="mensaje-error">{errores.listaAnimales}
+                                        </div>}
 
                                 </div>
 
-                                {/* Lista de animales que han sido seleccionados.*/}
-                                {/* LISTA DE ANIMALES SELECCIONADOS */}
-                                    <div className="listaAnimalesAgregadosEnCorral">Lista de animales en el corral</div>
 
-                                    <table className="tabla-corrales">
-                                        <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>NOMBRE</th>
-                                            <th>ACCIÓN</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {
-                                            animalesSeleccionados.length === 0 ? (
-                                                    <tr>
-                                                        <td colSpan="3" className="mensaje-no-animales">No hay animales
-                                                            seleccionados
-                                                        </td>
-                                                    </tr>
-                                            ) : (
-                                                animalesSeleccionados.map((id) => {
-                                                    const animal = animales.find((a) => a.id === id);
-                                                    return animal ? (
+                            </>
+                        )}
+                        {
+                            <>
+
+                                {/* LISTA DE ANIMALES SELECCIONADOS */}
+                                <div className="listaAnimalesAgregadosEnCorral">Lista de animales en el corral:</div>
+
+                                <table className="tabla-corrales">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        {/*La columna ACCIÓN solo aparece cuando se AGREGA o MODIFICA un corral*/}
+                                        {!esVisualizar && <th>ACCIÓN</th>}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        animalesSeleccionados.length === 0 ? (
+                                              /* - Si se VISUALIZA se muestra un mensaje indicando que no hay animales
+                                                 en el corral.
+                                                 - Si se AGREGA o MODIFICA se muestra un mensaje indicando que no
+                                                 hay aniamles seleccionados.*/
+                                            <tr>
+                                                {esVisualizar && ( //Se visualiza corral.
+                                                    <td colSpan="2" className="mensaje-no-animales">No hay animales
+                                                        en el corral
+                                                    </td>
+                                                    )
+                                                }
+                                                {!esVisualizar && ( //Se agrega o modifica corral.
+                                                    <td colSpan="2" className="mensaje-no-animales">No hay animales
+                                                        seleccionados
+                                                    </td>
+                                                )
+                                                }
+
+                                            </tr>
+                                        ) : (
+                                            animalesSeleccionados.map((id) => {
+                                                const animal = animales.find((a) => a.id === id);
+                                                return animal ? (
                                                     <tr key={id}>
                                                         <td>{animal.id}</td>
-                                                        <td>{animal.nombre}</td>
-                                                        <td>
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-danger btn-sm"
-                                                                onClick={() => handleQuitarAnimal(id)}
-                                                            >
-                                                                Quitar
-                                                            </button>
-                                                        </td>
+                                                        {/*El botón de QUITAR solo aparece cuando se AGREGA o MODIFICA un corral*/}
+                                                        {!esVisualizar && (
+                                                            <td>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-danger btn-sm"
+                                                                    onClick={() => handleQuitarAnimal(id)}
+                                                                >
+                                                                    Quitar
+                                                                </button>
+                                                            </td>
+                                                        )}
                                                     </tr>
                                                 ) : null;
                                             })
                                         )}
-                                        </tbody>
-                                    </table>
-
+                                    </tbody>
+                                </table>
                             </>
-                        )}
+
+                        }
 
                     </div>
 
