@@ -15,15 +15,15 @@ export const corralesMock= [
     {
         id: "CORRAL-2",
         nombre: "Corral terneros",
-        listaAnimales: ["C-1", "V-2"],
+        listaAnimales: ["C-1", "C-2"],
     }, {
         id: "CORRAL-3",
         nombre: "Corral vacas 2",
-        listaAnimales: "",
+        listaAnimales: [],
     }, {
         id: "CORRAL-4",
         nombre: "Corral vacas 3",
-        listaAnimales: "",
+        listaAnimales: [],
     },
 
 ];

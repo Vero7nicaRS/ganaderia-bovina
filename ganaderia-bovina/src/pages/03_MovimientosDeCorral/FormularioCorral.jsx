@@ -72,7 +72,9 @@ export const FormularioCorral = () => {
 
     useEffect(() => {
         console.log("Animales actualizados en el contexto:", animales);
-    }, [animales]);
+        console.log("Corrales actualizados en el contexto:", corrales);
+    }, [animales, corrales]);
+
 
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
@@ -97,58 +99,103 @@ export const FormularioCorral = () => {
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR un corral.
     //TODO: ERROR, NO SE ME HACE BIEN.
     const handleAgregar = (e) => {
-        console.log(corral); // Verifica el estado del corral antes de validar
-
-        /* Hay que actualizar el estado de corral del animal. Y también, hay que modificar
-           el listado de animales que están en los corrales.
-        */
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        // Se crea el nuevo objeto corral con la lista actualizada de las vacas/terneros.
-        const nuevoCorral = { ...corral, listaAnimales: animalesSeleccionados  };
-
-        /* Se recorre el listado de corrales existente para modificar algún corral que haya sido modificado,
-        ya que se han podido agregar o eliminar animales de ese corral.*/
-        const corralesActualizados = corrales.map((corralExistente) => {
-            // Si es el corral donde estaba algún animal y no es el mismo que el nuevo, lo modificamos
-            if (corralExistente.listaAnimales.some((id) => animalesSeleccionados.includes(id))
-                && corralExistente.nombre !== nuevoCorral.nombre) {
-                return {
-                    ...corralExistente,
-                    listaAnimales: corralExistente.listaAnimales.filter((id) => !animalesSeleccionados.includes(id)),
-                };
-            }
-            return corralExistente;
-        });
-
-        // Se aplica las modificaciones en el contexto de corrales ---> CorralesContext.
-        corralesActualizados.forEach((corral) => modificarCorral(corral));
-
-        // Se agrega o modifica el corral.
-        if (esAgregar) {
-            agregarCorral(nuevoCorral);
-        } else if (esModificar) {
-            modificarCorral(nuevoCorral);
-        }
-
         /* Recorre la lista de animales (vacas/terneros) que han sido seleccionados
            para actualizar el "corral" donde se encuentra -----> (AnimalesContext).
+           (Actualización de los animales en el contexto)
         */
+
+        // Se actualiza los animales, eliminándolos de sus corrales anteriores
         animalesSeleccionados.forEach((id) => {
             const animal = animales.find((a) => a.id === id);
             if (animal) {
-                modificarAnimal({ ...animal, corral: corral.nombre }); // Asigna el nombre del corral al animal
+                // Se elimina el animal del corral anterior para poder añadirlo al nuevo.
+                const corralAnterior = corrales.find((c) => c.nombre === animal.corral);
+                if (corralAnterior) {
+                    // Se elimina el animal de la lista de su corral anterior
+                    corralAnterior.listaAnimales = corralAnterior.listaAnimales.filter(
+                        (animalId) => animalId !== id
+                    );
+                    modificarCorral(corralAnterior); // Se actualiza el corral en el estado
+                }
+                // Se asigna al animal el nuevo corral.
+                modificarAnimal({ ...animal, corral: corral.nombre });
             }
         });
 
 
+        // Se crea el nuevo objeto corral con la lista actualizada de las vacas/terneros.
+        const nuevoCorral = { ...corral, listaAnimales: animalesSeleccionados };
 
-        /* Una vez que se haya agregado una nuevo corral o se modifique un corral existente,
-         el usuario es redirigido a la página de "lista-corrales".
-         */
+        // Si el corral no existe, se agrega como un nuevo corral
+        if (!corrales.find((c) => c.id === nuevoCorral.id)) {
+            // Se agrega el corral.
+            agregarCorral(nuevoCorral); // Se llama a "agregarCorral" de "FormularioContext".
+        } else {
+            // Si el corral ya existe, lo modificamos
+            modificarCorral(nuevoCorral); // Se llama a "modificarCorral" de "FormularioContext".
+        }
+
+        /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
+        el usuario es redirigido a la página de "lista-corrales".
+        */
         navigate("/lista-corrales");
     };
+
+    // const handleAgregar = (e) => {
+    //     console.log(corral); // Verifica el estado del corral antes de validar
+    //
+    //     /* Hay que actualizar el estado de corral del animal. Y también, hay que modificar
+    //        el listado de animales que están en los corrales.
+    //     */
+    //     e.preventDefault();
+    //     if (!validarFormulario()) return; // Si hay errores, no continúa
+    //
+    //     // Se crea el nuevo objeto corral con la lista actualizada de las vacas/terneros.
+    //     const nuevoCorral = { ...corral, listaAnimales: animalesSeleccionados };
+    //
+    //     /* Recorre la lista de animales (vacas/terneros) que han sido seleccionados
+    //      para actualizar el "corral" donde se encuentra -----> (AnimalesContext).
+    //      (Actualización de los animales en el contexto)
+    //     */
+    //     animalesSeleccionados.forEach((id) => {
+    //         const animal = animales.find((a) => a.id === id);
+    //         if (animal) {
+    //             // Asigna el nuevo corral al animal y actualiza en el contexto
+    //             modificarAnimal({ ...animal, corral: nuevoCorral.nombre }); //Le pasa el objeto con el animal y el corral nuevo (donde estamos "corral").
+    //         }
+    //     });
+    //
+    //     /* Se recorre el listado de corrales existente para modificar algún corral que haya sido modificado,
+    //        ya que se han podido agregar o eliminar animales de ese corral.
+    //        (Actualizamos el estado de los corrales antes de modificar los animales)
+    //     */
+    //
+    //     /*
+    //     *
+    //     0: {id: 'CORRAL-1', nombre: 'Corral vacas 1', listaAnimales: Array(2) --> ['V-1', 'V-2']}
+    //     1: {id: 'CORRAL-2', nombre: 'Corral terneros', listaAnimales: Array(2) --> ['C-1', 'C-2']}
+    //     2: {id: 'CORRAL-3', nombre: 'Corral vacas 2', listaAnimales: Array(0)}
+    //     3: {id: 'CORRAL-4', nombre: 'Corral vacas 3', listaAnimales: Array(0)}
+    //     4: {nombre: 'ASDAS', listaAnimales: Array(1), id: 'CORRAL-5'}
+    //     length: 5
+    //     * */
+    //
+    //
+    //     // Se agrega o modifica el corral.
+    //     if (esAgregar) {
+    //         agregarCorral(nuevoCorral);
+    //     } else if (esModificar) {
+    //         modificarCorral(nuevoCorral);
+    //     }
+    //
+    //     /* Una vez que se haya agregado una nuevo corral o se modifique un corral existente,
+    //      el usuario es redirigido a la página de "lista-corrales".
+    //      */
+    //     navigate("/lista-corrales");
+    // };
 
     const handleAceptarYSeguir = (e) => {
         console.log(corral); // Verifica el estado de la vacuna/tratamiento antes de validar
