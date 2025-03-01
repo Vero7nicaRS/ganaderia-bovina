@@ -10,7 +10,6 @@ import {InventarioVT} from "./pages/02_VacunacionesTratamientos/InventarioVT.jsx
 import {FormularioVT} from "./pages/02_VacunacionesTratamientos/FormularioVT.jsx";
 import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAnimal.jsx";
 import {ListaCorrales} from "./pages/03_MovimientosDeCorral/ListaCorrales.jsx";
-import {AgregarCorral} from "./pages/03_MovimientosDeCorral/AgregarCorral.jsx";
 import {ListaInseminaciones} from "./pages/04_Inseminaciones/ListaInseminaciones.jsx";
 import {SimulacionCrias} from "./pages/05_SimulacionCrias/SimulacionCrias.jsx";
 import {ListaToros} from "./pages/06_Toros/ListaToros.jsx";
@@ -67,7 +66,6 @@ export const App = () => {
 
                          {/* ---------- Páginas referentes a LISTA DE CORRALES ----------*/}
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
-                         <Route path="/agregar-corral" element={<AgregarCorral/>}/>
                          <Route path="/formulario-corral" element={<FormularioCorral/>}/>
 
 

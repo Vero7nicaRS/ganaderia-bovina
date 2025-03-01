@@ -9,6 +9,7 @@ import {VtProvider} from "./DataAnimales/DataVacunasTratamientos/VTProvider.jsx"
 import {InseminacionesProvider} from "./DataAnimales/DataInseminaciones/InseminacionesProvider.jsx";
 import {VTListadoProvider} from "./DataAnimales/DataVacunasTratamientos/DataListadoVTAnimales/VTListadoProvider.jsx";
 import {CorralesProvider} from "./DataAnimales/DataCorrales/CorralesProvider.jsx";
+import {SimulacionesProvider} from "./DataAnimales/DataSimulacionCria/SimulacionesProvider.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -26,7 +27,11 @@ createRoot(document.getElementById('root')).render(
                       <InseminacionesProvider>
                           <VTListadoProvider>
                               <CorralesProvider>
-                                  <App> </App>
+                                  <SimulacionesProvider>
+                                      <App> </App>
+
+                                  </SimulacionesProvider>
+
                               </CorralesProvider>
 
                           </VTListadoProvider>

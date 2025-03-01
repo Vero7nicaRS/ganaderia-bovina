@@ -1,39 +1,15 @@
-.cuadradoAgregarAnimal {
-    width: 300px;
-    height: 60px;
-    background-color: #ffffff;
-    border: 2px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    margin: 50px auto;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    padding: 0 10px; /* Agrega un poco de espacio alrededor del contenido */
-
-}
 /* Contenedor que agrupa el cuadrado y el botón */
 .contenedor {
     display: flex; /* Alinea los hijos horizontalmente */
     align-items: center; /* Alinea los hijos verticalmente */
     justify-content: center; /* Opcional: centra el contenido en la página */
 }
-/* Para los select y los inputs, agregamos un espaciado vertical */
-
 .contenedor-linea {
     display: flex;
     align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
     margin-bottom: 10px; /* Espaciado entre los elementos */
     flex-grow: 1; /* Permite que el espacio se distribuya mejor */
-
 }
-/*.contenedor-linea {*/
-/*    display: flex; !*Permite una mejor disposición de los elementos*!*/
-/*    align-items: center; !* Alineamos el texto y el campo de entrada verticalmente *!*/
-/*    margin-bottom: 10px; !* Espaciado entre los elementos *!*/
-/*}*/
 
 /* Establecemos un contenedor para los dos bloques: izquierdo y derecho */
 .contenedor-flex {
@@ -44,19 +20,20 @@
 
 /* Contenedor izquierdo (tiene 7 elementos) */
 .contenedor-izquierda {
-    width: 100%; /*OJO: Antes 50*/
-    flex: 1;
-    min-width: 300px; /* Evita que se reduzcan demasiado */
+    width: 50%;
 }
 
 /* Contenedor derecho (tiene 5 elementos) */
 .contenedor-derecha {
-    width: 100%; /*OJO: Antes 50*/
-    flex: 1;
-    min-width: 300px; /* Evita que se reduzcan demasiado */
+    width: 50%;
 }
 
-
+/* Para los select y los inputs, agregamos un espaciado vertical */
+.contenedor-linea {
+    display: flex; /*Permite una mejor disposición de los elementos*/
+    align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
+    margin-bottom: 10px; /* Espaciado entre los elementos */
+}
 
 /* Se encarga de poner el texto a la izquierda y el campo de escribir a la derecha del mismo */
 .label {
@@ -66,8 +43,8 @@
 
 /* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
 .cuadro-texto, .form-select {
-    width: 100%;
-    max-width: 300px; /* Ajusta el tamaño máximo */
+    width: auto;
+    max-width: 200px; /* Ajusta el tamaño máximo */
     margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
 }
 
@@ -93,7 +70,7 @@
     border: 1px solid #007bff; /* Añade un borde del color original */
 }
 
-/*Afecta a todos los elementos de boton-espacio*/
+{/* Afecta a todos los elementos de boton-espacio*/}
 .boton-espacio{
     display: flex; /*Permite una mejor dispoición de los elementos*/
     justify-content: center; /* Alinea el botón a la derecha */
@@ -101,7 +78,7 @@
 
 }
 
-/*Afecta al elemento botón*/
+{/*Afecta al elemento botón*/}
 .boton-espacio .btn{
 
     font-size: 14px;/* Tamaño del texto */
@@ -112,7 +89,7 @@
     margin-top: 15px; /* Espacio entre la tabla y el botón */
 }
 
-/*Cuando pasas el puntero del ratón por encima del botón*/
+{/*Cuando pasas el puntero del ratón por encima del botón*/}
 .boton-espacio .btn:hover {
     background-color: white; /* Cambia el fondo a blanco */
     color: #007bff; /* Cambia el texto al color original del fondo */
@@ -155,11 +132,11 @@
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    margin: 50px;
+    margin: 50px auto;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.cuadradoVisualizarAgregarModificar {
+.cuadradoVisualizarAgregarModificarInseminacion{
     width: 300px;
     height: 60px;
     background-color: #ffffff;
@@ -170,8 +147,21 @@
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    margin: 50px;
+    margin: 50px auto;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ---- Control del botón de ES SEXADO ---- */
+.checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px; /* Se ajusta el espacio que hay entre el checkbox y "Es sexado" */
+    white-space: nowrap; /* Evita que haya un salto de línea en "Es sexado" */
+}
+
+.checkbox-label {
+    margin-left: 4px; /* Reduce el espacio entre el checkbox y "Es sexado" */
 }
 
 /* MANEJO DE ERRORES: Cuadrado del campo se vuelve en color rojo*/
@@ -187,3 +177,59 @@
     height: 16px; /* Fijar la altura para que el formulario no se desplace */
     white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
 }
+
+
+
+
+.lista-animales {
+    display: flex;
+    flex-direction: column; /* Esto hace que los elementos aparezcan en vertical */
+    gap: 5px; /* Espaciado entre los elementos */
+}
+
+.item-animal {
+    align-items: center;
+}
+
+.tabla-corrales {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: white;
+}
+
+.tabla-corrales th, .tabla-corrales td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.tabla-corrales th {
+
+}
+.mensaje-no-animales {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+}
+
+.btn-eliminar {
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.btn-eliminar:hover {
+    background-color: darkred;
+}
+
+
+.listaAnimalesAgregadosEnCorral {
+    text-align: left; /* Alinea el texto a la izquierda */
+    font-size: 16px; /* Opcional: Ajusta el tamaño del texto */
+    margin-bottom: 10px; /* Espacio entre el texto y la tabla */
+}
+

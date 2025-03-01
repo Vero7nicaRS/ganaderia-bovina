@@ -102,6 +102,7 @@ export const  EliminarAnimal = () => {
                     <input
                         type="text"
                         className="cuadro-id"
+                        name="id"
                         value={animal.id || ""}
                         disabled
                     />
