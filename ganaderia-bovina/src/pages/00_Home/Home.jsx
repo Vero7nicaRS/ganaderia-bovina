@@ -1,6 +1,6 @@
 import "../../styles/stylesAll.css"
 import {NavBar} from "../../components/NavBar.jsx";
-const Home = () => {
+export const Home = () => {
     return (
         <div>
             <div className="cuadradoBienvenida"> ¡Bienvenido, ____ !</div>
@@ -13,5 +13,3 @@ const Home = () => {
         </div>
     );
 };
-
-export default Home;

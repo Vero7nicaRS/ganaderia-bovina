@@ -1,8 +1,7 @@
 /*
 * ------------------------------------------ InseminacionesProvider.jsx: ------------------------------------------
 * Funcionalidad: importa el contexto.
-* Se emplea para que el listado de inseminaciones se encuentre disponible
-* en las diferentes páginas.
+* Se emplea para que el listado de inseminaciones se encuentre disponible en las diferentes páginas.
 *
 * Se separa el Context del Provider porque se espera que cada archivo solo exporte componentes.
 * -----------------------------------------------------------------------------------------------------------

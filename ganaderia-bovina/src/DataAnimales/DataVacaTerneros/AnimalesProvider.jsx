@@ -24,7 +24,6 @@ export const AnimalesProvider = ({children}) => {
         }
         // setAnimales([...animales, nuevoAnimal]); No le estoy asignando ningún identificador.
 
-
         // Cálculo del identificador: es necesario que cada animal añadido tenga un identificador único (ID).
 
         // 1. Se obtiene el último identificador (ID) asignado al animal (vaca/ternero)
