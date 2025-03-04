@@ -17,7 +17,7 @@ import Swal from 'sweetalert2'; // Se importa SweetAlert2 para llevar a cabo el 
 
 export const ListadoVT_Animales = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListadoVT_Animales.
-      Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTListadoContext
+      Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTListadoContext.
       */
     const {vt_animal} = useContext(VTListadoContext);
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de vacunas/tratamientos.

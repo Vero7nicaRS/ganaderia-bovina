@@ -127,7 +127,7 @@ export const ListaToros = () => {
 
                                             <NavLink
                                                 to="/eliminar-toro"
-                                                state={{animalToro: item}} //Se le pasa el ANIMAL (item)
+                                                state={{animalToro: item}} //Se le pasa el ANIMAL (item).
                                                 className="btn-eliminar"
 
                                             >

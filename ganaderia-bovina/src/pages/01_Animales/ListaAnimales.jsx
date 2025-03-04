@@ -6,7 +6,6 @@
 * --------------------------------------------------------------------------------------------------------
 * */
 
-
 import "../../styles/ListaAnimales.css";
 import {useState, useContext, useEffect} from "react";
 import {NavLink} from "react-router-dom";

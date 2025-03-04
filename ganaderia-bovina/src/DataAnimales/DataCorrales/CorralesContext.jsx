@@ -10,4 +10,3 @@
 import {createContext} from "react";
 
 export const CorralesContext = createContext(null);
-

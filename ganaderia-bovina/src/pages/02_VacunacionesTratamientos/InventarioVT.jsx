@@ -56,7 +56,6 @@ export const InventarioVT = () => {
     //     }
     // };
 
-
     // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
     const manejarEliminar = (id, tipo, nombre) => {
         Swal.fire({

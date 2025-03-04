@@ -38,8 +38,7 @@ export const TorosProvider = ({children}) => {
             // 5. Se crea el nuevo animal (TORO) con el identificador único y tipo correspondiente
             return [...prevAnimalesToros, { ...nuevoAnimal, id: idUnico, tipo: tipoAnimal }];
         });
-
-
+        
         /* FORMA ANTERIOR: La forma en la que se implementaba anteriormente podría dar problemas
         con el identificador en el futuro (IDs duplicados), ya que se basaba en la CANTIDAD de toros y le sumaba uno.
         Pero si se cambiara el modo en el que se hace la eliminación, podría dar problemas.

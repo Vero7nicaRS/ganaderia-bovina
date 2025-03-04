@@ -36,7 +36,7 @@ export const VTListadoProvider = ({children}) => {
             // 3. Definir el siguiente ID disponible: se escoge el último Identificador y se le añade 1.
             const siguienteId = idsNumericos.length > 0 ? Math.max(...idsNumericos) + 1 : 1;
 
-            // 4. Se define cómo va a ser el identificador "I-num"
+            // 4. Se define cómo va a ser el identificador "I-num".
             const idUnico = `VTA-${siguienteId}`;
 
             // 5. Se añade la nueva inseminación a la lista de vacunas/tratamientos de animales existentes (prevVTAnimal) y

@@ -7,7 +7,6 @@ export const SimulacionCrias = () => {
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
 
-
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
@@ -125,6 +124,5 @@ export const SimulacionCrias = () => {
                     </div>
             </form>
         </>
-
 )
 }

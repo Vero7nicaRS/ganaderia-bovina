@@ -32,7 +32,7 @@ export const ListaCorrales = () => {
         setBusquedaID(e.target.value);
     };
     const {eliminarCorral} = useContext(CorralesContext);
-    // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
+    // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2.
     const manejarEliminar = (id) => {
         Swal.fire({
             title: `¿Desea eliminar el corral  ${id} seleccionado?`,

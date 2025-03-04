@@ -183,7 +183,6 @@ export const FormularioCorral = () => {
     //     length: 5
     //     * */
     //
-    //
     //     // Se agrega o modifica el corral.
     //     if (esAgregar) {
     //         agregarCorral(nuevoCorral);

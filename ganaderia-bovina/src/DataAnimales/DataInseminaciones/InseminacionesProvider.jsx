@@ -13,26 +13,26 @@ import {inseminacionesMock} from "./InseminacionesMock.jsx";
 
 export const InseminacionesProvider = ({children}) => {
 
-    //setInseminaciones permite actualizar el estado de inseminaciones (evitando modificar el estado actual "inseminaciones")
+    //setInseminaciones permite actualizar el estado de inseminaciones (evitando modificar el estado actual "inseminaciones").
     const [inseminaciones, setInseminaciones] = useState(inseminacionesMock);
 
     const agregarInseminacion = (nuevaInseminacion) => {
 
         // Cálculo del identificador: es necesario que cada inseminación añadida tenga un identificador único (ID).
         setInseminaciones(prevInseminaciones => {
-            // 1. Se asegura que el tipo esté definido
+            // 1. Se asegura que el tipo esté definido.
             const tipoInseminacion = nuevaInseminacion.tipo || "Inseminación";
 
-            // 2. Se fitra por las inseminaciones existentes
+            // 2. Se fitra por las inseminaciones existentes.
             const idsNumericos = prevInseminaciones
-                .filter(inseminacion => inseminacion.id.startsWith("I-")) // Solo inseminaciones
+                .filter(inseminacion => inseminacion.id.startsWith("I-")) // Solo inseminaciones.
                 .map(inseminacion => parseInt(inseminacion.id.split("-")[1])) // Se extrae el número del identificador (ID) pasándolo a entero.
                 .filter(num => !isNaN(num));
 
             // 3. Definir el siguiente ID disponible: se escoge el último Identificador y se le añade 1.
             const siguienteId = idsNumericos.length > 0 ? Math.max(...idsNumericos) + 1 : 1;
 
-            // 4. Se define cómo va a ser el identificador "I-num"
+            // 4. Se define cómo va a ser el identificador "I-num".
             const idUnico = `I-${siguienteId}`;
 
             // 5. Se añade la nueva inseminación a la lista de inseminaciones existentes (prevInseminaciones) y

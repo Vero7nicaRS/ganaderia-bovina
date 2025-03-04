@@ -36,5 +36,4 @@ export const vtMock= [
         unidades: "6",
         cantidad: "Botella"
     },
-
 ];

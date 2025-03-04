@@ -25,5 +25,4 @@ export const corralesMock= [
         nombre: "Corral vacas 3",
         listaAnimales: [],
     },
-
 ];

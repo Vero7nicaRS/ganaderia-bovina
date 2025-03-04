@@ -16,7 +16,6 @@ export const ComprobarCamposFormularioCorral = (datosCorral, listadoCorral) => {
         // erroresTemp.nombre = "El campo nombre es obligatorio";
         erroresTemp.nombre = "Campo obligatorio";
     }else {
-
         // Verificar si el nombre ya existe en la lista de corrales
         const nombreMayuscula = datosCorral.nombre.toUpperCase();
 

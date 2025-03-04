@@ -52,5 +52,4 @@ export const vtListadoMock= [
         fechaFinalizacion: "2025-03-01",
         responsable: "Pepe Ramirez"
     },
-
 ];

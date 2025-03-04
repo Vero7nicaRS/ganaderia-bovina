@@ -7,7 +7,7 @@ import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposFormularioInseminacion} from "../../components/ComprobarCamposFormularioInseminacion.jsx";
 export const FormularioInseminacion = () => {
 
-    //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
+    //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento).
     const location = useLocation();
 
     //Hook para navegar

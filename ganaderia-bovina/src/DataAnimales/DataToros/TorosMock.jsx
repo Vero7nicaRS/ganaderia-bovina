@@ -10,7 +10,7 @@
 export const torosMock = [
     {
         id: "T-1",
-        tipo: "Toro", //Añado el campo tipo por si en el futuro tengo todo en una misma tabla
+        tipo: "Toro", //Añado el campo tipo por si en el futuro tengo todo en una misma tabla.
         estado: "Vivo",
         nombre: "Manolo",
         cantidadSemen: "12000",

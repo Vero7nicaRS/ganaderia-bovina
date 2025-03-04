@@ -23,22 +23,18 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
         // erroresTemp.calidadPatas = "El campo calidad de patas es obligatorio";
         erroresTemp.calidadPatas = "Campo obligatorio";
     }
-
     if (!datosAnimal.calidadUbres) {
         // erroresTemp.calidadUbres = "El campo calidad de ubres es obligatorio";
         erroresTemp.calidadUbres = "Campo obligatorio";
     }
-
     if (!datosAnimal.grasa) {
         // erroresTemp.grasa = "El campo grasa es obligatorio";
         erroresTemp.grasa = "Campo obligatorio";
     }
-
     if (!datosAnimal.proteinas) {
         // erroresTemp.proteinas = "El campo proteinas es obligatorio";
         erroresTemp.proteinas = "Campo obligatorio";
     }
-
     // Validaciones específicas para Vacas
     if (tipoAnimal === "Vaca") {
 

@@ -24,7 +24,6 @@ export const VtProvider = ({children}) => {
         }
         // setVT([...vt, nuevoVT]); No le estoy asignando ningún identificador.
 
-
         // Cálculo del identificador: es necesario que cada vacuna/tratamiento añadido tenga un identificador único
         // que en este caso, es el nombre de la vacuna/tratamiento.
 

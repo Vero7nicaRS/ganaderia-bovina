@@ -193,7 +193,6 @@ export const ListaInseminaciones = () => {
         const fechas = inseminaciones.map(item => item.fechaInseminacion);
         return ["Sin filtro", ...new Set(fechas)];
     }, [inseminaciones]);
-
 * <select
                     className="date"
                     aria-label="Default select example"

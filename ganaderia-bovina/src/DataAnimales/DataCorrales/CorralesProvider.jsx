@@ -31,7 +31,7 @@ export const CorralesProvider = ({children}) => {
             // 2. Definir el siguiente ID disponible: se escoge el último Identificador y se le añade 1.
             const siguienteId = idsNumericos.length > 0 ? Math.max(...idsNumericos) + 1 : 1;
 
-            // 3. Se define cómo va a ser el identificador "CORRAL-num"
+            // 3. Se define cómo va a ser el identificador "CORRAL-num".
             const idUnico = `CORRAL-${siguienteId}`;
 
             // 5. Se añade el nuevo corral a la lista de corrales existentes (prevCorrales) y

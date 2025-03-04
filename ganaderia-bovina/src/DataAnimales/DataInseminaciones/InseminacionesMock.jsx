@@ -49,5 +49,4 @@ export const inseminacionesMock= [
         horaInseminacion: "14:52",
         responsable: "Juan"
     },
-
 ];
