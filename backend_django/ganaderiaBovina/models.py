@@ -109,14 +109,14 @@ class InventarioVT(models.Model):
     # Se le indica el código (key) para las vacas y terneros ("V-x", "C-x" siendo "x" un número).
     codigo = models.CharField(max_length=10, unique=True)
 
-    tipo = models.CharField(max_length=15, choices=TIPOS_CHOICES, default='Vaca')
+    tipo = models.CharField(max_length=15, choices=TIPOS_CHOICES, default='Tratamiento')
     nombre = models.CharField(max_length=100)
 
     # Unidades del tratamiento/vacuna (Rango comprendido entre 1 y 30)
     unidades = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(30)]
     )
-    cantidad = models.CharField(max_length=15, choices=CANTIDAD_CHOICES, default='Vacía')
+    cantidad = models.CharField(max_length=15, choices=CANTIDAD_CHOICES, default='Sobre')
 
 
     def __str__(self):
@@ -147,17 +147,59 @@ class VTAnimales(models.Model):
     id_animal = models.ForeignKey('Animal', on_delete=models.SET_NULL, null=True)
 
     tipo = models.CharField(max_length=15, choices=TIPOS_CHOICES, default='Tratamiento')
-    #nombre y dosis
+
+    #nombre
+    nombre_vt = models.CharField(max_length=100, null= True, blank=True)
 
     ruta = models.CharField(max_length=15, choices=RUTA_CHOICES, default='Intravenosa')
     fecha_inicio = models.DateField()
     fecha_finalizacion = models.DateField()
-
     responsable = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"{self.codigo} - {self.tipo}"
+    # Relación de VTAnimales con InventarioVT (inventario de vacunas y tratamientos)
+    # Cada elemento de VTAnimales se encuentra vinculado a un elemento de InventarioVT
+    # Ya que hay una relación entre el tipo (Tratamiento/Vacuna), nombre (del Tratamiento/Vacuna)
+    inventario_vt = models.ForeignKey(InventarioVT, null=True, blank=True, on_delete=models.SET_NULL)
 
+    # Dosis indica lo que se le va a suministrar al animal
+    dosis = models.IntegerField()
+
+    # "Save" me permite personalizar la lógica antes de que se almacene la información en la base de datos.
+    # *args y **kwargs permite que se envien cualquier tipo de parámetros y palabras.
+
+    # 1º Seleccionamos tipo
+    # 2º Seleccionamos nombre (que son todas las vacunas/tratamientos disponibles para ese tipo)
+    # 3º Se muestra las dosis (número de unidades que hay disponibles en el inventario de ese tratamiento/vacuna)
+    def save(self, *args, **kwargs):
+
+        # Se comprueba que hay un InventarioVT asociado.
+        if self.inventario_vt is not None:
+            # Se realizan las asociaciones de tipo, nombre y dosis.
+            # Se indica el nombre de esa vacuna/tratamiento seleccionado para guardarlo.
+            self.nombre_vt = self.inventario_vt.nombre
+            inventario_tipo = self.inventario_vt.tipo  # Tipo del inventario.
+            inventario_unidades = self.inventario_vt.unidades  # Unidades disponibles.
+
+
+
+            # Se comprueba que que el tipo seleccionado en VTAnimales coincida con el del InventarioVT
+            if self.tipo == 'Tratamiento' and inventario_tipo != 'Tratamiento':
+                raise ValueError("Debe seleccionar un tratamiento válido.")
+            if self.tipo == 'Vacuna' and inventario_tipo != 'Vacuna':
+                raise ValueError("Debe seleccionar una vacuna válida.")
+
+            # Se comprueba que la dosis no supere las unidades disponibles del inventario
+            if self.dosis > inventario_unidades:
+                raise ValueError(f"No hay suficientes unidades en el inventario. Disponibles: {inventario_unidades}")
+
+            # Se actualiza el número de unidades del inventario, restándole la dosis suministrada.
+            self.inventario_vt.unidades -= self.dosis
+            self.inventario_vt.save()
+
+        super().save(*args, **kwargs)
+    def __str__(self):
+        nombre_inventario = self.inventario_vt.nombre if self.inventario_vt else 'Sin nombre'
+        return f"{self.codigo} - {self.tipo} - {nombre_inventario}"
 
 # Modelo Lista Inseminaciones
 class ListaInseminaciones(models.Model):
