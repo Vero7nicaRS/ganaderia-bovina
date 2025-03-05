@@ -31,6 +31,7 @@ export const FormularioToro = () => {
         nombre: "",
         cantidadSemen: "",
         celulasSomaticas: "",
+        transmisionLeche: "",
         calidadPatas: "",
         calidadUbres: "",
         grasa: "",
@@ -206,6 +207,20 @@ export const FormularioToro = () => {
 
                         </div>
 
+                        <div className="contenedor-linea">
+                            <div className="label">Transmisión de leche</div>
+                            <input
+                                type="text"
+                                className={`cuadro-texto ${errores.transmisionLeche ? "error" : ""}`}
+                                name="transmisionLeche"
+                                disabled={esVisualizar} //Se indica que el campo "Transmisión de producción de leche" no se puede modificar cuando se Visualiza.
+                                value={animalToro.transmisionLeche || ""}
+                                onChange={handleChange}
+                            />
+                            {errores.transmisionLeche && <div className="mensaje-error">{errores.transmisionLeche}</div>}
+
+                        </div>
+
                     </div>
 
                     <div className="contenedor-derecha">
@@ -220,8 +235,6 @@ export const FormularioToro = () => {
                                 onChange={handleChange}
                             />
                             {errores.celulasSomaticas && <div className="mensaje-error">{errores.celulasSomaticas}</div>}
-
-
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de patas</div>

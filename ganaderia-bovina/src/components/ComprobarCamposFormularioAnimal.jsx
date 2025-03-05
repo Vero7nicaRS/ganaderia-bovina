@@ -58,6 +58,10 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
             erroresTemp.corral = "Campo obligatorio";
         }
 
+        if (!datosAnimal.produccionLeche) {
+            // erroresTemp.produccionLeche = "El campo células somáticas es obligatorio";
+            erroresTemp.produccionLeche = "Campo obligatorio";
+        }
     }
 
     // Validaciones específicas para Toros
@@ -65,6 +69,11 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
         if (!datosAnimal.cantidadSemen) {
             // erroresTemp.cantidadSemen = "El campo cantidad de semen es obligatorio";
             erroresTemp.cantidadSemen = "Campo obligatorio";
+        }
+
+        if (!datosAnimal.transmisionLeche) {
+            // erroresTemp.produccionLeche = "El campo células somáticas es obligatorio";
+            erroresTemp.transmisionLeche = "Campo obligatorio";
         }
     }
 

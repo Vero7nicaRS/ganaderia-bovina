@@ -80,7 +80,7 @@ export const NavBar = () => {
                                 </li>
                                 {/* Enlace a la página "Insertar tipo al animal" */}
                                 <li>
-                                    <NavLink to='/formulario-vt-animal' className="dropdown-item">Insertar tipo al
+                                    <NavLink to='/formulario-vt-animal' state={{modo: "agregar"}} className="dropdown-item">Insertar tipo al
                                         animal
                                     </NavLink>
                                 </li>

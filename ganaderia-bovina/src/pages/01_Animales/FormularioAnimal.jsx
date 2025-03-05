@@ -41,6 +41,7 @@ export const FormularioAnimal = () => {
         madre: "",
         corral: "",
         celulasSomaticas: "",
+        produccionLeche: "",
         calidadPatas: "",
         calidadUbres: "",
         grasa: "",
@@ -350,9 +351,21 @@ export const FormularioAnimal = () => {
                                 value={animal.celulasSomaticas || ""}
                                 onChange={handleChange}
                             />
-
                             {errores.celulasSomaticas &&
                                 <div className="mensaje-error">{errores.celulasSomaticas}</div>}
+
+                        </div>
+                        <div className="contenedor-linea">
+                            <div className="label">Producción de leche</div>
+                            <input
+                                type="text"
+                                className={`cuadro-texto ${errores.produccionLeche ? "error" : ""}`}
+                                name="produccionLeche"
+                                disabled={esVisualizar} //Se indica que el campo "Producción de leche" no se puede modificar cuando se Visualiza.
+                                value={animal.produccionLeche || ""}
+                                onChange={handleChange}
+                            />
+                            {errores.produccionLeche && <div className="mensaje-error">{errores.produccionLeche}</div>}
 
                         </div>
                         <div className="contenedor-linea">
