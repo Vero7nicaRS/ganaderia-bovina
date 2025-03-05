@@ -1,8 +1,7 @@
 import './styles/App.css'
 import './styles/cuadradosHome.css'
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
-import Home from "./pages/00_Home/Home.jsx";
-import GestionVacas from "./pages/GestionVacas.jsx"
+import {Home} from "./pages/00_Home/Home.jsx";
 import {NavBar} from "./components/NavBar.jsx"
 import {Footer} from "./components/Footer.jsx"
 import {ListaAnimales} from "./pages/01_Animales/ListaAnimales.jsx";
@@ -40,7 +39,6 @@ export const App = () => {
                  <div className="container">
                      <Routes>
                          <Route path="/" element={<Home/>}/>
-                         <Route path="/gestion-vacas" element={<GestionVacas/>}/>
 
                          {/* ---------- Páginas referentes a LISTA DE ANIMALES (Vacas/Terneros) ----------*/}
                          <Route path="/visualizar-animales" element={<ListaAnimales/>}/>
