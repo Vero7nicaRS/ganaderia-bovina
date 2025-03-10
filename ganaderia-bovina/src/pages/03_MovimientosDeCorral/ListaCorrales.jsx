@@ -19,8 +19,8 @@ export const ListaCorrales = () => {
             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
-                busquedaID === "" || item.idVaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
-                || item.idToro.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === ""
+                || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase());
 
             return coincideBusqueda;
         });
@@ -71,7 +71,7 @@ export const ListaCorrales = () => {
             {/*Añade una línea/raya */}
             <div className="contenedor-filtro-tipo">
                 <div className="contenedor-linea">
-                    <label htmlFor="filtroIDVacasToros">Filtrar animal (ID):</label>
+                    <label htmlFor="filtroIDVacasToros">Filtrar corral (ID):</label>
                     <input
                         id="filtroIDVacasToros" //Obligatoriamente debe coincidir con htmlFor
                         name="filtroIDVacasToros"
