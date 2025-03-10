@@ -128,12 +128,12 @@ export const FormularioVT_Animales= () => {
                 modificarVT(vtActualizado);
             }
 
-            console.log("Se ha añadido la vacuna/tratamiento al inventario");
+            console.log("Se ha añadido la vacuna/tratamiento del inventario");
             agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
 
 
         }else if (esModificar){
-            console.log("Se ha modificado la vacuna/tratamiento al inventario");
+            console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
             modificarVT_Animal(vt_animal); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
         }
 
@@ -173,7 +173,7 @@ export const FormularioVT_Animales= () => {
                 // Se llama a modificarVT para actualizar el contexto
                 modificarVT(vtActualizado);
             }
-            console.log("Se ha añadido la vacuna/tratamiento y se continua añadiendo nuevas vacunas/tratamientos");
+            console.log("Se ha añadido la vacuna/tratamiento al animal y se continua añadiendo nuevas vacunas/tratamientos a los animales");
             agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
             setVT_Animal({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
 
@@ -196,7 +196,7 @@ export const FormularioVT_Animales= () => {
 
                 <div className="cuadradoVisualizarAgregarmodificarVT_Animal">
                     {esVisualizar
-                        ? `VISUALIZAR ${vt_animal.tipo.toUpperCase()} DEL INVENTARIO`
+                        ? `VISUALIZAR ${vt_animal.tipo.toUpperCase()} DEL ANIMAL`
                         : esAgregar
                             ? "AÑADIR TRATAMIENTO/VACUNA AL ANIMAL"
                             : `MODIFICAR ${vt_animal.tipo.toUpperCase()} DEL ANIMAL`}
