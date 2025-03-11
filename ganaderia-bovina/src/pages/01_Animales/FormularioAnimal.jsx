@@ -1,6 +1,6 @@
 import "../../styles/FormularioAnimal.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
@@ -68,6 +68,20 @@ export const FormularioAnimal = () => {
 
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
+
+
+    /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
+    renderización del componente y de los cambios realizados en las dependencias.
+    En este caso, el useEffect se ejecutará cada vez que el estado "animales" o "corrales" se modifique.
+    Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
+    Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
+    *
+    * */
+    useEffect(() => {
+        console.log("Animales actualizados en el contexto:", animales);
+        console.log("Corrales actualizados en el contexto:", corrales);
+    }, [animales, corrales]);
+
 
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
