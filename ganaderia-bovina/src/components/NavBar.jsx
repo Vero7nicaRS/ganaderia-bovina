@@ -103,8 +103,18 @@ export const NavBar = () => {
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 {/* Enlace a la página "Agregar corral" */}
-                                <li><NavLink to='/formulario-corral' state={{modo: "agregar"}} className="dropdown-item">Agregar corral</NavLink>
+                                <li><NavLink to='/formulario-corral' state={{modo: "agregar"}}
+                                             className="dropdown-item">Agregar corral</NavLink>
                                 </li>
+
+                                <li>
+                                    <hr className="dropdown-divider"/>
+                                </li>
+                                {/* Enlace a la página "Agregar corral" */}
+                                <li><NavLink to='/movimiento-de-corral'
+                                             className="dropdown-item">Movimiento de corral</NavLink>
+                                </li>
+
                             </ul>
                         </li>
                         <li className="nav-item dropdown">

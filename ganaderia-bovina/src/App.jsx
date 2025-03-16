@@ -21,6 +21,7 @@ import {ListadoVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Lista
 import {FormularioVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Listado_VT_Animales/FormularioVT_Animales.jsx";
 import {ArbolGenealogico} from "./pages/07_ArbolGenealogico/ArbolGenealogico.jsx";
 import {FormularioCorral} from "./pages/03_MovimientosDeCorral/FormularioCorral.jsx";
+import {MovimientoCorral} from "./pages/03_MovimientosDeCorral/MovimientoCorral.jsx"
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -65,6 +66,7 @@ export const App = () => {
                          {/* ---------- Páginas referentes a LISTA DE CORRALES ----------*/}
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/formulario-corral" element={<FormularioCorral/>}/>
+                         <Route path="/movimiento-de-corral" element={<MovimientoCorral/>}/>
 
 
                          {/* ---------- Páginas referentes a LISTA DE INSEMINACIONES  ----------*/}
