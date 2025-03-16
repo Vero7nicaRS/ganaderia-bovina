@@ -21,18 +21,20 @@ export const FormularioVT_Animales= () => {
 
     const { modo, vt_animal: vt_Animal_Inicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
 
-    /* Se inicializa el tratamiento/vacuna con los datos del state.
-       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [vt_animal, setVT_Animal] = useState(vt_Animal_Inicial || {
-        id: "VTA-3",
+
+    const estadoInicialVTAnimal = {
+        id: "",
         tipo: "Tratamiento",
         nombre: "",
-        dosis: "1",
+        dosis: "",
         ruta: "Intravenosa",
         fechaInicio: "",
         fechaFinalizacion: "",
         responsable: ""
-    });
+    }
+    /* Se inicializa el tratamiento/vacuna con los datos del state.
+       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
+    const [vt_animal, setVT_Animal] = useState(vt_Animal_Inicial || estadoInicialVTAnimal);
 
 
     /* Para que haya un desplegable con el listado de toros y vacas disponibles, es necesario
@@ -51,7 +53,7 @@ export const FormularioVT_Animales= () => {
         if (!vt_animal.tipo) {
             setVT_Animal((prevVT) => ({ ...prevVT, tipo: "Tratamiento" }));
         }
-    }, [vt_animal.tipo]); // Añadir vt.tipo como dependencia
+    }, [vt, vt_animal.tipo]); // Las dependencias son "vt" y "vt_animal.tipo"
 
 
     /* Se obtiene las funciones: agregarVT_Animal y modificarVT_Animal para hacer CU (agregar y modificar).
@@ -67,6 +69,9 @@ export const FormularioVT_Animales= () => {
     //Manejador para llevar acabo las modificaciones de los tratamientos/vacunas (actualizar el estado del tratamiento/vacuna)
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // Si el campo que cambia es "dosis", convertimos el valor a número para evitar problemas con strings
+
         setVT_Animal({
             ...vt_animal,
             [name]: value,
@@ -109,6 +114,7 @@ export const FormularioVT_Animales= () => {
             const indexVT = vt.findIndex((item) => item.nombre === vt_animal.nombre);
 
             if(indexVT !==-1){
+                console.log("ESTOY AQUI")
                 const cantidadDisponibleInventario = vt[indexVT].unidades; //Cantidad del inventario.
                 const cantidadUsada = parseInt(vt_animal.dosis, 10);
 
@@ -117,7 +123,7 @@ export const FormularioVT_Animales= () => {
                     return; // Se detine la ejecución al no tener suficientes unidades
                 }
 
-                const cantidadRestante = cantidadDisponibleInventario -cantidadUsada;
+                const cantidadRestante = cantidadDisponibleInventario-cantidadUsada;
                 //Se crea una copia del inventario con la cantidad actualizada.
                 const vtActualizado = {
                     ...vt[indexVT],
@@ -159,12 +165,12 @@ export const FormularioVT_Animales= () => {
                 const cantidadDisponibleInventario = vt[indexVT].unidades; //Cantidad del inventario.
                 const cantidadUsada = parseInt(vt_animal.dosis, 10);
 
-                if(cantidadDisponibleInventario > cantidadUsada){
+                if( cantidadUsada > cantidadDisponibleInventario){
                     console.error("Error: No hay suficientes unidades en el inventario.");
                     return; // Se detine la ejecución al no tener suficientes unidades
                 }
 
-                const cantidadRestante = cantidadDisponibleInventario -cantidadUsada;
+                const cantidadRestante = cantidadDisponibleInventario-cantidadUsada;
                 //Se crea una copia del inventario con la cantidad actualizada.
                 const vtActualizado = {
                     ...vt[indexVT],
@@ -175,7 +181,7 @@ export const FormularioVT_Animales= () => {
             }
             console.log("Se ha añadido la vacuna/tratamiento al animal y se continua añadiendo nuevas vacunas/tratamientos a los animales");
             agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
-            setVT_Animal({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            setVT_Animal(estadoInicialVTAnimal); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
 
         }
 
@@ -248,7 +254,7 @@ export const FormularioVT_Animales= () => {
                                         condición del filtro*/
                                         .filter((animal) =>
                                             (animal.tipo.toUpperCase() === "Vaca".toUpperCase()
-                                            || animal.tipo.toUpperCase() === "Ternero".toUpperCase())
+                                                || animal.tipo.toUpperCase() === "Ternero".toUpperCase())
                                             && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
                                             && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
                                         )
@@ -275,7 +281,7 @@ export const FormularioVT_Animales= () => {
                                 disabled={esVisualizar || esModificar}
                                 /*Se indica que el campo "Tipo" no se puede modificar cuando se Visualiza o se Modifica.*/
                                 value={vt_animal.tipo || "Tratamiento"}
-                                onChange={ (e) => {
+                                onChange={(e) => {
                                     handleChange(e);
                                     /* Se actualizan los campos "Nombre" y "Dosis" al modificar el campo "Tipo".
                                     El campo "Nombre" se actualiza cada vez que se modifique el campo "Tipo"
@@ -287,7 +293,7 @@ export const FormularioVT_Animales= () => {
                                     Ej: Bovisan: cantidad 6 (INVENTARIO)
                                         Nombre: Bosivan.
                                         Dosis: Desplegable del 1-6.*/
-                                    setVT_Animal((prev) => ({...prev, nombre:"", dosis:"1"}))
+                                    setVT_Animal((prev) => ({...prev, nombre: "", dosis: "1"}))
                                 }}
                             >
                                 <option value="Tratamiento">Tratamiento</option>
@@ -304,7 +310,7 @@ export const FormularioVT_Animales= () => {
                                 onChange={(e) => {
                                     handleChange(e);
                                     /* Se actualizan el campo "Dosis" al modificar el campo "Nombre".*/
-                                    setVT_Animal((prev) => ({...prev, dosis:"1"}));
+                                    setVT_Animal((prev) => ({...prev, dosis: ""}));
                                 }}
                             >
                                 <option value="">Selecciona</option>
@@ -320,13 +326,13 @@ export const FormularioVT_Animales= () => {
                                             vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase()
                                             && vt_del_animal.unidades >0
                                         )
-                                           .map((vt_del_animal) => (
+                                        .map((vt_del_animal) => (
                                             <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>
                                                 {vt_del_animal.nombre}
                                             </option>
                                         ))
                                 ) : (
-                                    <option>No hay disponibles</option>
+                                    <option disabled>No hay disponibles</option>
                                 )}
                             </select>
                             {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
@@ -335,30 +341,34 @@ export const FormularioVT_Animales= () => {
                         <div className="contenedor-linea">
                             <div className="label">Dosis</div>
                             <select
-                                className="form-select"
+                                className={`form-select ${errores.dosis ? "error" : ""}`}
                                 name="dosis"
-                                disabled={esVisualizar}
-                                /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
-                                value={vt_animal.dosis || "1"}
-                                onChange={handleChange}
+                                disabled={esVisualizar}  // Solo se habilita en modo agregar o modificar
+                                value={vt_animal.dosis || ""}  // Mantén el valor de dosis como está
+                                onChange={handleChange}  // Solo se ejecutará si no es modo visualización
                             >
-                                {(() => {
-                                    // Se obtiene el objeto que contiene la vacuna/tratamiento que se ha seleccionado
-                                    const objetoVT = vt.find((vt_del_animal) => vt_del_animal.nombre === vt_animal.nombre);
-                                    const cantidadDisponible = objetoVT ? objetoVT.unidades : 0;
+                                <option value="">Selecciona dosis</option>
+                                {esVisualizar ? (
+                                    // En modo visualización, solo mostrar la dosis asignada, sin opciones.
+                                    <option value={vt_animal.dosis}>{vt_animal.dosis}</option>
+                                ) : (
 
-                                    /* Se generan las opciones del desplegable de dosis en función de la cantidad
-                                     que se obtiene disponible en el inventario de tratamientos/vacunas*/
-                                    return cantidadDisponible > 0
-                                        ? Array.from(
-                                            { length: cantidadDisponible }, (_, i) => i + 1).map((numDosis) => (
-                                            <option key={numDosis} value={numDosis}>
-                                                {numDosis}
-                                            </option>
-                                        ))
-                                        : null;
-                                })()}
+                                    (() => {
+                                        const objetoVT = vt.find(vt_del_animal => vt_del_animal.nombre === vt_animal.nombre);
+                                        const cantidadDisponible = objetoVT ? objetoVT.unidades : 0;
+
+                                       //Se muestran todas las opciones de dosis que hay para ese tratamiento o vacuna.
+                                        return cantidadDisponible > 0
+                                            ? Array.from({length: cantidadDisponible}, (_, i) => i + 1).map((numDosis) => (
+                                                <option key={numDosis} value={numDosis}>
+                                                    {numDosis}
+                                                </option>
+                                            ))
+                                            : <option disabled>No hay dosis disponibles</option>;
+                                    })()
+                                )}
                             </select>
+                            {errores.dosis && <div className="mensaje-error">{errores.dosis}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Ruta</div>
@@ -386,34 +396,30 @@ export const FormularioVT_Animales= () => {
                     <div className="contenedor-derecha">
 
                         <div className="contenedor-linea">
-                            <label htmlFor="fechaInicio">Fecha inicio</label>
+                            <div className="label">Fecha de inicio</div>
                             <input
                                 type="date"
-                                id="fechaInicio"
                                 className={`cuadro-texto ${errores.fechaInicio ? "error" : ""}`}
-                                name="fechaFinalizacion"
-                                value={vt_animal.fechaInicio || ''} /*Cada vez que se cambie de hora, se actualizará inseminacion.horaInseminacion*/
-                                onChange={(e) => setVT_Animal({...vt_animal, fechaInicio: e.target.value})}
-                                disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
+                                name="fechaInicio"
+                                disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
+                                value={vt_animal.fechaInicio || ""}
+                                onChange={handleChange}
                             />
                             {errores.fechaInicio &&
                                 <div className="mensaje-error">{errores.fechaInicio}</div>}
-
                         </div>
                         <div className="contenedor-linea">
-                            <label htmlFor="fechaFinalizacion">Fecha finalización</label>
+                            <div className="label">Fecha de finalización</div>
                             <input
                                 type="date"
-                                id="fechaFinalizacion"
                                 className={`cuadro-texto ${errores.fechaFinalizacion ? "error" : ""}`}
                                 name="fechaFinalizacion"
-                                value={vt_animal.fechaFinalizacion || ''} /*Cada vez que se cambie de hora, se actualizará inseminacion.horaInseminacion*/
-                                onChange={(e) => setVT_Animal({...vt_animal, fechaFinalizacion: e.target.value})}
-                                disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
+                                value={vt_animal.fechaFinalizacion || ""}
+                                onChange={handleChange}
                             />
                             {errores.fechaFinalizacion &&
                                 <div className="mensaje-error">{errores.fechaFinalizacion}</div>}
-
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Responsable</div>
