@@ -21,9 +21,7 @@ export const FormularioInseminacion = () => {
     const { modo, inseminacion: inseminacionInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
 
 
-    /* Se inicializa la inseminacion con los datos del state.
-       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [inseminacion, setInseminacion] = useState(inseminacionInicial || {
+    const estadoInicialInseminacion = {
         tipo: "",
         idVaca: "",
         idToro: "",
@@ -32,7 +30,10 @@ export const FormularioInseminacion = () => {
         fechaInseminacion: "",
         horaInseminacion: "",
         responsable: ""
-    });
+    }
+    /* Se inicializa la inseminacion con los datos del state.
+       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
+    const [inseminacion, setInseminacion] = useState(inseminacionInicial || estadoInicialInseminacion);
 
     /* Para que haya un desplegable con el listado de toros y vacas disponibles, es necesario
     * acceder al listado de los mismos. Para ello, se obtiene dicha información con
@@ -47,9 +48,11 @@ export const FormularioInseminacion = () => {
             setInseminacion((prevInseminacion) => ({ ...prevInseminacion, tipo: "Inseminación" }));
         }
     }, [inseminacion.tipo]); // Añadir inseminacion.tipo como dependencia
+
+
     /* Se obtiene las funciones: agregarInseminacion y modificarInseminacion para hacer CU (agregar y modificar).
-          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza InseminacionesContext
-          */
+       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza InseminacionesContext
+    */
     const {agregarInseminacion, modificarInseminacion} = useContext(InseminacionesContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
@@ -114,9 +117,8 @@ export const FormularioInseminacion = () => {
         if(esAgregar){
             console.log("Se ha añadido la inseminación y se continua añadiendo nuevas inseminaciones");
             agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al inventario
-            setInseminacion({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            setInseminacion(estadoInicialInseminacion); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
-
     }
 
     return (
@@ -151,8 +153,6 @@ export const FormularioInseminacion = () => {
                             value={inseminacion.id || ""}
                             disabled
                         />
-
-
                     </div>
                 )}
 
@@ -208,7 +208,7 @@ export const FormularioInseminacion = () => {
                                     <option>No hay vacas disponibles</option>
                                 )}
                             </select>
-                            {errores.idVaca && <div className="mensaje-error">{errores.idVaca}</div>}
+                            {errores.idVaca && <div className="mensaje-error-inseminacion">{errores.idVaca}</div>}
 
                         </div>
                         <div className="contenedor-linea">
@@ -241,7 +241,7 @@ export const FormularioInseminacion = () => {
                                     <option>No hay toros disponibles</option>
                                 )}
                             </select>
-                            {errores.idToro && <div className="mensaje-error">{errores.idToro}</div>}
+                            {errores.idToro && <div className="mensaje-error-inseminacion">{errores.idToro}</div>}
 
                         </div>
 
@@ -289,43 +289,44 @@ export const FormularioInseminacion = () => {
                             <input
                                 type="date"
                                 className={`cuadro-texto ${errores.fechaInseminacion ? "error" : ""}`}
-
                                 name="fechaInseminacion"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.fechaInseminacion || ""}
                                 onChange={handleChange}
                             />
-                            {errores.fechaInseminacion && <div className="mensaje-error">{errores.fechaInseminacion}</div>}
-
+                            {errores.fechaInseminacion &&
+                                <div className="mensaje-error-inseminacion">{errores.fechaInseminacion}</div>}
                         </div>
+
                         <div className="contenedor-linea">
-                            <label htmlFor="horaInseminacion">Hora de inseminación</label>
+                            <div className="label">Hora de inseminación</div>
                             <input
                                 type="time"
-                                id="horaInseminacion"
                                 className={`cuadro-texto ${errores.horaInseminacion ? "error" : ""}`}
                                 name="horaInseminacion"
-                                value={inseminacion.horaInseminacion || ''} /*Cada vez que se cambie de hora, se actualizará inseminacion.horaInseminacion*/
-                                onChange={(e) => setInseminacion({...inseminacion, horaInseminacion: e.target.value})}
-                                disabled={esVisualizar} //Se indica que el campo "Hora de inseminación" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
+                                value={inseminacion.horaInseminacion || ""}
+                                onChange={handleChange}
                             />
-                            {errores.horaInseminacion && <div className="mensaje-error">{errores.horaInseminacion}</div>}
-
+                            {errores.horaInseminacion &&
+                                <div className="mensaje-error-inseminacion">{errores.horaInseminacion}</div>}
                         </div>
 
                         <div className="contenedor-linea">
                             <div className="label">Responsable</div>
                             <input
                                 type="text"
-                                className = {`cuadro-texto ${errores.responsable ? "error" : ""}`}
+                                className={`cuadro-texto ${errores.responsable ? "error" : ""}`}
                                 name="responsable"
                                 disabled={esVisualizar} //Se indica que el campo "Responsable" no se puede modificar cuando se Visualiza.
                                 value={inseminacion.responsable || ""}
                                 onChange={handleChange}
                             />
-                            {errores.responsable && <div className="mensaje-error">{errores.responsable}</div>}
+                            {errores.responsable &&
+                                <div className="mensaje-error-inseminacion">{errores.responsable}</div>}
 
                         </div>
+
 
                     </div>
                 </div>
