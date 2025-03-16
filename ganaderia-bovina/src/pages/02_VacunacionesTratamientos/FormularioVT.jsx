@@ -21,15 +21,14 @@ export const FormularioVT= () => {
     /* Se inicializa el tratamiento/vacuna con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
 
-    //TODO: me he quedado aquí.
-    const [vtForm, setVTForm] = useState(vtInicial || {
+    const estadoInicialVT = {
         id: "",
         tipo: "Tratamiento",
         nombre: "",
-        unidades: "1",
+        unidades: "",
         cantidad: "Sobre"
-    });
-
+    }
+    const [vtForm, setVTForm] = useState(vtInicial || estadoInicialVT);
 
     // Si "tipo" se encuentra vacio, se establece "tipo: tratamiento" correctamente.
     // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
@@ -112,7 +111,7 @@ export const FormularioVT= () => {
         if(esAgregar){
             console.log("Se ha añadido la vacuna/tratamiento y se continua añadiendo nuevas vacunas/tratamientos");
             agregarVT(vtForm); // Llamada a la función agregar de VTContext: Se añade el nuevo tratamiento/vacuna al inventario
-            setVTForm({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            setVTForm(estadoInicialVT); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
     }
@@ -151,11 +150,8 @@ export const FormularioVT= () => {
                             value={vtForm.id || ""}
                             disabled
                         />
-
-
                     </div>
                 )}
-
             </div>
 
             <hr/>
@@ -183,8 +179,10 @@ export const FormularioVT= () => {
                             <div className="label">Nombre</div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}                                name="nombre"
-                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
+                                className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
+                                name="nombre"
+                                disabled={esVisualizar || esModificar}
+                                //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza ni Modifica
                                 value={vtForm.nombre || ""}
                                 onChange={handleChange}
                             />
@@ -194,20 +192,22 @@ export const FormularioVT= () => {
                         <div className="contenedor-linea">
                             <div className="label">Unidades</div>
                             <select
-                                className="form-select"
+                                className={`form-select ${errores.unidades ? "error" : ""}`}
                                 name="unidades"
                                 disabled={esVisualizar}
                                 /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
-                                value={vtForm.unidades || "1"}
+                                value={vtForm.unidades}
                                 onChange={handleChange}
 
                             >
-                                {Array.from({ length: 30 }, (_, i) => (
-                                    <option key={i + 1} value={i + 1}>
-                                        {i + 1}
+                                <option value = "">Selecciona la dosis</option>
+                                {Array.from({ length: 31 }, (_, i) => (
+                                    <option key={i} value={i}>
+                                        {i}
                                     </option>
                                 ))}
                             </select>
+                            {errores.unidades && <div className="mensaje-error">{errores.unidades}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Cantidad</div>
