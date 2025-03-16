@@ -42,6 +42,8 @@ export const AnimalesProvider = ({children}) => {
 
         // 5. Se crea el nuevo animal (VACA o TERNERO) con el identificador único correspondiente.
         setAnimales([...animales, { ...nuevoAnimal, id: idUnico}]);
+
+        return nuevoAnimal;
     };
 
     const modificarAnimal = (animalModificado) => {
