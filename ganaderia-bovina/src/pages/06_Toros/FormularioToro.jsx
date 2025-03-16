@@ -23,9 +23,7 @@ export const FormularioToro = () => {
 
     const { modo, animalToro: animalInicialToro } = location.state; // Se recupera el modo y animal desde el state
 
-    /* Se inicializa el animal con los datos del state.
-       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [animalToro, setAnimalToro] = useState(animalInicialToro || {
+    const estadoInicialToro ={
         tipo: "Toro",
         estado: "Vivo",
         nombre: "",
@@ -36,7 +34,10 @@ export const FormularioToro = () => {
         calidadUbres: "",
         grasa: "",
         proteinas: ""
-    });
+    }
+    /* Se inicializa el animal con los datos del state.
+       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
+    const [animalToro, setAnimalToro] = useState(animalInicialToro || estadoInicialToro);
 
 
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
@@ -110,7 +111,7 @@ export const FormularioToro = () => {
         if(esAgregar){
             console.log("Se ha añadido el toro y se continua añadiendo nuevos toros");
             agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (tooro)
-            setAnimalToro({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            setAnimalToro(estadoInicialToro); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
     }
