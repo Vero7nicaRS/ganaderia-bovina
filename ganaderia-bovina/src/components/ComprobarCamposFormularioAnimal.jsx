@@ -35,8 +35,8 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
         // erroresTemp.proteinas = "El campo proteinas es obligatorio";
         erroresTemp.proteinas = "Campo obligatorio";
     }
-    // Validaciones específicas para Vacas
-    if (tipoAnimal === "Vaca") {
+    // Validaciones específicas para Vacas y Terneros
+    if (tipoAnimal === "Vaca" || tipoAnimal === "Ternero") {
 
         if (!datosAnimal.fechaNacimiento) {
             // erroresTemp.fechaNacimiento = "La fecha de nacimiento es obligatorio";
