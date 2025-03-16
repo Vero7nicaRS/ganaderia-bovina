@@ -178,11 +178,13 @@ button {
 .btn-eliminar:hover {
     background-color: #b02a37; /* Rojo oscuro */
     color: white; /* Texto blanco */
-
 }
 
+/* Oculta el botón de ELIMINAR pero mantiene su espacio para que los botones "VER" y "MODIFICAR" no se muevan de sitio.*/
+.btn-eliminar-hidden {
+    visibility: hidden; /* Mantiene el espacio del botón pero lo oculta */
+}
 /* ------------------------------------- FIN DE BOTONES -------------------------------------*/
-
 
 /* Empleado para fijar un tamaño de tabla. */
 .contenedor-tablaLI {

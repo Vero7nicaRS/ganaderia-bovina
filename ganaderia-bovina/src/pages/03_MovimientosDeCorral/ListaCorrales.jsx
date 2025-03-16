@@ -82,7 +82,16 @@ export const ListaCorrales = () => {
                         onChange={manejarBusquedaID}
                     />
                 </div>
+                {/* BOTÓN DE MOVIMIENTO DE CORRAL*/}
+                <div className="boton-volver">
+                    <NavLink to="/movimiento-de-corral" className="btn btn-info">
+                        MOVER DE CORRAL
+                    </NavLink>
+
+                </div>
             </div>
+
+
             <div className="listaVacunasTratamientos">Lista de corrales:</div>
 
             <div>
@@ -111,9 +120,6 @@ export const ListaCorrales = () => {
                                     <tr key={item.id}>
                                         <td>{item.id}</td>
                                         <td>{item.nombre}</td>
-                                        {/*TODO: TENGO QUE CAMBIARLO
-                                        PORQUE TENGO QUE PONER EL NÚMERO DE ANIMALES.*/}
-
 
                                         <td>
                                             {/* BOTÓN VER */}
@@ -136,15 +142,26 @@ export const ListaCorrales = () => {
                                                     MODIFICAR
                                                 </NavLink>
                                                 {/* BOTÓN ELIMINAR */}
-                                                <button
-                                                    className="btn-eliminar"
-                                                    onClick={ () => manejarEliminar(item.id)}
-                                                >
-                                                    ELIMINAR
-                                                </button>
+
+                                                {/* Solo se muestra el botón "ELIMINAR" si el corral no tiene ningun animal, es decir,
+                                                 está el corral vacío */}
+                                                {!item.listaAnimales || item.listaAnimales.length === 0 ? (
+                                                    //Si NO hay animales, aparece el botón de ELIMINAR.
+                                                    <button
+                                                        className="btn-eliminar"
+                                                        onClick={() => manejarEliminar(item.id)}
+                                                    >
+                                                        ELIMINAR
+                                                    </button>
+                                                ) : ( //Si hay animales, deshabilito el botón de ELIMINAR.
+                                                    <button
+                                                        className="btn-eliminar btn-eliminar-hidden"
+                                                    >
+                                                        ELIMINAR
+                                                    </button>
+                                                )}
 
                                             </>
-
                                         </td>
                                     </tr>
                                 ))
