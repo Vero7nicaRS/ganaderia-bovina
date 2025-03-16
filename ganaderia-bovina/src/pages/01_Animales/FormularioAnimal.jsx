@@ -27,11 +27,12 @@ export const FormularioAnimal = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-    const { modo, animal: animalInicial } = location.state || { tipo: "Vaca", estado:"Vacía", corral: "1 - Vacas"}; // Se recupera el modo y animal desde el state
+    const { modo, animal: animalInicial } = location.state || { tipo: "Vaca", estado:"Vacía", corral: "Corral vacas 1"}; // Se recupera el modo y animal desde el state
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [animal, setAnimal] = useState(animalInicial || {
+
+    const estadoInicial = {
         id: "",
         tipo: "Vaca",
         estado: "Vacía",
@@ -39,27 +40,27 @@ export const FormularioAnimal = () => {
         fechaNacimiento: "",
         padre: "",
         madre: "",
-        corral: "",
+        corral: "Corral vacas 1",
         celulasSomaticas: "",
         produccionLeche: "",
         calidadPatas: "",
         calidadUbres: "",
         grasa: "",
         proteinas: ""
-    });
+    }
+    const [animal, setAnimal] = useState(animalInicial || estadoInicial);
 
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
     const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
 
-
     /* Se extrae la información de las vacas, terneros, toros y corrales existentes para poder
     * utilizarlo en el formulario y seleccionar animales dichos animales. */
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
 
-    const { corrales } = useContext(CorralesContext); // Lista de corrales
+    const { corrales, modificarCorral } = useContext(CorralesContext); // Lista de corrales
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -69,19 +70,51 @@ export const FormularioAnimal = () => {
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
+    // Se emplea para comprobar si dos listas son iguales (en este caso, si dos corrales tienen los mismos elementos)
+    const sonIgualesListas = (lista1, lista2) => {
+        if (lista1.length !== lista2.length) return false;
+        // Se ordenan las listas para comparar los elementos.
+        const lista1Ordenada = [...lista1].sort();
+        const lista2Ordenada = [...lista2].sort();
+        return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
+    };
 
     /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
-    renderización del componente y de los cambios realizados en las dependencias.
-    En este caso, el useEffect se ejecutará cada vez que el estado "animales" o "corrales" se modifique.
-    Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
-    Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
-    *
-    * */
+   renderización del componente y de los cambios realizados en las dependencias.
+   En este caso, el useEffect se ejecutará cuando se hayan realizado la ejecución
+   de todas las funciones, y una vez renderizado, se evalúan las dependencias que son
+   "animales", "corrales" y "modificarCorral".
+   Por tanto, cada vez que el estado "animales" o "corrales" cambie, se ejecutará el UseEffect.
+   Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
+   Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
+
+   Razón de las dependencias escogidas:
+    - animales: cada vez que cambie la lista de animales (agregar o modificar), se quiere que se ejecute
+    para que la información esté sincronizada.
+    - corrales: cada vez que cambie la lista de corrales (agregar o modificar), "".
+    - modificarCorral: aparece dentro del UseEffect.
+
+    En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
+    actualizada.
+   * */
     useEffect(() => {
+
+        // Se recorre cada corral (corral) de la lista de corrales (corrales - Context) viendo los animales que tiene, para así actualizarlo.
+        corrales.forEach((corral) => {
+            // Se obtienen los IDs de los animales que tienen ese corral asignado.
+            const animalesAsignados = animales
+                .filter((animal) => animal.corral === corral.nombre) // ¿Animal está en ese corral?
+                .map((animal) => animal.id); //Si está, dame el identificador del animal.
+
+            // Si la lista del corral es distinta de los animales asignados, se actualiza el corral
+            if (!sonIgualesListas(corral.listaAnimales, animalesAsignados)) {
+                const updatedCorral = { ...corral, listaAnimales: animalesAsignados };
+                modificarCorral(updatedCorral);
+            }
+        });
         console.log("Animales actualizados en el contexto:", animales);
         console.log("Corrales actualizados en el contexto:", corrales);
-    }, [animales, corrales]);
-
+    }, [animales, corrales, modificarCorral]);
 
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
@@ -116,15 +149,28 @@ export const FormularioAnimal = () => {
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        console.log(animal); // Verifica el estado de animal antes de validar
+        console.log("Animal antes de ser añadido: ",animal); // Verifica el estado de animal antes de validar
+        let nuevoAnimalConId;
         if(esAgregar){
             console.log("Se ha añadido el animal");
-            agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
+            nuevoAnimalConId = agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
         }else if (esModificar){
             console.log("Se ha modificado el animal");
-            modificarAnimal(animal); // Llamada a la función modificar de AnimalesContext: Se modifica el animal existente (vaca/ternero)
+            nuevoAnimalConId = modificarAnimal(animal); // Llamada a la función modificar de AnimalesContext: Se modifica el animal existente (vaca/ternero)
         }
-
+        // Ahora, actualizamos el corral al que se asigna el animal
+        if (nuevoAnimalConId) {
+            const corralSeleccionado = corrales.find((c) => c.nombre === nuevoAnimalConId.corral);
+            console.log("Corral seleccionado:", corralSeleccionado);
+            if (corralSeleccionado) {
+                // Creamos un nuevo objeto corral agregando el id del animal
+                const nuevoCorral = {
+                    ...corralSeleccionado,
+                    listaAnimales: [...corralSeleccionado.listaAnimales, nuevoAnimalConId.id],
+                };
+                modificarCorral(nuevoCorral);
+            }
+        }
         /* Una vez que se haya agregado un nuevo animal o se modifique un animal existente,
          el usuario es redirigido a la página de "visualizar-animales".
          */
@@ -141,9 +187,8 @@ export const FormularioAnimal = () => {
         if(esAgregar){
             console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
             agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
-            setAnimal({}); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
-
     }
 
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR  -----------------------*/
@@ -482,8 +527,6 @@ export const FormularioAnimal = () => {
                             <NavLink to="/visualizar-animales" className="btn btn-info">CANCELAR</NavLink>
 
                         </div>
-
-
                     )}
 
 
