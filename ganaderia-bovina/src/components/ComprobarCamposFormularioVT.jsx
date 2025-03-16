@@ -32,11 +32,25 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
                 //erroresTemp.nombre = `Ya existe una ${datosVT.tipo}con este nombre.`;
             }
         }
+
+        if(!datosVT.unidades?.trim()){
+            erroresTemp.unidades =  "Campo obligatorio";
+        }
     // Validaciones para agregar una vacuna/tratamiento al animal.
     }else if(tipo === "VTanimal"){
         if (!datosVT.idAnimal?.trim()) {
             // erroresTemp.idAnimal = "El campo idAnimal es obligatorio";
             erroresTemp.idAnimal = "Campo obligatorio";
+        }
+
+        if (!datosVT.nombre?.trim()){
+            // erroresTemp.nombre = "El campo fechaInicio es obligatorio";
+            erroresTemp.nombre = "Campo obligatorio";
+        }
+
+        if (!datosVT.dosis?.trim()){
+            // erroresTemp.dosis = "El campo fechaInicio es obligatorio";
+            erroresTemp.dosis = "Campo obligatorio";
         }
 
         if (!datosVT.fechaInicio?.trim()) {
