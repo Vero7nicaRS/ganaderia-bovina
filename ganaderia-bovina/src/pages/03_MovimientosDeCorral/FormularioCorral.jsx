@@ -230,7 +230,7 @@ export const FormularioCorral = () => {
                         {/* En caso de que sea una acción de VISUALIZAR, MODIFICAR O AGREGAR,
                         se mostrará el número total de animales que hay en el corral y los seleccionados. */}
                             <div className="contenedor-linea">
-                                <div className="label">Número de animales</div>
+                                <div className="label">Número de animales: </div>
                                 {animalesSeleccionados.length}
                             </div>
 
@@ -240,7 +240,7 @@ export const FormularioCorral = () => {
                         {!esVisualizar && (
                             <>
                                 <div className="contenedor-linea">
-                                    <div className="label">Añadir Animales:</div>
+                                    <div className="label">Añadir animales</div>
                                     <div className="lista-animales">
                                         {animales
                                             //Filtramos por los animales que NO están en el corral y obtenemos su identificador y corral donde están.
