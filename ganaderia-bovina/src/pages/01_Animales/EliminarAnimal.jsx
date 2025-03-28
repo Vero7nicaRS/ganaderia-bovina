@@ -46,6 +46,9 @@ export const  EliminarAnimal = () => {
         setComentarios(e.target.value);
     };
 
+    /* corralMV: Variable que contiene el valor "ninguno", se utilizará para actualizar el campo "corral"
+    cuando el animal tenga como estado "vendida" o "muerte".
+    * */
     const corralMV = 'Ninguno';
 
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
@@ -77,7 +80,7 @@ export const  EliminarAnimal = () => {
             const animalActualizado = {
                 ...animal,
                 estado: motivo,
-                corral: corralMV,
+                corral: corralMV, /* CorralMV: contiene el valor "Ninguno"*/
                 comentario: comentarios
             };
             modificarAnimal(animalActualizado);
