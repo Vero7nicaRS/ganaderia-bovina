@@ -46,6 +46,7 @@ export const  EliminarAnimal = () => {
         setComentarios(e.target.value);
     };
 
+    const corralMV = 'Ninguno';
 
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
 
@@ -76,7 +77,7 @@ export const  EliminarAnimal = () => {
             const animalActualizado = {
                 ...animal,
                 estado: motivo,
-                corral: "Ninguno",
+                corral: corralMV,
                 comentario: comentarios
             };
             modificarAnimal(animalActualizado);

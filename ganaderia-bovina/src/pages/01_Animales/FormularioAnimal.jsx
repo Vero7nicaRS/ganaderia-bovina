@@ -382,6 +382,12 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un corral</option>
+                                {/* Si el animal ha sido vendido o muerto, el corral tiene como valor
+                                    ninguno */}
+                                {/* Opción oculta pero mostrada si ya estaba asignada */}
+                                {["Ninguno"].includes(animal.corral) && (
+                                    <option value={animal.corral}>{animal.corral}</option>
+                                )}
                                 {/* Aparece un listado de los nombres de los corrales existentes.*/}
                                 {corrales && corrales.length > 0 ? (
                                     corrales
