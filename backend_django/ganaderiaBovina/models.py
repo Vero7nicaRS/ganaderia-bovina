@@ -316,7 +316,7 @@ class VTAnimales(models.Model):
     # Relación de VTAnimales con InventarioVT (inventario de vacunas y tratamientos)
     # Cada elemento de VTAnimales se encuentra vinculado a un elemento de InventarioVT
     # Ya que hay una relación entre el tipo (Tratamiento/Vacuna), nombre (del Tratamiento/Vacuna)
-    inventario_vt = models.ForeignKey(InventarioVT, null=False, blank=False, on_delete=models.PROTECT)
+    inventario_vt = models.ForeignKey(InventarioVT, null=True, blank=True, on_delete=models.PROTECT)
 
     # Dosis indica lo que se le va a suministrar al animal
     dosis = models.IntegerField()
