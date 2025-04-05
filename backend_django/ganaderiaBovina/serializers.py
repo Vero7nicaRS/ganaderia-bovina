@@ -12,6 +12,8 @@
 import re
 
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 from django.core.exceptions import ValidationError
 
@@ -22,6 +24,20 @@ from django.core.exceptions import ValidationError
 
 # Incluye todos los campos del modelo Animal, por tanto se podrá hacer CRUD mediante la API
 class AnimalSerializer(serializers.ModelSerializer):
+
+    # La comprobación del campo "unique" se hace antes que la del validate_codigo.
+    # Por ello, se hace la comprobación aquí.
+    # Si el código existe en el sistema, se lanza un mensaje de error
+    codigo = serializers.CharField(
+        required=False,
+        allow_null=True,
+        validators=[
+            UniqueValidator(
+                queryset=Animal.objects.all(),
+                message=f"El código ya existe en el sistema."
+            )
+        ]
+    )
     class Meta:
         model = Animal
         fields = '__all__'
@@ -85,10 +101,18 @@ class AnimalSerializer(serializers.ModelSerializer):
                     'min_value': 'El valor mínimo permitido es 1.',
                     'max_value': 'El valor máximo permitido es 9.'
                 }
-            }
+            },
+            'padre': {
+
+                'error_messages': {
+                    'required': 'El padre es obligatorio.',
+                    'null': 'Debe seleccionar un padre válido.',
+                    'invalid': 'El valor del padre no es válido.'
+                }
+            },
         }
 
-    # Validaciones correspondiente al campo "codigo".
+    # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
             return value  # Se genera el código de manera automática-
@@ -99,31 +123,34 @@ class AnimalSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"ERROR: El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
+        #if Animal.objects.filter(codigo=value).exists():
+        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
         if Animal.objects.filter(codigo=value).exists():
-            raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
-
+            raise serializers.ValidationError(
+                f"El código '{value}' ya existe en el sistema."
+            )
         return value
 
-    # Validaciones generales. Se ejecuta después después de las validaciones de cada uno de los campos.
-    # Se manejan los campos: padre, madre y corral.
-    def validate(self, data):
-        errores = {}
+    # validate_<campo>: Validación para el campo "padre".
+    def validate_padre(self, value):
+        if value in [None, '']:
+            raise serializers.ValidationError('Debe seleccionar un padre válido.')
+        return value
 
-        if data.get('padre') in [None, '']:
-            errores['padre'] = 'Debe seleccionar un padre válido.'
-        if data.get('madre') in [None, '']:
-            errores['madre'] = 'Debe seleccionar una madre válida.'
-        if data.get('corral') in [None, '']:
-            errores['corral'] = 'Debe seleccionar un corral válido.'
+    # validate_<campo>: Validación para el campo "madre".
+    def validate_madre(self, value):
+        if value in [None, '']:
+            raise serializers.ValidationError('Debe seleccionar una madre válida.')
+        return value
 
-        if errores:
-            raise serializers.ValidationError(errores)
-
-        return data
-
+    # validate_<campo>: Validación para el campo "corral".
+    def validate_corral(self, value):
+        if value in [None, '']:
+            raise serializers.ValidationError('Debe seleccionar un corral válido.')
+        return value
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Serializer de TORO
@@ -131,6 +158,17 @@ class AnimalSerializer(serializers.ModelSerializer):
 
 # Incluye todos los campos del modelo Toro, por tanto se podrá hacer CRUD mediante la API
 class ToroSerializer(serializers.ModelSerializer):
+
+    codigo = serializers.CharField(
+        required=False,
+        allow_null=True,
+        validators=[
+            UniqueValidator(
+                queryset=Toro.objects.all(),
+                message=f"El código ya existe en el sistema."
+            )
+        ]
+    )
     class Meta:
         model = Toro
         fields = '__all__'
@@ -193,7 +231,7 @@ class ToroSerializer(serializers.ModelSerializer):
             }
         }
 
-    # Validaciones correspondiente al campo "codigo".
+    # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
             return value  # Se genera el código de manera automática-
@@ -203,11 +241,12 @@ class ToroSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"ERROR: El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
 
+        # No funciona aquí, porque unique se ejecuta antes que el validate_codigo
         # Si el código existe en el sistema, se lanza un mensaje de error.
-        if Toro.objects.filter(codigo=value).exists():
-            raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
+        #if Toro.objects.filter(codigo=value).exists():
+        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
@@ -218,6 +257,16 @@ class ToroSerializer(serializers.ModelSerializer):
 
 # Incluye todos los campos del modelo Corral, por tanto se podrá hacer CRUD mediante la API
 class CorralSerializer(serializers.ModelSerializer):
+    codigo = serializers.CharField(
+        required=False,
+        allow_null=True,
+        validators=[
+            UniqueValidator(
+                queryset=Corral.objects.all(),
+                message=f"El código ya existe en el sistema."
+            )
+        ]
+    )
     class Meta:
         model = Corral
         fields = '__all__'
@@ -230,7 +279,7 @@ class CorralSerializer(serializers.ModelSerializer):
             }
         }
 
-    # Validaciones correspondiente al campo "codigo".
+    # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
                 return value  # Se genera el código de manera automática-
@@ -240,11 +289,11 @@ class CorralSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"ERROR: El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
-        if Corral.objects.filter(codigo=value).exists():
-            raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
+        #if Corral.objects.filter(codigo=value).exists():
+        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
@@ -254,6 +303,16 @@ class CorralSerializer(serializers.ModelSerializer):
 
 # Incluye todos los campos del modelo InventarioVT, por tanto se podrá hacer CRUD mediante la API
 class InventarioVTSerializer(serializers.ModelSerializer):
+    codigo = serializers.CharField(
+        required=False,
+        allow_null=True,
+        validators=[
+            UniqueValidator(
+                queryset=InventarioVT.objects.all(),
+                message=f"El código ya existe en el sistema."
+            )
+        ]
+    )
     class Meta:
         model = InventarioVT
         fields = '__all__'
@@ -274,7 +333,7 @@ class InventarioVTSerializer(serializers.ModelSerializer):
             }
         }
 
-    # Validaciones correspondiente al campo "codigo".
+    # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
             return value  # Se genera el código de manera automática-
@@ -284,11 +343,11 @@ class InventarioVTSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"ERROR: El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
-        if Toro.objects.filter(codigo=value).exists():
-            raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
+        #if Toro.objects.filter(codigo=value).exists():
+        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
@@ -302,6 +361,16 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
     # Se guarda el campo "nombre_vt" como respuesta a las peticiones, por tanto se muestra cuando se hace
     # GET y POST aunque NO se guarde en la base de datos.
     nombre_vt = serializers.CharField(source="inventario_vt.nombre", read_only=True)
+    codigo = serializers.CharField(
+        required=False,
+        allow_null=True,
+        validators=[
+            UniqueValidator(
+                queryset=VTAnimales.objects.all(),
+                message=f"El código ya existe en el sistema."
+            )
+        ]
+    )
     class Meta:
         model = VTAnimales
         fields = '__all__'
@@ -329,17 +398,10 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                     'required': 'La dosis es obligatorio.',
                     'invalid': 'Se debe introducir un número entero válido.'
                 }
-            },
-            'id_animal': {
-                'error_messages': {
-                    'required': 'El identificador del animal es obligatorio.',
-                    'invalid': 'Se debe introducir un identificador de animal válido.'
-                }
             }
-
         }
 
-    # Validaciones correspondiente al campo "codigo".
+    # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
             return value  # Se genera el código de manera automática-
@@ -349,14 +411,26 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"ERROR: El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
-        if VTAnimales.objects.filter(codigo=value).exists():
-            raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
+        #if VTAnimales.objects.filter(codigo=value).exists():
+        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
+    # validate_<campo>: Validación para el campo "id_animal".
+    def validate_id_animal(self,value):
+        if value in [None, '']:
+            raise serializers.ValidationError('Debe seleccionar un identificador de animal válido.')
+        return value
+
+
+    # validate_<campo>: Validación para el campo "inventario_vt".
+    def validate_inventario_vt(self,value):
+        if value in [None, '']:
+            raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
+        return value
 
     # Hacemos las validaciones relacionadas con el tipo (vacuna/tratamiento) y el nombre escogido
     def validate(self, data):
@@ -393,8 +467,8 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     f"El {tipo.lower()} seleccionado tiene el estado 'Inactivo' y por tanto, no se puede usar."
                 )
-        if not inventario:
-             raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
+        #if not inventario:
+        #     raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
         return data
 
 
@@ -405,6 +479,17 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
 # Incluye todos los campos del modelo ListaInseminaciones, por tanto se podrá hacer CRUD mediante la API
 # Tiene referencias a Toro y Animal.
 class ListaInseminacionesSerializer(serializers.ModelSerializer):
+
+    codigo = serializers.CharField(
+        required=False,
+        allow_null=True,
+        validators=[
+            UniqueValidator(
+                queryset=ListaInseminaciones.objects.all(),
+                message=f"El código ya existe en el sistema."
+            )
+        ]
+    )
     class Meta:
         model = ListaInseminaciones
         fields = '__all__'
@@ -429,7 +514,7 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
                 }
             }
         }
-    # Validaciones correspondiente al campo "codigo".
+    # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
             return value  # Se genera el código de manera automática-
@@ -439,25 +524,22 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"ERROR: El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
-        if ListaInseminaciones.objects.filter(codigo=value).exists():
-            raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
+        #if ListaInseminaciones.objects.filter(codigo=value).exists():
+        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
-    # Validaciones generales. Se ejecuta después después de las validaciones de cada uno de los campos.
-    # Se manejan los campos: id_vaca e id_toro.
-    def validate(self, data):
-        errores = {}
+     # validate_<campo>: Validación para el campo "id_vaca".
+    def validate_id_vaca(self,value):
+        if value in [None, '']:
+            raise serializers.ValidationError('Debe seleccionar una vaca válida.')
+        return value
 
-        if data.get('id_vaca') in [None, '']:
-            errores['id_vaca'] = 'Debe seleccionar una vaca válida.'
-        if data.get('id_toro') in [None, '']:
-            errores['id_toro'] = 'Debe seleccionar un toro válido.'
-
-        if errores:
-            raise serializers.ValidationError(errores)
-
-        return data
+    # validate_<campo>: Validación para el campo "id_toro".
+    def validate_id_toro(self,value):
+        if value in [None, '']:
+            raise serializers.ValidationError('Debe seleccionar un toro válido.')
+        return value
