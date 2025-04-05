@@ -318,6 +318,7 @@ class VTAnimales(models.Model):
     # Ya que hay una relación entre el tipo (Tratamiento/Vacuna), nombre (del Tratamiento/Vacuna)
     inventario_vt = models.ForeignKey(InventarioVT, null=True, blank=True, on_delete=models.PROTECT)
 
+
     # Dosis indica lo que se le va a suministrar al animal
     dosis = models.IntegerField()
 
