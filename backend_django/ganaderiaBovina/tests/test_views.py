@@ -221,19 +221,38 @@ def test_codigo_duplicado_animal():
         proteinas=3.5
     )
     madre = Animal.objects.create(
-        codigo="V-999", tipo="Vaca", estado="Vacía", nombre="MadreTest",
-        fecha_nacimiento="2020-01-01", celulas_somaticas=100000,
-        produccion_leche=20.0, calidad_patas=5.5, calidad_ubres=5.5,
-        grasa=4.0, proteinas=3.5, padre=toro, corral=None
+        codigo="V-999",
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="MadreTest",
+        fecha_nacimiento="2020-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=5.5,
+        calidad_ubres=5.5,
+        grasa=4.0,
+        proteinas=3.5,
+        padre=toro,
+        corral=None
     )
     corral = Corral.objects.create(nombre="CorralTest")
 
     # Se crea un animal indicándole un código en específico (escrito).
     Animal.objects.create(
-        codigo="V-100", tipo="Vaca", estado="Vacía", nombre="Vaquita",
-        fecha_nacimiento="2025-01-01", celulas_somaticas=100000,
-        produccion_leche=20.0, calidad_patas=5.5, calidad_ubres=6.0,
-        grasa=4.0, proteinas=3.5, padre=toro, madre=madre, corral=corral
+        codigo="V-100",
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaquita",
+        fecha_nacimiento="2025-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=5.5,
+        calidad_ubres=6.0,
+        grasa=4.0,
+        proteinas=3.5,
+        padre=toro,
+        madre=madre,
+        corral=corral
     )
 
     # Se intenta crear un animal con el mismo código.
@@ -319,3 +338,208 @@ def test_crear_animal_codigo_formato_incorrecto():
     assert "codigo" in response.data # Error del campo "código"
     # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
     assert response.data["codigo"][0] == "El código debe tener el formato 'V-número' (Ej: V-1)."
+
+# Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
+@pytest.mark.django_db
+def test_codigo_generado_automaticamente():
+    client = APIClient()
+
+    # Creamos un toro y una vaca para usar como padres
+    toro = Toro.objects.create(
+        nombre="ToroAuto",
+        cantidad_semen=100,
+        transmision_leche=Decimal("1.5"),
+        celulas_somaticas=Decimal("0.8"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    madre = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="MadreAuto",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=4.0,
+        proteinas=3.5,
+        padre=toro,
+        madre=None,
+        corral=Corral.objects.create(nombre="CorralAuto")
+    )
+
+    datos = {
+        # No se indica el campo "codigo"
+        "tipo": "Vaca",
+        "estado": "Vacía",
+        "nombre": "VacaAuto",
+        "fecha_nacimiento": "2025-04-01",
+        "celulas_somaticas": 120000,
+        "produccion_leche": 22.0,
+        "calidad_patas": 7.0,
+        "calidad_ubres": 6.8,
+        "grasa": 4.1,
+        "proteinas": 3.9,
+        "padre": toro.id,
+        "madre": madre.id,
+        "corral": madre.corral.id
+    }
+
+    response = client.post("/api/animales/", datos, format="json")
+
+    assert response.status_code == 201
+    assert "codigo" in response.data
+    assert response.data["codigo"].startswith("V-")
+    assert response.data["codigo"][2:].isdigit()
+
+# Test para comprobar la eliminación de un Animal por el motivo "ERROR"
+@pytest.mark.django_db
+def test_eliminar_animal_error():
+    client = APIClient()
+
+    toro = Toro.objects.create(
+        nombre="ToroTest",
+        cantidad_semen=50,
+        transmision_leche=2.0,
+        celulas_somaticas=1.0,
+        calidad_patas=7.5,
+        calidad_ubres=8.0,
+        grasa=3.5,
+        proteinas=3.0)
+    madre = Animal.objects.create(
+        nombre="Madre",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=7.0,
+        calidad_ubres=8.0,
+        grasa=4.0,
+        proteinas=3.5,
+        padre=toro,
+        corral=None)
+    animal = Animal.objects.create(
+        nombre="AnimalEliminar",
+        tipo="Ternero",
+        estado="Joven",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=120000,
+        produccion_leche=15.0,
+        calidad_patas=6.5,
+        calidad_ubres=7.5,
+        grasa=3.8,
+        proteinas=3.2,
+        padre=toro,
+        madre=madre,
+        corral=None)
+
+    response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=ERROR")
+
+    assert response.status_code == 204
+    assert Animal.objects.filter(id=animal.id).count() == 0
+
+# Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
+@pytest.mark.django_db
+@pytest.mark.parametrize("motivo", ["MUERTA", "VENDIDA"])
+def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
+    client = APIClient()
+
+    corral = Corral.objects.create(nombre="Corral 1")
+    toro = Toro.objects.create(
+        nombre="ToroTest",
+        cantidad_semen=50,
+        transmision_leche=2.0,
+        celulas_somaticas=1.0,
+        calidad_patas=7.5,
+        calidad_ubres=8.0,
+        grasa=3.5,
+        proteinas=3.0)
+    madre = Animal.objects.create(
+        nombre="Madre",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=7.0,
+        calidad_ubres=8.0,
+        grasa=4.0,
+        proteinas=3.5,
+        padre=toro,
+        corral=corral)
+    animal = Animal.objects.create(
+        nombre="AnimalEstado",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=18.0,
+        calidad_patas=7.0,
+        calidad_ubres=7.0,
+        grasa=3.8,
+        proteinas=3.2,
+        padre=toro,
+        madre=madre,
+        corral=corral)
+
+    response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo={motivo}")
+
+    animal.refresh_from_db()
+    assert animal.corral is None  # El animal ya no está en el corral
+    assert response.status_code == 200
+    assert animal.estado == motivo.capitalize()
+    assert animal.fecha_eliminacion is not None
+
+# Test para comprobar la eliminación de un Animal por un motivo no correcto.
+@pytest.mark.django_db
+def test_eliminar_animal_motivo_invalido():
+    client = APIClient()
+
+    corral = Corral.objects.create(nombre="Corral 1")
+    toro = Toro.objects.create(
+        nombre="ToroTest",
+        cantidad_semen=50,
+        transmision_leche=2.0,
+        celulas_somaticas=1.0,
+        calidad_patas=7.5,
+        calidad_ubres=8.0,
+        grasa=3.5,
+        proteinas=3.0)
+    madre = Animal.objects.create(
+        nombre="Madre",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=7.0,
+        calidad_ubres=8.0,
+        grasa=4.0,
+        proteinas=3.5,
+        padre=toro,
+        corral=None)
+    animal = Animal.objects.create(
+        nombre="AnimalMotivo",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=18.0,
+        calidad_patas=7.0,
+        calidad_ubres=7.0,
+        grasa=3.8,
+        proteinas=3.2,
+        padre=toro,
+        madre=madre,
+        corral=None)
+
+    response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=INCORRECTO")
+
+    assert response.status_code == 400
+    assert "ERROR" in response.data
+    # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
