@@ -130,6 +130,16 @@ class Corral(models.Model):
     codigo = models.CharField(max_length=10, unique=True, blank=True, null=True)
 
     nombre = models.CharField(max_length=100)
+    # --- OBSERVACIONES ---
+    # No hace falta guardar el campo: número de animales porque es un dato calculable mediante
+    # la relación Animal y Corral. Usando: corral.animales.count()
+
+    # No hace falta guardar el campo: animales del corral porque ya hay una relación entre
+    # Animal y Corral.
+    # En Animal está: corral = models.ForeignKey(Corral, on_delete=models.PROTECT, related_name='animales', null=True, blank=True)
+    # Esto es debido a "related_name = 'animales", ya que desde cualquier objeto Corral se puede
+    # obtener los animales que tiene. Usando: corral.animales.all()
+
     def save(self, *args, **kwargs):
         if not self.codigo:
             self.codigo = generar_codigo_corral()
