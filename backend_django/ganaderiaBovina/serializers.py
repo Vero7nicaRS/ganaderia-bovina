@@ -257,16 +257,18 @@ class ToroSerializer(serializers.ModelSerializer):
 
 # Incluye todos los campos del modelo Corral, por tanto se podrá hacer CRUD mediante la API
 class CorralSerializer(serializers.ModelSerializer):
+    cantidad_animales = serializers.SerializerMethodField() # Número de animales en el corral.
+    animales = serializers.SerializerMethodField() # Animales que hay en el corral.
     codigo = serializers.CharField(
-        required=False,
-        allow_null=True,
-        validators=[
-            UniqueValidator(
-                queryset=Corral.objects.all(),
-                message=f"El código ya existe en el sistema."
+                required=False,
+                allow_null=True,
+                validators=[
+                    UniqueValidator(
+                        queryset=Corral.objects.all(),
+                        message=f"El código ya existe en el sistema."
+                    )
+                ]
             )
-        ]
-    )
     class Meta:
         model = Corral
         fields = '__all__'
@@ -297,6 +299,13 @@ class CorralSerializer(serializers.ModelSerializer):
 
         return value
 
+    # Se obtiene el número de animales que tiene el corral con el campo calculado.
+    def get_cantidad_animales(self, obj):
+        return obj.animales.count()
+
+    # Se obtienen los animales que hay en el corral gracias a la relación con Animal.
+    def get_animales(self, obj):
+        return [str(animal) for animal in obj.animales.all()]
 # --------------------------------------------------------------------------------------------------------------
 #                                       Serializer de INVENTARIOVT (Vacunas y tratamientos del inventario)
 # --------------------------------------------------------------------------------------------------------------
