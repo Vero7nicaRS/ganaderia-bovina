@@ -70,7 +70,7 @@ def test_crear_animal_valido():
     assert response.status_code == 201
     assert Animal.objects.filter(nombre="BebéVaquita").exists()
 
-# Comprobar que debe haber valores en cada uno de los campos.
+# Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
 def test_animal_campos_requeridos_vacios():
     client = APIClient()
@@ -105,7 +105,7 @@ def test_animal_campos_requeridos_vacios():
     assert response.data['madre'][0] == "Debe seleccionar una madre válida."
     assert response.data['corral'][0] == "Debe seleccionar un corral válido."
 
-# Valores fuera de rango
+# Test para comprobar los valores fuera de rango
 @pytest.mark.django_db
 def test_animal_valores_fuera_de_rango():
     client = APIClient()
@@ -202,7 +202,7 @@ def test_crear_animal_datos_invalidos():
 
 
 
-# Comprobar código duplicado
+# Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_animal():
     client = APIClient()
@@ -649,6 +649,7 @@ def test_eliminar_animal_motivo_invalido():
     # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
 
 
+# FILTRADO
 
 # Test para filtrar por nombre del animal ignorando mayúsculas y minúsculas.
 @pytest.mark.django_db
