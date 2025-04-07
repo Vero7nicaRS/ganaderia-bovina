@@ -237,7 +237,7 @@ def test_codigo_duplicado_animal():
     )
     corral = Corral.objects.create(nombre="CorralTest")
 
-    # Se crea un animal indicándole un código en específico (escrito).
+    # Se crea un animal indicándole un código en específico ("V-100").
     Animal.objects.create(
         codigo="V-100",
         tipo="Vaca",
@@ -255,7 +255,7 @@ def test_codigo_duplicado_animal():
         corral=corral
     )
 
-    # Se intenta crear un animal con el mismo código.
+    # Se intenta crear un nuevo animal con el mismo código ("V-100").
     datos_duplicados = {
         "codigo": "V-100",
         "tipo": "Vaca",
@@ -393,8 +393,8 @@ def test_codigo_generado_automaticamente():
 
     assert response.status_code == 201
     assert "codigo" in response.data
-    assert response.data["codigo"].startswith("V-")
-    assert response.data["codigo"][2:].isdigit()
+    assert response.data["codigo"].startswith("V-") # Comprueba que el código comience por "V-".
+    assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "V-" son números.
 
 # Test para comprobar la eliminación de un Animal por el motivo "ERROR"
 @pytest.mark.django_db
@@ -490,10 +490,10 @@ def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo={motivo}")
 
     animal.refresh_from_db()
-    assert animal.corral is None  # El animal ya no está en el corral
+    assert animal.corral is None  # El animal ya no está en el corral.
     assert response.status_code == 200
-    assert animal.estado == motivo.capitalize()
-    assert animal.fecha_eliminacion is not None
+    assert animal.estado == motivo.capitalize() # El estado del animal debe estar actualizado al motivo de su eliminación.
+    assert animal.fecha_eliminacion is not None # La fecha de eliminación tiene que tener algún valor.
 
 # Test para comprobar la eliminación de un Animal por un motivo no correcto.
 @pytest.mark.django_db
@@ -541,5 +541,5 @@ def test_eliminar_animal_motivo_invalido():
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=INCORRECTO")
 
     assert response.status_code == 400
-    assert "ERROR" in response.data
+    assert response.data["ERROR"] == "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."
     # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
