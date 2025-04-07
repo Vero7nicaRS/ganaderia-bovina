@@ -6,7 +6,7 @@
 import pytest
 from rest_framework.test import APIClient
 from django.urls import reverse
-from ganaderiaBovina.models import Toro, Animal, Corral
+from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 from decimal import Decimal
 
 
@@ -397,10 +397,14 @@ def test_codigo_generado_automaticamente():
     assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "V-" son números.
 
 # Test para comprobar la eliminación de un Animal por el motivo "ERROR"
+# ¿Qué se verifica?
+# - Animal eliminado de la base de datos.
+# - Ya no tiene ningún corral asignado.
+# - El historial de VTAnimales y ListaInseminaciones se mantiene a null (FK).
 @pytest.mark.django_db
 def test_eliminar_animal_error():
     client = APIClient()
-
+    corral = Corral.objects.create(nombre="Corral 1")
     toro = Toro.objects.create(
         nombre="ToroTest",
         cantidad_semen=50,
@@ -423,6 +427,7 @@ def test_eliminar_animal_error():
         proteinas=3.5,
         padre=toro,
         corral=None)
+
     animal = Animal.objects.create(
         nombre="AnimalEliminar",
         tipo="Ternero",
@@ -436,14 +441,67 @@ def test_eliminar_animal_error():
         proteinas=3.2,
         padre=toro,
         madre=madre,
-        corral=None)
+        corral=corral)
+
+    # Se crea la inseminación para el animal.
+    inseminacion = ListaInseminaciones.objects.create(
+        id_vaca=animal,
+        id_toro=toro,
+        razon="Celo",
+        fecha_inseminacion="2025-04-01",
+        hora_inseminacion="12:00",
+        es_sexado=True,
+        responsable="Veterinario A"
+    )
+
+    # Se crea el tratamiento en el inventario para posteriormente suministrárselo al animal.
+    inventario = InventarioVT.objects.create(
+        tipo="Tratamiento",
+        nombre="Antibiótico",
+        unidades=10,
+        cantidad="Botella",
+        estado="Activa"
+    )
+    # Se suministra al animal el tratamiento del inventario.
+    vt = VTAnimales.objects.create(
+        id_animal=animal,
+        tipo="Tratamiento",
+        ruta="Oral",
+        fecha_inicio="2025-04-01",
+        fecha_finalizacion="2025-04-05",
+        responsable="Veterinario A",
+        inventario_vt=inventario,
+        dosis=2
+    )
 
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=ERROR")
 
     assert response.status_code == 204
-    assert Animal.objects.filter(id=animal.id).count() == 0
+    assert not Animal.objects.filter(id=animal.id).exists() # Se compruebe que ese animal NO existe en la base de datos.
+    assert not corral.animales.filter(id=animal.id).exists() # Se comprueba que no esté en ningún corral ese animal.
+    # No se usa "animal" porque hemos eliminado su instancia. Por tanto, utilizamos corral para verificarlo.
+    # Se comprueba que no esté en ningún corral ese animal.
+
+    # Se mantienen las relaciones con las inseminaciones y los suministros de vacunas/tratamientos.
+    # Deben estar a "null" (None) esas relaciones  (SET_NULL).
+    assert VTAnimales.objects.filter(inventario_vt=inventario).exists()
+    assert VTAnimales.objects.filter(id_animal__isnull=True).exists()
+
+    assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
+    assert ListaInseminaciones.objects.filter(id_vaca__isnull=True).exists()
+
+    # Se comprueba que no se haya modificado el tratamiento ni las dosis
+    vt.refresh_from_db()
+    assert vt.dosis == 2
+    assert vt.inventario_vt == inventario
 
 # Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
+# ¿Qué se verifica?
+# - El Animal permanece en la base de datos.
+# - Ya no tiene ningún corral asignado.
+# - Actualización del estado y de la fecha de eliminación.
+# - El historial de VTAnimales y ListaInseminaciones se mantiene con el identificador del animal (FK).
+# - Las relaciones con sus reproductores no se ven alteradas.
 @pytest.mark.django_db
 @pytest.mark.parametrize("motivo", ["MUERTA", "VENDIDA"])
 def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
@@ -486,7 +544,36 @@ def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
         padre=toro,
         madre=madre,
         corral=corral)
+    # Crear inseminación asociada al animal
+    inseminacion = ListaInseminaciones.objects.create(
+        id_vaca=animal,
+        id_toro=toro,
+        razon="Celo",
+        fecha_inseminacion="2025-04-01",
+        hora_inseminacion="12:00",
+        es_sexado=True,
+        responsable="Veterinario A"
+    )
 
+    # Crear tratamiento asociado al animal
+    inventario = InventarioVT.objects.create(
+        tipo="Tratamiento",
+        nombre="Antibiótico",
+        unidades=10,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    vt = VTAnimales.objects.create(
+        id_animal=animal,
+        tipo="Tratamiento",
+        ruta="Oral",
+        fecha_inicio="2025-04-01",
+        fecha_finalizacion="2025-04-05",
+        responsable="Veterinario A",
+        inventario_vt=inventario,
+        dosis=2
+    )
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo={motivo}")
 
     animal.refresh_from_db()
@@ -494,6 +581,23 @@ def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
     assert response.status_code == 200
     assert animal.estado == motivo.capitalize() # El estado del animal debe estar actualizado al motivo de su eliminación.
     assert animal.fecha_eliminacion is not None # La fecha de eliminación tiene que tener algún valor.
+    # Verificamos que ningún animal en el corral tenga el mismo ID
+    assert not corral.animales.filter(id=animal.id).exists()
+    # No se usa "animal" porque hemos eliminado su instancia. Por tanto, utilizamos corral para verificarlo.
+    # Se comprueba que no esté en ningún corral ese animal.
+
+    # Se comprueba que se mantiene el historial en los tratamientos/vacunas e inseminaciones.
+    assert VTAnimales.objects.filter(id_animal=animal).exists()
+    assert ListaInseminaciones.objects.filter(id_vaca=animal).exists()
+
+    # Se comprueba que las relaciones con sus reproductores se sigue manteniendo.
+    assert animal.padre == toro
+    assert animal.madre == madre
+
+    # Se comprueba que no se haya modificado el tratamiento ni las dosis
+    vt.refresh_from_db()
+    assert vt.dosis == 2
+    assert vt.inventario_vt == inventario
 
 # Test para comprobar la eliminación de un Animal por un motivo no correcto.
 @pytest.mark.django_db
@@ -536,7 +640,7 @@ def test_eliminar_animal_motivo_invalido():
         proteinas=3.2,
         padre=toro,
         madre=madre,
-        corral=None)
+        corral=corral)
 
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=INCORRECTO")
 
