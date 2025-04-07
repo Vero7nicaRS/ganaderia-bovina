@@ -1,4 +1,4 @@
-# --------------------------------- test_views.py: ---------------------------------
+# --------------------------------- test_animales.py: ---------------------------------
 # Funcionalidad: se encarga de comprobar la API
 # (ej: crear, modificar, eliminar, mostrar...)
 # -----------------------------------------------------------------------------------
@@ -647,3 +647,217 @@ def test_eliminar_animal_motivo_invalido():
     assert response.status_code == 400
     assert response.data["ERROR"] == "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."
     # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
+
+
+
+# Test para filtrar por nombre del animal ignorando mayúsculas y minúsculas.
+@pytest.mark.django_db
+def test_filtrado_animales_por_nombre():
+    client = APIClient()
+    corral = Corral.objects.create(nombre="CorralFiltro")
+    toro = Toro.objects.create(
+        nombre="ToroFiltro",
+        cantidad_semen=100,
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    Animal.objects.create(
+        nombre="Filtrable1",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2022-01-01",
+        celulas_somaticas=150000,
+        produccion_leche=22.0,
+        calidad_patas=7.0,
+        calidad_ubres=7.0,
+        grasa=4.0,
+        proteinas=3.4,
+        padre=toro,
+        corral=corral
+    )
+
+    Animal.objects.create(
+        nombre="OtroNombre",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2021-01-01",
+        celulas_somaticas=250000,
+        produccion_leche=18.0,
+        calidad_patas=6.0,
+        calidad_ubres=6.0,
+        grasa=4.5,
+        proteinas=3.0,
+        padre=toro,
+        corral=corral
+    )
+
+    response = client.get("/api/animales/?nombre=filtrable")
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    assert response.data[0]["nombre"] == "Filtrable1"
+
+# Test para filtrar por la producción de leche del animal.
+@pytest.mark.django_db
+def test_filtrado_animales_por_rango_produccion_leche():
+    client = APIClient()
+    corral = Corral.objects.create(nombre="CorralFiltro")
+    toro = Toro.objects.create(
+        nombre="ToroFiltro",
+        cantidad_semen=100,
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # No cumple con el filtro (>=20).
+    Animal.objects.create(
+        nombre="Prueba vaca 1",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2021-01-01",
+        celulas_somaticas=250000,
+        produccion_leche=19.0,
+        calidad_patas=6.0,
+        calidad_ubres=6.0,
+        grasa=4.5,
+        proteinas=3.0,
+        padre=toro,
+        corral=corral
+    )
+
+    # Sí cumple con el filtro (>=20).
+    Animal.objects.create(
+        nombre="Prueba vaca 2",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2022-01-01",
+        celulas_somaticas=150000,
+        produccion_leche=22.0,
+        calidad_patas=7.0,
+        calidad_ubres=7.0,
+        grasa=4.0,
+        proteinas=3.4,
+        padre=toro,
+        corral=corral
+    )
+
+    # No cumple con el filtro (>=20).
+    Animal.objects.create(
+        nombre="Prueba vaca 3",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2021-01-01",
+        celulas_somaticas=250000,
+        produccion_leche=10.0,
+        calidad_patas=6.0,
+        calidad_ubres=6.0,
+        grasa=4.5,
+        proteinas=3.0,
+        padre=toro,
+        corral=corral
+    )
+
+    # Sí cumple con el filtro (>=20).
+    Animal.objects.create(
+        nombre="Prueba vaca 4",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2021-01-01",
+        celulas_somaticas=250000,
+        produccion_leche=28.0,
+        calidad_patas=6.0,
+        calidad_ubres=6.0,
+        grasa=4.5,
+        proteinas=3.0,
+        padre=toro,
+        corral=corral
+    )
+
+    response = client.get("/api/animales/?produccion_leche__gte=20")
+    assert response.status_code == 200
+    assert len(response.data) == 2 # Se espera que haya dos vacas válidas.
+
+    # Se crea una lista con todos los nombres de las vacas que se han obtenido como resultado.
+    nombres = [animal["nombre"] for animal in response.data]
+    assert "Prueba vaca 2" in nombres
+    assert "Prueba vaca 4" in nombres
+
+# Test para filtrar por la el tipo y la calidad de ubres del animal.
+@pytest.mark.django_db
+def test_filtrado_combinado_por_tipo_y_calidad_ubres():
+    client = APIClient()
+
+    corral = Corral.objects.create(nombre="Corral Filtro")
+    toro = Toro.objects.create(
+        nombre="ToroFiltro",
+        cantidad_semen=100,
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # Animal que sí cumple ambos filtros
+    Animal.objects.create(
+        nombre="VacaBuena",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2022-01-01",
+        celulas_somaticas=150000,
+        produccion_leche=22.0,
+        calidad_patas=7.0,
+        calidad_ubres=6.5,  # cumple filtro
+        grasa=4.0,
+        proteinas=3.4,
+        padre=toro,
+        corral=corral
+    )
+
+    # Animal que no cumple calidad_ubres
+    Animal.objects.create(
+        nombre="VacaMala",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2022-01-01",
+        celulas_somaticas=150000,
+        produccion_leche=22.0,
+        calidad_patas=7.0,
+        calidad_ubres=8.5,  # no cumple
+        grasa=4.0,
+        proteinas=3.4,
+        padre=toro,
+        corral=corral
+    )
+
+    # Animal que no cumple tipo
+    Animal.objects.create(
+        nombre="Ternerito",
+        tipo="Ternero",
+        estado="Joven",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=10.0,
+        calidad_patas=6.5,
+        calidad_ubres=6.0,  # cumple calidad pero no tipo
+        grasa=3.8,
+        proteinas=3.2,
+        padre=toro,
+        corral=corral
+    )
+
+    # Se aplica filtro combinado: tipo = "vaca", calidad_ubres menor o igual a 7
+    response = client.get("/api/animales/?tipo=vaca&calidad_ubres__lte=7")
+
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    assert response.data[0]["nombre"] == "VacaBuena"
