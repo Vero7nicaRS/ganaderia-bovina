@@ -418,8 +418,10 @@ class Toro(models.Model):
 
     estado = models.CharField(max_length=15, choices=ESTADOS_CHOICES, default='Vivo')
 
-    # Cantidad de semen
-    cantidad_semen = models.IntegerField()
+    # Cantidad de semen: no tiene un valor negativo.
+    cantidad_semen = models.IntegerField(
+        validators=[MinValueValidator(0)]
+    )
 
     # Transmisión de producción de leche: (Media 30 y desviación 20. Tiene 2 decimales.)
     transmision_leche = models.DecimalField(
