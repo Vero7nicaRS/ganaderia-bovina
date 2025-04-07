@@ -61,13 +61,16 @@ class AnimalSerializer(serializers.ModelSerializer):
                     'blank': 'El número de células somáticas no puede estar vacía.',
                     'min_value': "El valor mínimo permitido es 50000.",
                     'max_value': "El valor máximo permitido es 2000000.",
+                    'null': 'El número de células somáticas no puede ser nulo.'
                 }
             },
             'produccion_leche': {
                 'error_messages': {
                     'required': 'La producción de leche es obligatoria.',
                     'invalid': 'Debe introducir un número válido.',
-                    'min_value': "El valor mínimo permitido es 0."
+                    'min_value': "El valor mínimo permitido es 0.",
+                    'null': 'La producción de leche no puede ser nulo.'
+
                 }
             },
             'grasa': {
@@ -75,7 +78,8 @@ class AnimalSerializer(serializers.ModelSerializer):
                     'required': 'El porcentaje de grasa es obligatorio.',
                     'invalid': 'Debe introducir un número válido.',
                     'min_value': "El valor mínimo permitido es 2.5.",
-                    'max_value': "El valor máximo permitido es 6."
+                    'max_value': "El valor máximo permitido es 6.",
+                    'null': 'El porcentaje de grasa no puede ser nulo.'
                 }
             },
             'proteinas': {
@@ -83,7 +87,8 @@ class AnimalSerializer(serializers.ModelSerializer):
                     'required': 'El porcentaje de proteínas es obligatorio.',
                     'invalid': 'Debe introducir un número válido.',
                     'min_value': "El valor mínimo permitido es 2.8.",
-                    'max_value': "El valor máximo permitido es 4."
+                    'max_value': "El valor máximo permitido es 4.",
+                    'null': 'El porcentaje de proteínas no puede ser nulo.'
                 }
             },
             'calidad_patas': {
@@ -91,7 +96,8 @@ class AnimalSerializer(serializers.ModelSerializer):
                     'required': 'La calidad de patas es obligatoria.',
                     'invalid': 'Debe ser un número decimal entre 1 y 9.',
                     'min_value': 'El valor mínimo permitido es 1.',
-                    'max_value': 'El valor máximo permitido es 9.'
+                    'max_value': 'El valor máximo permitido es 9.',
+                    'null': 'La calidad de patas no puede ser nulo.'
                 }
             },
             'calidad_ubres': {
@@ -99,11 +105,11 @@ class AnimalSerializer(serializers.ModelSerializer):
                     'required': 'La calidad de ubres es obligatoria.',
                     'invalid': 'Debe ser un número decimal entre 1 y 9.',
                     'min_value': 'El valor mínimo permitido es 1.',
-                    'max_value': 'El valor máximo permitido es 9.'
+                    'max_value': 'El valor máximo permitido es 9.',
+                    'null': 'La calidad de ubres no puede ser nulo.'
                 }
             },
             'padre': {
-
                 'error_messages': {
                     'required': 'El padre es obligatorio.',
                     'null': 'Debe seleccionar un padre válido.',
@@ -183,14 +189,16 @@ class ToroSerializer(serializers.ModelSerializer):
                 'error_messages': {
                     'required': 'La cantidad de semen es obligatoria.',
                     'invalid': 'Debe introducir un número válido.',
-                    'min_value': "El valor mínimo permitido es 0."
+                    'min_value': "El valor mínimo permitido es 0.",
+                    'null': 'La cantidad de semen no puede ser nulo.'
                 }
             },
             'transmision_leche': {
                 'error_messages': {
                     'required': 'La producción de leche es obligatoria.',
                     'invalid': 'Debe introducir un número válido.',
-                    'min_value': "El valor mínimo permitido es 0."
+                    'min_value': "El valor mínimo permitido es 0.",
+                    'null': 'La producción de leche no puede ser nulo.'
                 }
             },
             'celulas_somaticas': {
@@ -199,6 +207,7 @@ class ToroSerializer(serializers.ModelSerializer):
                     'invalid': 'Debe introducir un número entero válido.',
                     'min_value': "El valor mínimo permitido es 50000.",
                     'max_value': "El valor máximo permitido es 2000000.",
+                    'null': 'El número de células somáticas no puede ser nulo.'
                 }
             },
             'calidad_patas': {
@@ -206,7 +215,8 @@ class ToroSerializer(serializers.ModelSerializer):
                     'required': 'La calidad de patas es obligatoria.',
                     'invalid': 'Debe ser un número decimal entre 1 y 9.',
                     'min_value': 'El valor mínimo permitido es 1.',
-                    'max_value': 'El valor máximo permitido es 9.'
+                    'max_value': 'El valor máximo permitido es 9.',
+                    'null': 'La calidad de patas no puede ser nulo.'
                 }
             },
             'calidad_ubres': {
@@ -214,19 +224,22 @@ class ToroSerializer(serializers.ModelSerializer):
                     'required': 'La calidad de ubres es obligatoria.',
                     'invalid': 'Debe ser un número decimal entre 1 y 9.',
                     'min_value': 'El valor mínimo permitido es 1.',
-                    'max_value': 'El valor máximo permitido es 9.'
+                    'max_value': 'El valor máximo permitido es 9.',
+                    'null': 'La calidad de ubres no puede ser nulo.'
                 }
             },
             'grasa': {
                 'error_messages': {
                     'required': 'El porcentaje de grasa es obligatorio.',
                     'invalid': 'Debe introducir un número válido.',
+                    'null': 'El porcentaje de proteínas no puede ser nulo.'
                 }
             },
             'proteinas': {
                 'error_messages': {
                     'required': 'El porcentaje de proteínas es obligatorio.',
                     'invalid': 'Debe introducir un número válido.',
+                    'null': 'El porcentaje de proteínas no puede ser nulo.'
                 }
             }
         }
@@ -241,7 +254,7 @@ class ToroSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
         # No funciona aquí, porque unique se ejecuta antes que el validate_codigo
         # Si el código existe en el sistema, se lanza un mensaje de error.
