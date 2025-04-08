@@ -52,7 +52,7 @@ def test_crear_animal_valido():
     data = {
         "tipo": "Ternero",
         "estado": "Joven",
-        "nombre": "BebéVaquita",
+        "nombre": "Vaquita",
         "fecha_nacimiento": "2024-01-01",
         "padre": toro.id,
         "madre": madre.id,
@@ -68,7 +68,14 @@ def test_crear_animal_valido():
     response = client.post(reverse("animal-list"), data, format="json")
 
     assert response.status_code == 201
-    assert Animal.objects.filter(nombre="BebéVaquita").exists()
+
+    # Se comprueba que el código se ha generado correctamente.
+    assert "codigo" in response.data
+    assert response.data["codigo"].startswith("C-")
+    assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "T-" son números.
+
+    # Se comprueba que el ternero existe en la base de datos.
+    assert Animal.objects.filter(nombre="Vaquita").exists()
 
 # Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
@@ -139,32 +146,60 @@ def test_animal_valores_fuera_de_rango():
         corral=Corral.objects.create(nombre="Corralito")
     )
 
-    datos = {
+    datosMin = {
         "tipo": "Vaca",
         "estado": "Vacía",
         "nombre": "Vaquita",
         "fecha_nacimiento": "2024-01-01",
-        "celulas_somaticas": 9999999,  # Muy alto
+        "celulas_somaticas": 49999,  # Menor que 50000
         "produccion_leche": -5,        # Negativo
-        "calidad_patas": 15,           # Mayor a 9
-        "calidad_ubres": 0.5,          # Menor a 1
-        "grasa": 10,                   # Mayor a 6
+        "calidad_patas": 0.99,         # Menor que 1
+        "calidad_ubres": 0.5,          # Menor que 1
+        "grasa": 2.49,                 # Menor que 2.5
         "proteinas": 1.5,              # Menor a 2.8
         "padre": toro.id,
         "madre": madre.id,
         "corral": madre.corral.id
     }
 
-    response = client.post("/api/animales/", datos, format='json')
-    assert response.status_code == 400
+    datosMax = {
+        "tipo": "Vaca",
+        "estado": "Vacía",
+        "nombre": "Vaquita",
+        "fecha_nacimiento": "2024-01-01",
+        "celulas_somaticas": 9999999,  # Mayor que 2000000
+        "produccion_leche": -1,        # Negativo
+        "calidad_patas": 15,           # Mayor que 9
+        "calidad_ubres": 10,           # Mayor que 9
+        "grasa": 10,                   # Mayor a 6
+        "proteinas": 4.01,              # Mayor que 4
+        "padre": toro.id,
+        "madre": madre.id,
+        "corral": madre.corral.id
+    }
 
-    # Se comprueba que se obtienen los mensajes de error personalizado.
-    assert response.data['celulas_somaticas'][0] == "El valor máximo permitido es 2000000."
-    assert response.data['produccion_leche'][0] == "El valor mínimo permitido es 0."
-    assert response.data['calidad_patas'][0] == "El valor máximo permitido es 9."
-    assert response.data['calidad_ubres'][0] == "El valor mínimo permitido es 1."
-    assert response.data['grasa'][0] == "El valor máximo permitido es 6."
-    assert response.data['proteinas'][0] == "El valor mínimo permitido es 2.8."
+    responseMin = client.post("/api/animales/", datosMin, format='json')
+    responseMax = client.post("/api/animales/", datosMax, format='json')
+
+    assert responseMin.status_code == 400
+    assert responseMax.status_code == 400
+
+    # Mensajes de error personalizados esperados en el serializer
+    # MÍNIMO
+    assert responseMin.data['celulas_somaticas'][0] == "El valor mínimo permitido es 50000."
+    assert responseMin.data['produccion_leche'][0] == "El valor mínimo permitido es 0."
+    assert responseMin.data['calidad_patas'][0] == "El valor mínimo permitido es 1."
+    assert responseMin.data['calidad_ubres'][0] == "El valor mínimo permitido es 1."
+    assert responseMin.data['grasa'][0] == "El valor mínimo permitido es 2.5."
+    assert responseMin.data['proteinas'][0] == "El valor mínimo permitido es 2.8."
+
+    # MÁXIMO
+    assert responseMax.data['celulas_somaticas'][0] == "El valor máximo permitido es 2000000."
+    assert responseMax.data['produccion_leche'][0] == "El valor mínimo permitido es 0."
+    assert responseMax.data['calidad_patas'][0] == "El valor máximo permitido es 9."
+    assert responseMax.data['calidad_ubres'][0] == "El valor máximo permitido es 9."
+    assert responseMax.data['grasa'][0] == "El valor máximo permitido es 6."
+    assert responseMax.data['proteinas'][0] == "El valor máximo permitido es 4."
 
 # TEST QUE INCLUYE TODO
 # Se comprueba que se NO se puede crear un animal (vaca/ternero) correctamente con datos no válidos.
@@ -341,7 +376,7 @@ def test_crear_animal_codigo_formato_incorrecto():
 
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
-def test_codigo_generado_automaticamente():
+def test_codigo_animales_generado_automaticamente():
     client = APIClient()
 
     # Creamos un toro y una vaca para usar como padres
@@ -653,7 +688,10 @@ def test_eliminar_animal_motivo_invalido():
     # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
 
 
-# FILTRADO
+# --------------------------------------------------------------------------------------------------------------
+#                                       Test de TOROS: FILTRADO
+# --------------------------------------------------------------------------------------------------------------
+
 
 # Test para filtrar por nombre del animal ignorando mayúsculas y minúsculas.
 @pytest.mark.django_db
@@ -709,7 +747,6 @@ def test_filtrado_animales_por_nombre():
 # --------------------------------------------------------------------------------------------------------------
 #                                       Test de ANIMALES: FILTRADO
 # --------------------------------------------------------------------------------------------------------------
-
 
 # Test para filtrar por la producción de leche del animal.
 @pytest.mark.django_db
