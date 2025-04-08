@@ -10,7 +10,7 @@ from decimal import Decimal
 
 
 # --------------------------------------------------------------------------------------------------------------
-#                                       Test de TOROS
+#                                       Test de TOROS: LÓGICA
 # --------------------------------------------------------------------------------------------------------------
 
 # Test donde se comprueba que se puede crear un toro correctamente con datos válidos.
@@ -199,13 +199,12 @@ def test_codigo_generado_automaticamente():
 # Test para comprobar la eliminación de un Toro por el motivo "ERROR"
 # ¿Qué se verifica?
 # - Toro eliminado de la base de datos.
-# - Ya no tiene ningún corral asignado.
-# - El historial de VTAnimales y ListaInseminaciones se mantiene a null (FK).
+# - El historial de ListaInseminaciones se mantiene a null (FK).
 @pytest.mark.django_db
 def test_eliminar_toro_error():
     client = APIClient()
 
-    # Creamos un toro
+    # Se crea un toro
     toro = Toro.objects.create(
         nombre="ToroEliminar",
         cantidad_semen=100,
@@ -217,7 +216,7 @@ def test_eliminar_toro_error():
         proteinas=3.4
     )
 
-    # Creamos una vaca asociada para poder crear inseminación
+    # Se crea una vaca para poder crear la inseminación.
     vaca = Animal.objects.create(
         nombre="VacaPrueba",
         tipo="Vaca",
@@ -231,7 +230,7 @@ def test_eliminar_toro_error():
         proteinas=3.6,
     )
 
-    # Creamos una inseminación con el toro que vamos a eliminar
+    # Se crea una inseminación con el toro que se va a eliminar.
     inseminacion = ListaInseminaciones.objects.create(
         id_vaca=vaca,
         id_toro=toro,
@@ -242,6 +241,7 @@ def test_eliminar_toro_error():
         responsable="Veterinario A"
     )
 
+    # Se elimina al toro por el motivo "ERROR"
     response = client.delete(f"/api/toros/{toro.id}/eliminar/?motivo=ERROR")
 
     assert response.status_code == 204
@@ -251,3 +251,233 @@ def test_eliminar_toro_error():
     inseminacion.refresh_from_db()
     assert ListaInseminaciones.objects.filter(id_vaca=vaca).exists()
     assert inseminacion.id_toro is None
+
+# Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
+# ¿Qué se verifica?
+# - El Toro permanece en la base de datos.
+# - Actualización del estado y de la fecha de eliminación.
+# - El historial de ListaInseminaciones se mantiene con el identificador del animal (FK).
+@pytest.mark.django_db
+@pytest.mark.parametrize("motivo", ["MUERTE", "OTROS"])
+def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
+    client = APIClient()
+
+    # Se crea un toro
+    toro = Toro.objects.create(
+        nombre="ToroEliminar",
+        cantidad_semen=100,
+        transmision_leche=2.5,
+        celulas_somaticas=0.8,
+        calidad_patas=7.5,
+        calidad_ubres=8.0,
+        grasa=4.0,
+        proteinas=3.4
+    )
+
+    # Se crea una vaca para poder crear la inseminación.
+    vaca = Animal.objects.create(
+        nombre="VacaPrueba",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=25.0,
+        calidad_patas=6.5,
+        calidad_ubres=7.0,
+        grasa=4.1,
+        proteinas=3.6,
+    )
+
+    # Se crea una inseminación con el toro que se va a eliminar.
+    inseminacion = ListaInseminaciones.objects.create(
+        id_vaca=vaca,
+        id_toro=toro,
+        razon="Celo",
+        fecha_inseminacion="2025-04-01",
+        hora_inseminacion="12:00",
+        es_sexado=True,
+        responsable="Veterinario A"
+    )
+
+    # Se elimina al toro por el motivo "MUERTE" u "OTROS"
+    response = client.delete(f"/api/toros/{toro.id}/eliminar/?motivo={motivo}")
+
+    toro.refresh_from_db()
+    assert response.status_code == 200
+    assert toro.estado == motivo.capitalize() # El estado del toro debe estar actualizado al motivo de su eliminación.
+    assert toro.fecha_eliminacion is not None # La fecha de eliminación tiene que tener algún valor.
+
+    # Se comprueba que se mantiene el historial en las inseminaciones.
+    assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
+
+    # Se comprueba que no haya habido modificaciones en la lista de inseminación y se mantienen la
+    # relación del toro con la vacuna/tratamiento:
+    #   - id_vaca: para asegurarnos de que la inseminación no se ha eliminado.
+    #   - id_toro: ""        ""     la relación con el toro se mantiene y no se pone a null.
+
+    inseminacion.refresh_from_db()
+    assert ListaInseminaciones.objects.filter(id_vaca=vaca).exists()
+    assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
+
+# Test para comprobar la eliminación de un Animal por un motivo no correcto.
+@pytest.mark.django_db
+def test_eliminar_toro_motivo_invalido():
+    client = APIClient()
+
+    # Se crea un toro
+    toro = Toro.objects.create(
+        nombre="ToroEliminar",
+        cantidad_semen=100,
+        transmision_leche=2.5,
+        celulas_somaticas=0.8,
+        calidad_patas=7.5,
+        calidad_ubres=8.0,
+        grasa=4.0,
+        proteinas=3.4
+    )
+
+    # Se crea una vaca para poder crear la inseminación.
+    vaca = Animal.objects.create(
+        nombre="VacaPrueba",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=25.0,
+        calidad_patas=6.5,
+        calidad_ubres=7.0,
+        grasa=4.1,
+        proteinas=3.6,
+    )
+
+    # Se crea una inseminación con el toro que se va a eliminar.
+    inseminacion = ListaInseminaciones.objects.create(
+        id_vaca=vaca,
+        id_toro=toro,
+        razon="Celo",
+        fecha_inseminacion="2025-04-01",
+        hora_inseminacion="12:00",
+        es_sexado=True,
+        responsable="Veterinario A"
+    )
+
+    # Se elimina al toro por un motivo erróneo, en este caso "INCORRECTO".
+    response = client.delete(f"/api/toros/{toro.id}/eliminar/?motivo=INCORRECTO")
+
+    assert response.status_code == 400
+    assert response.data["ERROR"] == "El motivo seleccionado no es correcto. Usa: 'ERROR', 'MUERTE' u 'OTROS'."
+    # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTE' u 'OTROS'
+
+# --------------------------------------------------------------------------------------------------------------
+#                                       Test de TOROS: FILTRADO
+# --------------------------------------------------------------------------------------------------------------
+
+# Test para filtrar por la transmisión de leche del toro.
+@pytest.mark.django_db
+def test_filtrado_toro_por_rango_transmision_leche():
+    client = APIClient()
+
+    # No cumple con el filtro (>=3).
+    Toro.objects.create(
+        nombre="Toro Prueba 1",
+        cantidad_semen=100,
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # Sí cumple con el filtro (>=3).
+    Toro.objects.create(
+        nombre="Toro Prueba 2",
+        cantidad_semen=100,
+        transmision_leche=Decimal("3.08"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # No cumple con el filtro (>=3).
+    Toro.objects.create(
+        nombre="Toro Prueba 3",
+        cantidad_semen=100,
+        transmision_leche=Decimal("2.99"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+    # Sí cumple con el filtro (>=3).
+    Toro.objects.create(
+        nombre="Toro Prueba 4",
+        cantidad_semen=100,
+        transmision_leche=Decimal("3.01"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    response = client.get("/api/toros/?transmision_leche__gte=3.01")
+    assert response.status_code == 200
+    assert len(response.data) == 2 # Se espera que haya dos vacas válidas.
+
+    # Se crea una lista con todos los nombres de las vacas que se han obtenido como resultado.
+    nombres = [toro["nombre"] for toro in response.data]
+    assert "Toro Prueba 2" in nombres
+    assert "Toro Prueba 4" in nombres
+
+
+# Test para filtrar por la cantidad de semen y la calidad de ubres del toro.
+@pytest.mark.django_db
+def test_filtrado_combinado_toros_por_cantidad_semen_y_calidad_ubres():
+    client = APIClient()
+
+    # Toro que sí cumple ambos filtros
+    Toro.objects.create(
+        nombre="Toro Prueba 1",
+        cantidad_semen=50, # Lo cumple
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"), # Lo cumple
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # Toro que no cumple calidad_ubres
+    Toro.objects.create(
+        nombre="Toro Prueba 2",
+        cantidad_semen=50, # Lo cumple
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("8.55"), # No lo cumple
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # Toro que no cumple cantidad de semen
+    Toro.objects.create(
+        nombre="Toro Prueba 3",
+        cantidad_semen=49, # No lo cumple
+        transmision_leche=Decimal("3.0"),
+        celulas_somaticas=Decimal("1.0"),
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("8.55"), # Lo cumple
+        grasa=3.5,
+        proteinas=3.2
+    )
+
+    # Se aplica filtro combinado: cantidad_semen = 50 y calidad_ubres menor o igual a 7
+    response = client.get("/api/toros/?cantidad_semen=50&calidad_ubres__lte=7")
+
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    assert response.data[0]["nombre"] == "Toro Prueba 1"
