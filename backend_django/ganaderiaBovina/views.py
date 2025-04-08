@@ -117,7 +117,7 @@ class AnimalViewSet(viewsets.ModelViewSet):
                 )
 
             else:
-                return Response({"ERROR": "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."},
+                return Response({"ERROR": "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         except ProtectedError as e:
@@ -202,7 +202,8 @@ class ToroViewSet(viewsets.ModelViewSet):
                                             f'(ha sido eliminado pero se mentiene en el sistema).'}, status=status.HTTP_200_OK)
 
             else:
-                return Response({'ERROR': 'El motivo seleccionado no es correcto. Escoge: "ERROR", "MUERTE" u "OTROS".'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'ERROR': "El motivo seleccionado no es correcto. Usa: 'ERROR', 'MUERTE' u 'OTROS'."},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({'ERROR': 'Error inesperado.', 'detalles': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
