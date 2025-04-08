@@ -1,0 +1,383 @@
+# --------------------------------- test_inventariovt.py: ---------------------------------
+# Funcionalidad: se encarga de comprobar la API
+# (ej: crear, modificar, eliminar, mostrar...)
+# -----------------------------------------------------------------------------------
+
+import pytest
+from rest_framework.test import APIClient
+from django.urls import reverse
+from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
+from decimal import Decimal
+
+
+# --------------------------------------------------------------------------------------------------------------
+#                                       Test de INVENTARIOVT: LÓGICA
+# --------------------------------------------------------------------------------------------------------------
+
+# Test donde se comprueba que se puede crear un tratamiento/vacuna en el inventario correctamente con datos válidos.
+@pytest.mark.django_db
+def test_crear_inventariovt_valido():
+    client = APIClient()
+
+    datos = {
+        "tipo": "Vacuna",
+        "nombre": "Vacuna Prueba",
+        "unidades": 10,
+        "cantidad": "Sobre",
+        "estado": "Activa"
+    }
+
+    response = client.post("/api/inventariovt/", datos, format="json")
+
+    assert response.status_code == 201
+
+    # Se comprueba que el código se ha generado correctamente.
+    assert "codigo" in response.data
+    assert response.data["codigo"].startswith("VT-")
+    assert response.data["codigo"][3:].isdigit()
+
+    # Se comprueba que la vacuna/tratamiento existe en la base de datos.
+    assert InventarioVT.objects.filter(nombre="Vacuna Prueba").exists()
+
+# Test para comprobar que debe haber valores en cada uno de los campos.
+@pytest.mark.django_db
+def test_inventariovt_campos_requeridos_vacios():
+    client = APIClient()
+
+    datos = {
+        "nombre": "",
+        "unidades": None,
+    }
+
+    response = client.post("/api/inventariovt/", datos, format="json")
+
+    assert response.status_code == 400
+
+    # Mensajes de error personalizados esperados en el serializer
+    assert response.data["nombre"][0] == "El nombre no puede estar vacío."
+    assert response.data["unidades"][0] == "El número de unidades no puede ser nulo."
+
+# Test para comprobar que tienen los valores por defecto correctamente.
+@pytest.mark.django_db
+def test_inventariovt_campos_por_defecto():
+    client = APIClient()
+    datos = {
+        "nombre": "Tratamiento Prueba",
+        "unidades": 5
+    }
+
+    response = client.post("/api/inventariovt/", datos, format="json")
+    assert response.status_code == 201
+    assert response.data["tipo"] == "Tratamiento"
+    assert response.data["cantidad"] == "Sobre"
+    assert response.data["estado"] == "Activa"
+
+
+# Test para comprobar los valores fuera de rango
+@pytest.mark.django_db
+def test_inventariovt_valores_fuera_de_rango():
+    client = APIClient()
+
+    # Los datos tienen se sobresalen del rango mínimo.
+    datosMin = {
+        "tipo": "Vacuna",
+        "nombre": "Tratamiento Prueba", # Campo requerido,
+        "unidades": -3, # Valor negativo.
+        "cantidad": "Botella", # Tipo inválido
+        "estado": "Activa" # Tipo inválido
+    }
+
+    # Los datos tienen se sobresalen del rango máximo.
+    datosMax = {
+        "tipo": "Vacuna",
+        "nombre": "Tratamiento Prueba", # Campo requerido,
+        "unidades": 31, # Valor superior a 30.
+        "cantidad": "Botella", # Tipo inválido
+        "estado": "Activa" # Tipo inválido
+    }
+
+    responseMin = client.post("/api/inventariovt/", datosMin, format="json")
+    responseMax = client.post("/api/inventariovt/", datosMax, format="json")
+
+    assert responseMin.status_code == 400
+    assert responseMax.status_code == 400
+
+    # Mensajes de error personalizados esperados en el serializer
+    # MÍNIMO
+    assert responseMin.data["unidades"][0] == "El valor mínimo permitido es 1."
+
+    # MÁXIMO
+    assert responseMax.data["unidades"][0] == "El valor máximo permitido es 30."
+
+
+
+# Test para comprobar si se generan códigos duplicados
+@pytest.mark.django_db
+def test_codigo_duplicado_toro():
+    client = APIClient()
+
+    # Se crea un toro indicándole un código en específico ("T-100").
+    InventarioVT.objects.create(
+        codigo = "VT-100",
+        tipo = "Vacuna",
+        nombre = "Vacuna Prueba 1",
+        unidades = 7,
+        cantidad = "Sobre",
+        estado = "Activa"
+    )
+
+    # Se intenta crear un nuevo  con el mismo código ("VT-100").
+    datos_duplicados = {
+        "codigo": "VT-100",
+        "tipo": "Vacuna",
+        "nombre": "Vacuna Prueba 2",
+        "unidades": 10,
+        "cantidad": "Sobre",
+        "estado": "Activa"
+    }
+
+    # Se intenta crear un nuevo tratamiento/vacuna con el mismo código ("VT-100").
+    response = client.post("/api/inventariovt/", datos_duplicados, format='json')
+
+    assert response.status_code == 400
+    assert "codigo" in response.data
+    assert response.data["codigo"][0] == "El código ya existe en el sistema."  # Se comprueba que se obtiene el mensaje de error personalizado.
+
+# Test para comprobar código con formato incorrecto.
+@pytest.mark.django_db
+def test_crear_inventariovt_codigo_formato_incorrecto():
+    client = APIClient()
+
+    InventarioVT.objects.create(
+        codigo = "VT-100",
+        tipo = "Vacuna",
+        nombre = "Vacuna Prueba 1",
+        unidades = 7,
+        cantidad = "Sobre",
+        estado = "Activa"
+    )
+
+    datos_codigo_incorrecto = {
+        "codigo": "ABC-999",# Formato de código incorrecto.
+        "tipo": "Vacuna",
+        "nombre": "Vacuna Prueba 2",
+        "unidades": 10,
+        "cantidad": "Sobre",
+        "estado": "Activa"
+    }
+
+    response = client.post("/api/inventariovt/", datos_codigo_incorrecto, format="json")
+
+    assert response.status_code == 400
+    assert "codigo" in response.data # Error del campo "código"
+    # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
+    assert response.data["codigo"][0] == "El código debe tener el formato 'VT-número' (Ej: VT-1)."
+
+
+
+# Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
+@pytest.mark.django_db
+def test_codigo_inventariovt_generado_automaticamente():
+    client = APIClient()
+    datos = {
+        # No se indica el campo "codigo"
+        "tipo": "Vacuna",
+        "nombre": "Vacuna Prueba",
+        "unidades": 10,
+        "cantidad": "Sobre",
+        "estado": "Activa"
+    }
+
+    response = client.post("/api/inventariovt/", datos, format="json")
+
+    assert response.status_code == 201
+    assert "codigo" in response.data
+    assert response.data["codigo"].startswith("VT-") # Comprueba que el código comience por "VT-".
+    assert response.data["codigo"][3:].isdigit() # Comprueba que lo que le sigue a "VT-" son números.
+
+
+# Test para comprobar la eliminación de una vacuna/tratamiento por el motivo "ERROR"
+# ¿Qué se verifica?
+# - El tratamiento/vacuna es eliminado de la base de datos.
+# - No hay problemas con las relaciones porque esa vacuna/tratamiento no tiene ninguna referencia
+#   a otras relaciones.
+@pytest.mark.django_db
+def test_eliminar_inventariovt_error_sin_uso():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        nombre="Vacuna Prueba",
+        tipo="Vacuna",
+        unidades=10,
+        cantidad="Sobre",
+        estado="Activa"
+    )
+
+    # Se elimina la vacuna/tratamiento por el motivo "ERROR"
+    response = client.delete(f"/api/inventariovt/{inventario.id}/eliminar/?motivo=ERROR")
+
+    assert response.status_code == 204
+    assert not InventarioVT.objects.filter(id=inventario.id).exists() # Se compruebe que esa vacuna/tratamiento NO existe en la base de datos.
+
+# Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
+# ¿Qué se verifica?
+# - La vacuna/tratamiento permanece en la base de datos.
+# - Actualización del estado.
+# - El historial de VTAnimales se mantiene con el identificador del animal (FK).
+@pytest.mark.django_db
+def test_eliminar_inventarioVT_con_motivo_actualiza_estado():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        nombre="Tratamiento Prueba",
+        tipo="Tratamiento",
+        unidades=10,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        nombre="Vaca Prueba",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=22.0,
+        calidad_patas=7.0,
+        calidad_ubres=6.5,
+        grasa=4.0,
+        proteinas=3.5
+    )
+
+    vt = VTAnimales.objects.create(
+        id_animal=animal,
+        tipo="Tratamiento",
+        ruta="Oral",
+        fecha_inicio="2025-04-01",
+        fecha_finalizacion="2025-04-05",
+        responsable="Veterinario A",
+        inventario_vt=inventario,
+        dosis=3
+    )
+    # Se elimina al toro por el motivo "INACTIVA"
+    response = client.delete(f"/api/inventariovt/{inventario.id}/eliminar/?motivo=INACTIVA")
+
+    inventario.refresh_from_db()
+    assert response.status_code == 200
+    assert inventario.estado == "Inactiva" # El estado de la vacuna/tratamiento debe estar actualizado al motivo de su eliminación.
+
+    # Se comprueba que no haya habido modificaciones en la lista de vacunas/tratamientos suministrados
+    # y se mantienen la relación de la vacuna/tratamiento con las vacunas/tratamientos suministrados.
+    vt.refresh_from_db()
+    assert vt.inventario_vt == inventario
+    assert vt.dosis == 3
+
+# Test para comprobar la eliminación de un Animal por un motivo no correcto.
+@pytest.mark.django_db
+def test_eliminar_inventariovt_motivo_invalido():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        nombre="Tratamiento Prueba",
+        tipo="Tratamiento",
+        unidades=10,
+        cantidad="Botella",
+        estado="Activa"
+    )
+    # Se elimina al toro por un motivo erróneo, en este caso "INCORRECTO".
+    response = client.delete(f"/api/inventariovt/{inventario.id}/eliminar/?motivo=INCORRECTO")
+    assert response.status_code == 400
+    assert response.data["ERROR"] == "El motivo seleccionado no es correcto: Usa 'ERROR' o 'INACTIVA'."
+
+
+
+# --------------------------------------------------------------------------------------------------------------
+#                                       Test de INVENTARIOVT: FILTRADO
+# --------------------------------------------------------------------------------------------------------------
+# Test para filtrar por las unidades de las vacunas/tratamientos del inventario.
+@pytest.mark.django_db
+def test_filtrado_inventariovt_por_rango_unidades():
+    client = APIClient()
+
+    # No cumple con el filtro (>=6).
+    InventarioVT.objects.create(
+        nombre="Tratamiento Prueba 1",
+        tipo="Tratamiento",
+        unidades=3,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    # Sí cumple con el filtro (>=6).
+    InventarioVT.objects.create(
+        nombre="Tratamiento Prueba 2",
+        tipo="Tratamiento",
+        unidades=6,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    # No cumple con el filtro (>=6).
+    InventarioVT.objects.create(
+        nombre="Tratamiento Prueba 3",
+        tipo="Tratamiento",
+        unidades=5,
+        cantidad="Botella",
+        estado="Activa"
+    )
+    # Sí cumple con el filtro (>=6).
+    InventarioVT.objects.create(
+        nombre="Vacuna Prueba 4",
+        tipo="Vacuna",
+        unidades=10,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    response = client.get("/api/inventariovt/?unidades__gte=6")
+    assert response.status_code == 200
+    assert len(response.data) == 2 # Se espera que haya dos vacunas/tratamientos válidas.
+
+    # Se crea una lista con todos los nombres de las vacunas/tratamientos que se han obtenido como resultado.
+    nombres = [toro["nombre"] for toro in response.data]
+    assert "Tratamiento Prueba 2" in nombres
+    assert "Vacuna Prueba 4" in nombres
+
+# Test para filtrar por la el tipo y estado de las vacunas/tratamientos del inventario.
+@pytest.mark.django_db
+def test_filtrado_combinado_inventariovt_por_tipo_y_estado():
+    client = APIClient()
+
+    # Sí cumple ambos filtros
+    InventarioVT.objects.create(
+        nombre="Vacuna Prueba 1",
+        tipo="Vacuna",
+        unidades=3,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    # No cumple estado
+    InventarioVT.objects.create(
+        nombre="Tratamiento Prueba 1",
+        tipo="Tratamiento",
+        unidades=3,
+        cantidad="Botella",
+        estado="Inactiva" # No
+    )
+
+    # No cumple tipo de semen
+    InventarioVT.objects.create(
+        nombre="Tratamiento Prueba 1",
+        tipo="Tratamiento", # No
+        unidades=3,
+        cantidad="Botella",
+        estado="Activa"
+    )
+
+    # Se aplica filtro combinado: tipo = Vacuna y estado = Activa
+    response = client.get("/api/inventariovt/?tipo=Vacuna&estado=Activa")
+
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    assert response.data[0]["nombre"] == "Vacuna Prueba 1"
