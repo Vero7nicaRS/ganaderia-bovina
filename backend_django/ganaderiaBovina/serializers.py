@@ -205,8 +205,8 @@ class ToroSerializer(serializers.ModelSerializer):
                 'error_messages': {
                     'required': 'El número de células somáticas es obligatorio.',
                     'invalid': 'Debe introducir un número entero válido.',
-                    'min_value': "El valor mínimo permitido es 50000.",
-                    'max_value': "El valor máximo permitido es 2000000.",
+                    # 'min_value': "El valor mínimo permitido es 50000.",
+                    # 'max_value': "El valor máximo permitido es 2000000.",
                     'null': 'El número de células somáticas no puede ser nulo.'
                 }
             },
@@ -351,6 +351,7 @@ class InventarioVTSerializer(serializers.ModelSerializer):
                     'invalid': 'Se debe introducir un número entero válido.',
                     'min_value': "El valor mínimo permitido es 1.",
                     'max_value': "El valor máximo permitido es 30.",
+                    'null': "El número de unidades no puede ser nulo."
                 }
             }
         }
@@ -365,7 +366,7 @@ class InventarioVTSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
         #if Toro.objects.filter(codigo=value).exists():
