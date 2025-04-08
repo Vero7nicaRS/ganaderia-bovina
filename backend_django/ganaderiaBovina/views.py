@@ -357,7 +357,7 @@ class InventarioVTViewSet(viewsets.ModelViewSet):
                                             f" El Estado se ha actualizado a {motivo}."})
 
             else:
-                return Response({"ERROR": "Motivo no válido. Usa 'ERROR' o 'INACTIVA'."},
+                return Response({"ERROR": "El motivo seleccionado no es correcto: Usa 'ERROR' o 'INACTIVA'."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         except ProtectedError as e:
@@ -383,7 +383,7 @@ def inventario_por_tipo(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 # --------------------------------------------------------------------------------------------------------------
-#                                       Vista de INVENTARIOVT (Vacunas y tratamientos suministrados a los animales)
+#                                       Vista de VTANIMALES (Vacunas y tratamientos suministrados a los animales)
 # --------------------------------------------------------------------------------------------------------------
 
 class VTAnimalesViewSet(viewsets.ModelViewSet):
