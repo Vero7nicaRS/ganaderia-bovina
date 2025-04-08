@@ -11,7 +11,7 @@ from decimal import Decimal
 
 
 # --------------------------------------------------------------------------------------------------------------
-#                                       Test de ANIMALES
+#                                       Test de ANIMALES: LÓGICA
 # --------------------------------------------------------------------------------------------------------------
 
 # Se comprueba que se puede crear un animal (vaca/ternero) correctamente con datos válidos.
@@ -586,10 +586,13 @@ def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
     # No se usa "animal" porque hemos eliminado su instancia. Por tanto, utilizamos corral para verificarlo.
     # Se comprueba que no esté en ningún corral ese animal.
 
-    # Se comprueba que se mantiene el historial en los tratamientos/vacunas e inseminaciones.
+    # Se comprueba que no haya habido modificaciones en los tratamientos/vacunas e inseminaciones y se mantienen la
+    # relación del toro con la vacuna/tratamiento:
+    #   - id_vaca: para asegurarnos de que la inseminación no se ha eliminado.
+    #   - id_toro: ""        ""     la relación con el toro se mantiene y no se pone a null.
     assert VTAnimales.objects.filter(id_animal=animal).exists()
     assert ListaInseminaciones.objects.filter(id_vaca=animal).exists()
-
+    assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
     # Se comprueba que las relaciones con sus reproductores se sigue manteniendo.
     assert animal.padre == toro
     assert animal.madre == madre
@@ -642,10 +645,11 @@ def test_eliminar_animal_motivo_invalido():
         madre=madre,
         corral=corral)
 
+    # Se elimina al toro por un motivo erróneo, en este caso "INCORRECTO".
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=INCORRECTO")
 
     assert response.status_code == 400
-    assert response.data["ERROR"] == "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."
+    assert response.data["ERROR"] == "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."
     # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
 
 
@@ -702,6 +706,11 @@ def test_filtrado_animales_por_nombre():
     assert len(response.data) == 1
     assert response.data[0]["nombre"] == "Filtrable1"
 
+# --------------------------------------------------------------------------------------------------------------
+#                                       Test de ANIMALES: FILTRADO
+# --------------------------------------------------------------------------------------------------------------
+
+
 # Test para filtrar por la producción de leche del animal.
 @pytest.mark.django_db
 def test_filtrado_animales_por_rango_produccion_leche():
@@ -720,7 +729,7 @@ def test_filtrado_animales_por_rango_produccion_leche():
 
     # No cumple con el filtro (>=20).
     Animal.objects.create(
-        nombre="Prueba vaca 1",
+        nombre="Vaca Prueba 1",
         tipo="Vaca",
         estado="Vacía",
         fecha_nacimiento="2021-01-01",
@@ -736,7 +745,7 @@ def test_filtrado_animales_por_rango_produccion_leche():
 
     # Sí cumple con el filtro (>=20).
     Animal.objects.create(
-        nombre="Prueba vaca 2",
+        nombre="Vaca Prueba 2",
         tipo="Vaca",
         estado="Vacía",
         fecha_nacimiento="2022-01-01",
@@ -752,7 +761,7 @@ def test_filtrado_animales_por_rango_produccion_leche():
 
     # No cumple con el filtro (>=20).
     Animal.objects.create(
-        nombre="Prueba vaca 3",
+        nombre="Vaca Prueba 3",
         tipo="Vaca",
         estado="Vacía",
         fecha_nacimiento="2021-01-01",
@@ -768,7 +777,7 @@ def test_filtrado_animales_por_rango_produccion_leche():
 
     # Sí cumple con el filtro (>=20).
     Animal.objects.create(
-        nombre="Prueba vaca 4",
+        nombre="Vaca Prueba 4",
         tipo="Vaca",
         estado="Vacía",
         fecha_nacimiento="2021-01-01",
@@ -788,12 +797,12 @@ def test_filtrado_animales_por_rango_produccion_leche():
 
     # Se crea una lista con todos los nombres de las vacas que se han obtenido como resultado.
     nombres = [animal["nombre"] for animal in response.data]
-    assert "Prueba vaca 2" in nombres
-    assert "Prueba vaca 4" in nombres
+    assert "Vaca Prueba 2" in nombres
+    assert "Vaca Prueba 4" in nombres
 
 # Test para filtrar por la el tipo y la calidad de ubres del animal.
 @pytest.mark.django_db
-def test_filtrado_combinado_por_tipo_y_calidad_ubres():
+def test_filtrado_combinado_animales_por_tipo_y_calidad_ubres():
     client = APIClient()
 
     corral = Corral.objects.create(nombre="Corral Filtro")
