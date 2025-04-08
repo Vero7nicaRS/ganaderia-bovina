@@ -32,10 +32,14 @@ def test_crear_toro_valido():
     response = client.post(reverse("toro-list"), datos, format="json")
 
     assert response.status_code == 201
+
+    # Se comprueba que el código se ha generado correctamente.
     assert "codigo" in response.data
-    assert response.data["nombre"] == "ToroPrueba"
     assert response.data["codigo"].startswith("T-")
-    # assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "T-" son números.
+    assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "T-" son números.
+
+    # Se comprueba que el toro existe en la base de datos.
+    assert Toro.objects.filter(nombre="ToroPrueba").exists()
 
 # Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
@@ -72,32 +76,57 @@ def test_toro_campos_requeridos_vacios():
 def test_toro_valores_fuera_de_rango():
     client = APIClient()
 
-    datos = {
+    datosMin = {
         "nombre": "ToroRango",
         "cantidad_semen": -10,  # Valor negativo.
         "transmision_leche": "no es decimal",  # Tipo inválido
         "celulas_somaticas": "texto",  # Tipo inválido
-        "calidad_patas": 10.0,  # Mayor a 9
-        "calidad_ubres": 0.5,  # Menor a 1
+        "calidad_patas": 0,  # Menor que 1
+        "calidad_ubres": -2,  # Menor que 1
         "grasa": "mucho",  # Tipo inválido
         "proteinas": None  # Campo requerido
     }
 
-    response = client.post("/api/toros/", datos, format="json")
-    assert response.status_code == 400
+    datosMax = {
+        "nombre": "ToroRango",
+        "cantidad_semen": -23,  # Valor negativo.
+        "transmision_leche": "no es decimal",  # Tipo inválido
+        "celulas_somaticas": "texto",  # Tipo inválido
+        "calidad_patas": 10.0,  # Mayor que 9
+        "calidad_ubres": 12,  # Mayor que 9
+        "grasa": "mucho",  # Tipo inválido
+        "proteinas": None  # Campo requerido
+    }
 
-    assert response.data["cantidad_semen"][0] == "El valor mínimo permitido es 0."
-    assert response.data["transmision_leche"][0] == "Debe introducir un número válido."
-    assert response.data["celulas_somaticas"][0] == "Debe introducir un número entero válido."
-    assert response.data["calidad_patas"][0] == "El valor máximo permitido es 9."
-    assert response.data["calidad_ubres"][0] == "El valor mínimo permitido es 1."
-    assert response.data["grasa"][0] == "Debe introducir un número válido."
-    assert response.data["proteinas"][0] == "El porcentaje de proteínas no puede ser nulo."
+    responseMin = client.post("/api/toros/", datosMin, format="json")
+    responseMax = client.post("/api/toros/", datosMax, format="json")
+
+    assert responseMin.status_code == 400
+    assert responseMax.status_code == 400
+
+    # Mensajes de error personalizados esperados en el serializer
+    # MÍNIMO
+    assert responseMin.data["cantidad_semen"][0] == "El valor mínimo permitido es 0."
+    assert responseMin.data["transmision_leche"][0] == "Debe introducir un número válido."
+    assert responseMin.data["celulas_somaticas"][0] == "Debe introducir un número entero válido."
+    assert responseMin.data["calidad_patas"][0] == "El valor mínimo permitido es 1."
+    assert responseMin.data["calidad_ubres"][0] == "El valor mínimo permitido es 1."
+    assert responseMin.data["grasa"][0] == "Debe introducir un número válido."
+    assert responseMin.data["proteinas"][0] == "El porcentaje de proteínas no puede ser nulo."
+
+    # MÁXIMO
+    assert responseMax.data["cantidad_semen"][0] == "El valor mínimo permitido es 0."
+    assert responseMax.data["transmision_leche"][0] == "Debe introducir un número válido."
+    assert responseMax.data["celulas_somaticas"][0] == "Debe introducir un número entero válido."
+    assert responseMax.data["calidad_patas"][0] == "El valor máximo permitido es 9."
+    assert responseMax.data["calidad_ubres"][0] == "El valor máximo permitido es 9."
+    assert responseMax.data["grasa"][0] == "Debe introducir un número válido."
+    assert responseMax.data["proteinas"][0] == "El porcentaje de proteínas no puede ser nulo."
 
 
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
-def test_codigo_duplicado_animal():
+def test_codigo_duplicado_toro():
     client = APIClient()
 
     # Se crea un toro indicándole un código en específico ("T-100").
@@ -132,7 +161,7 @@ def test_codigo_duplicado_animal():
     assert "codigo" in response.data
     assert response.data["codigo"][0] == "El código ya existe en el sistema."  # Se comprueba que se obtiene el mensaje de error personalizado.
 
-# Comprobar código con formato incorrecto.
+# Test para comprobar código con formato incorrecto.
 @pytest.mark.django_db
 def test_crear_toro_codigo_formato_incorrecto():
     client = APIClient()
@@ -173,7 +202,7 @@ def test_crear_toro_codigo_formato_incorrecto():
 
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
-def test_codigo_generado_automaticamente():
+def test_codigo_toro_generado_automaticamente():
     client = APIClient()
     datos = {
         # No se indica el campo "codigo"
