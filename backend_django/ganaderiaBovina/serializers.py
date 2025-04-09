@@ -419,7 +419,8 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
             'dosis': {
                 'error_messages': {
                     'required': 'La dosis es obligatorio.',
-                    'invalid': 'Se debe introducir un número entero válido.'
+                    'invalid': 'Se debe introducir un número entero válido.',
+                    'null': "El número de unidades no puede ser nulo."
                 }
             }
         }
@@ -434,7 +435,7 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
         #if VTAnimales.objects.filter(codigo=value).exists():
@@ -445,14 +446,14 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
     # validate_<campo>: Validación para el campo "id_animal".
     def validate_id_animal(self,value):
         if value in [None, '']:
-            raise serializers.ValidationError('Debe seleccionar un identificador de animal válido.')
+            raise serializers.ValidationError('Se debe seleccionar un identificador de animal válido.')
         return value
 
 
     # validate_<campo>: Validación para el campo "inventario_vt".
     def validate_inventario_vt(self,value):
         if value in [None, '']:
-            raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
+            raise serializers.ValidationError("Se debe seleccionar una vacuna o tratamiento del inventario.")
         return value
 
     # Hacemos las validaciones relacionadas con el tipo (vacuna/tratamiento) y el nombre escogido
@@ -466,19 +467,25 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
             # Si no coincide la vacuna/tratamiento con el tipo escogido, muestra un error.
             if tipo and inventario.tipo != tipo:
                 raise serializers.ValidationError(
-                    f"El {tipo.lower()} seleccionado no coincide con el tipo del inventario: {inventario.tipo}."
+                   # f"El {tipo.lower()} seleccionado no coincide con el tipo del inventario: {inventario.tipo}."
+                    # El error se asocia al campo "tipo" y arriba no se asociaba (cambiado para los test)
+                    {"tipo": f"El tipo '{tipo.lower()}' seleccionado no coincide con el tipo del inventario: {inventario.tipo}."}
                 )
             # Se comprueba que la dosis no supere las unidades disponibles del inventario
             # Si la dosis que se desea suministrar es mayor que la del inventario, se muestra un error.
             if dosis and dosis > inventario.unidades:
                 raise serializers.ValidationError(
-                    f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}"
+                   # f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}"
+                    # El error se asocia al campo "dosis" y arriba no se asociaba (cambiado para los test)
+                    {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}"}
                 )
             # Se comprueba que no se suministre 0 dosis.
             # Si la dosis es 0, se muestra un error.
             if dosis == 0:
                 raise serializers.ValidationError(
-                    f"La dosis suministrada debe ser mayor a 0."
+                    #f"La dosis suministrada debe ser mayor a 0."
+                     # El error se asocia al campo "dosis" y arriba no se asociaba (cambiado para los test)
+                    {"dosis": "La dosis suministrada debe ser mayor a 0."}
                 )
             #if inventario.unidades == 0:
             #    raise serializers.ValidationError(
@@ -488,7 +495,9 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
             # Si es "INACTIVA", se muestra un error.
             if inventario.estado != "Activa":
                 raise serializers.ValidationError(
-                    f"El {tipo.lower()} seleccionado tiene el estado 'Inactivo' y por tanto, no se puede usar."
+                    {"estado": f"{'El' if tipo == 'tratamiento' else 'La'} "
+                               f"{tipo.lower()} suministrad{'o' if inventario.tipo == 'tratamiento' else 'a'}"
+                               f" tiene el estado 'Inactivo' y por tanto, no se puede usar."}
                 )
         #if not inventario:
         #     raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
@@ -547,7 +556,7 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1) .")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
         #if ListaInseminaciones.objects.filter(codigo=value).exists():
