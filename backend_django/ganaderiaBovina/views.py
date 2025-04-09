@@ -425,7 +425,7 @@ class VTAnimalesViewSet(viewsets.ModelViewSet):
         try:
             self.perform_destroy(instance)
             return Response(
-                {f"{'El' if tipo == 'tratamiento' else 'La'} "
+                {"ERROR": f"{'El' if tipo == 'tratamiento' else 'La'} "
                             f"{tipo} suministrad{'o' if tipo == 'tratamiento' else 'a'} "
                             f"{codigo} ha sido eliminad{'o' if tipo == 'tratamiento' else 'a'} "
                             f"correctamente."},
