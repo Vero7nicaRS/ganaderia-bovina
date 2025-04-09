@@ -81,19 +81,19 @@ def test_inventariovt_valores_fuera_de_rango():
     # Los datos tienen se sobresalen del rango mínimo.
     datosMin = {
         "tipo": "Vacuna",
-        "nombre": "Tratamiento Prueba", # Campo requerido,
+        "nombre": "Tratamiento Prueba",
         "unidades": -3, # Valor negativo.
-        "cantidad": "Botella", # Tipo inválido
-        "estado": "Activa" # Tipo inválido
+        "cantidad": "Botella",
+        "estado": "Activa"
     }
 
     # Los datos tienen se sobresalen del rango máximo.
     datosMax = {
         "tipo": "Vacuna",
-        "nombre": "Tratamiento Prueba", # Campo requerido,
+        "nombre": "Tratamiento Prueba",
         "unidades": 31, # Valor superior a 30.
-        "cantidad": "Botella", # Tipo inválido
-        "estado": "Activa" # Tipo inválido
+        "cantidad": "Botella",
+        "estado": "Activa"
     }
 
     responseMin = client.post("/api/inventariovt/", datosMin, format="json")
@@ -158,7 +158,7 @@ def test_crear_inventariovt_codigo_formato_incorrecto():
     )
 
     datos_codigo_incorrecto = {
-        "codigo": "ABC-999",# Formato de código incorrecto.
+        "codigo": "ABC-999", # Formato de código incorrecto.
         "tipo": "Vacuna",
         "nombre": "Vacuna Prueba 2",
         "unidades": 10,
@@ -172,8 +172,6 @@ def test_crear_inventariovt_codigo_formato_incorrecto():
     assert "codigo" in response.data # Error del campo "código"
     # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
     assert response.data["codigo"][0] == "El código debe tener el formato 'VT-número' (Ej: VT-1)."
-
-
 
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
@@ -196,13 +194,13 @@ def test_codigo_inventariovt_generado_automaticamente():
     assert response.data["codigo"][3:].isdigit() # Comprueba que lo que le sigue a "VT-" son números.
 
 
-# Test para comprobar la eliminación de una vacuna/tratamiento por el motivo "ERROR"
+# Test para comprobar la eliminación de una vacuna/tratamiento por el motivo "ERROR" sin relación existente.
 # ¿Qué se verifica?
 # - El tratamiento/vacuna es eliminado de la base de datos.
 # - No hay problemas con las relaciones porque esa vacuna/tratamiento no tiene ninguna referencia
 #   a otras relaciones.
 @pytest.mark.django_db
-def test_eliminar_inventariovt_error_sin_uso():
+def test_eliminar_inventariovt_error_sin_relacion():
     client = APIClient()
 
     inventario = InventarioVT.objects.create(
@@ -218,6 +216,66 @@ def test_eliminar_inventariovt_error_sin_uso():
 
     assert response.status_code == 204
     assert not InventarioVT.objects.filter(id=inventario.id).exists() # Se compruebe que esa vacuna/tratamiento NO existe en la base de datos.
+
+
+# Test para comprobar la eliminación de una vacuna/tratamiento por el motivo "ERROR" con existencia de relaciones.
+# ¿Qué se verifica?
+# - El tratamiento/vacuna es eliminado de la base de datos.
+# - Sí hay problemas con las relaciones porque esa vacuna/tratamiento no tiene ninguna referencia
+#   a otras relaciones, por tanto debe lanzar un error.
+@pytest.mark.django_db
+def test_eliminar_inventariovt_error_con_relacion():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        codigo="VT-200",
+        tipo="Vacuna",
+        nombre="Vacuna Relacionada",
+        unidades=10,
+        cantidad="Sobre",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Relacionada",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=120000,
+        produccion_leche=21.0,
+        calidad_patas=Decimal("7.5"),
+        calidad_ubres=Decimal("6.8"),
+        grasa=3.8,
+        proteinas=3.2,
+        corral=Corral.objects.create(nombre="Corral R")
+    )
+
+    VTAnimales.objects.create(
+        codigo="VTA-100",
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2025-04-01",
+        fecha_finalizacion="2025-04-03",
+        responsable="Veterinaria X",
+        dosis=2,
+        id_animal=animal,
+        inventario_vt=inventario
+    )
+
+    # Se intenta eliminar la vacuna/tratamiento por el motivo "ERROR" y con relaciones con vtanimales.
+    response = client.delete(f"/api/inventariovt/{inventario.id}/eliminar/?motivo=ERROR")
+
+    assert response.status_code == 400
+    assert "ERROR" in response.data
+    assert response.data["ERROR"] == f"No se puede eliminar '{inventario.codigo}' porque está asociado a otros registros."
+    assert "MOTIVO DEL ERROR" in response.data
+    assert "VTA-100" in response.data["MOTIVO DEL ERROR"]
+
+    # Se comprueba que sigue existiendo la vacuna/tratamiento en el inventario.
+    assert InventarioVT.objects.filter(id=inventario.id).exists()
+    assert VTAnimales.objects.filter(inventario_vt=inventario).exists()
+
+
 
 # Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
 # ¿Qué se verifica?
@@ -339,11 +397,11 @@ def test_filtrado_inventariovt_por_rango_unidades():
     assert len(response.data) == 2 # Se espera que haya dos vacunas/tratamientos válidas.
 
     # Se crea una lista con todos los nombres de las vacunas/tratamientos que se han obtenido como resultado.
-    nombres = [toro["nombre"] for toro in response.data]
+    nombres = [inventariovt["nombre"] for inventariovt in response.data]
     assert "Tratamiento Prueba 2" in nombres
     assert "Vacuna Prueba 4" in nombres
 
-# Test para filtrar por la el tipo y estado de las vacunas/tratamientos del inventario.
+# Test para filtrar por el tipo y estado de las vacunas/tratamientos del inventario.
 @pytest.mark.django_db
 def test_filtrado_combinado_inventariovt_por_tipo_y_estado():
     client = APIClient()
@@ -366,7 +424,7 @@ def test_filtrado_combinado_inventariovt_por_tipo_y_estado():
         estado="Inactiva" # No
     )
 
-    # No cumple tipo de semen
+    # No cumple tipo
     InventarioVT.objects.create(
         nombre="Tratamiento Prueba 1",
         tipo="Tratamiento", # No
