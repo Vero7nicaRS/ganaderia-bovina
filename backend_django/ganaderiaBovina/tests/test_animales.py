@@ -394,7 +394,7 @@ def test_codigo_animales_generado_automaticamente():
     madre = Animal.objects.create(
         tipo="Vaca",
         estado="Vacía",
-        nombre="MadreAuto",
+        nombre="Vaca Prueba 1",
         fecha_nacimiento="2024-01-01",
         celulas_somaticas=100000,
         produccion_leche=20.0,
@@ -404,14 +404,14 @@ def test_codigo_animales_generado_automaticamente():
         proteinas=3.5,
         padre=toro,
         madre=None,
-        corral=Corral.objects.create(nombre="CorralAuto")
+        corral=Corral.objects.create(nombre="Corral 1")
     )
 
     datos = {
         # No se indica el campo "codigo"
         "tipo": "Vaca",
         "estado": "Vacía",
-        "nombre": "VacaAuto",
+        "nombre": "Vaca Prueba 2",
         "fecha_nacimiento": "2025-04-01",
         "celulas_somaticas": 120000,
         "produccion_leche": 22.0,
