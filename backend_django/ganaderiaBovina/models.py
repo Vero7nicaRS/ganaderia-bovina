@@ -390,7 +390,7 @@ class ListaInseminaciones(models.Model):
     hora_inseminacion = models.TimeField()
 
     # El tipo de semen: se indica si es Sexado o No sexado (boolean)
-    es_sexado = models.BooleanField()
+    es_sexado = models.BooleanField(default=True, null=False, blank=False)
     responsable = models.CharField(max_length=100)
 
     def save(self, *args, **kwargs):
