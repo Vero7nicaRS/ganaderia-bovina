@@ -465,7 +465,13 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
         inventario = data.get('inventario_vt')
         tipo = data.get('tipo')  # Tipo del inventario.
         dosis = data.get('dosis')
+        fecha_inicio = data.get('fecha_inicio')
+        fecha_finalizacion = data.get('fecha_finalizacion')
 
+        if fecha_inicio and fecha_finalizacion and fecha_inicio > fecha_finalizacion:
+            raise serializers.ValidationError({
+                "fecha_finalizacion": "La fecha de finalización debe ser posterior a la fecha de inicio."
+            })
         if inventario:
             # Se comprueba que que el tipo seleccionado en VTAnimales coincida con el del InventarioVT
             # Si no coincide la vacuna/tratamiento con el tipo escogido, muestra un error.
@@ -533,13 +539,13 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
             'fecha_inseminacion': {
                 'error_messages': {
                     'required': 'La fecha de inseminación es obligatoria.',
-                    'invalid': 'La fecha de inseminación no es válida. El formato es AAAA-MM-DD',
+                    'invalid': 'La fecha de inseminación no es válida. El formato es AAAA-MM-DD.',
                 }
             },
             'hora_inseminacion': {
                 'error_messages': {
                     'required': 'La hora de inseminación es obligatoria.',
-                    'invalid': 'La hora de inseminación no es válida. El formato es HH:MM:[SS[.mmmmmm]]',
+                    'invalid': 'La hora de inseminación no es válida. El formato es HH:MM:[SS[.mmmmmm]].',
                 }
             },
 
@@ -560,7 +566,7 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1) .")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
         #if ListaInseminaciones.objects.filter(codigo=value).exists():
@@ -579,3 +585,21 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
         if value in [None, '']:
             raise serializers.ValidationError('Debe seleccionar un toro válido.')
         return value
+
+    # No hago un validate_id_toro() porque solo obtendría el identificador del toro.
+    # Y yo necesito acceder al objeto Toro para poder ver la cantidad de semen que tiene.
+    def validate(self,data):
+        toro = data.get('id_toro')
+        if toro and toro.cantidad_semen <= 0:
+            raise serializers.ValidationError(
+             {"id_toro": f"El toro {toro.codigo} no tiene suficiente cantidad de semen para inseminar."}
+            )
+        return data
+
+    # Al crearse una inseminación, se actualiza la cantidad semen que tiene el toro.
+    # Una inseminación solo usa 1 cantidad de semen del toro.
+    def create(self, validated_data):
+        toro = validated_data["id_toro"]
+        toro.cantidad_semen -= 1 # Se decrementa la cantidad de semen a 1.
+        toro.save() # Se guarda la información actualizada del toro.
+        return super().create(validated_data)
