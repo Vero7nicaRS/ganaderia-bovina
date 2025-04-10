@@ -248,7 +248,7 @@ class CorralViewSet(viewsets.ModelViewSet):
             try:
                 self.perform_destroy(instance)
                 return Response(
-                    {f"El corral {codigo} ha sido eliminado correctamente."},
+                    {"mensaje":f"El corral {codigo} ha sido eliminado correctamente."},
                     status=status.HTTP_200_OK
                 )
             except ProtectedError:
