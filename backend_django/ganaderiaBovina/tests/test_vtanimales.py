@@ -221,6 +221,8 @@ def test_vtanimales_valores_fuera_de_rango():
     assert responseMin.data["dosis"][0] == "La dosis suministrada debe ser mayor a 0."
 
     # MÁXIMO
+    # Se comprueba que no se puedan suministrar más dosis de las que tiene el inventario, es decir,
+    # de la que tiene esa vacuna o tratamiento.
     assert responseMax.data["dosis"][0] == (f"No hay suficientes unidades en el inventario. "
                                             f"Disponibles: {inventario.unidades}")
 
