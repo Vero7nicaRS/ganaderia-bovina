@@ -304,7 +304,7 @@ class CorralSerializer(serializers.ModelSerializer):
 
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
-            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej:'{prefijo}-1)'.")
+            raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
         # Si el código existe en el sistema, se lanza un mensaje de error.
         #if Corral.objects.filter(codigo=value).exists():
