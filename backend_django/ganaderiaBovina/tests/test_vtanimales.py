@@ -275,14 +275,14 @@ def test_codigo_duplicado_vtanimales():
         "inventario_vt": inventario.id,
     }
 
-    # Se intenta crear un nuevo tratamiento/vacuna con el mismo código ("VT-100").
+    # Se intenta crear un nuevo tratamiento/vacuna con el mismo código ("VTA-100").
     response = client.post("/api/vtanimales/", datos_duplicados, format='json')
 
     assert response.status_code == 400
     assert "codigo" in response.data
     assert response.data["codigo"][0] == "El código ya existe en el sistema."  # Se comprueba que se obtiene el mensaje de error personalizado.
 
-# Test para comprobar si se generan códigos duplicados
+# Test para comprobar si se generan códigos con formato incorrecto.
 @pytest.mark.django_db
 def test_crear_vtanimales_codigo_formato_incorrecto():
     client = APIClient()
@@ -321,7 +321,7 @@ def test_crear_vtanimales_codigo_formato_incorrecto():
         "inventario_vt": inventario.id,
     }
 
-    # Se intenta crear un nuevo tratamiento/vacuna con el mismo código ("VT-100").
+    # Se intenta crear un nuevo tratamiento/vacuna con un código incorrecto ("VTA-100").
     response = client.post("/api/vtanimales/", datos_codigo_incorrecto, format='json')
 
     assert response.status_code == 400
@@ -371,8 +371,8 @@ def test_codigo_vtanimales_generado_automaticamente():
 
     assert response.status_code == 201
     assert "codigo" in response.data
-    assert response.data["codigo"].startswith("VTA-") # Comprueba que el código comience por "VT-".
-    assert response.data["codigo"][4:].isdigit() # Comprueba que lo que le sigue a "VT-" son números.
+    assert response.data["codigo"].startswith("VTA-") # Comprueba que el código comience por "VTA-".
+    assert response.data["codigo"][4:].isdigit() # Comprueba que lo que le sigue a "VTA-" son números.
 
 # Test para comprobar que si se selecciona un tipo distinto en el inventario y en la vacuna/tratamiento suministrado,
 # se muestra un mensaje de error.
