@@ -282,17 +282,21 @@ class CorralSerializer(serializers.ModelSerializer):
                     )
                 ]
             )
+    nombre = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=Corral.objects.all(),
+                message="Ya existe un corral con este nombre."
+            )
+        ],
+        error_messages={
+            'required': 'El nombre es obligatorio.',
+            'blank': 'El nombre no puede estar vacío.'
+        }
+    )
     class Meta:
         model = Corral
         fields = '__all__'
-        extra_kwargs = {
-            'nombre': {
-                'error_messages': {
-                    'required': 'El nombre es obligatorio.',
-                    'blank': 'El nombre no puede estar vacío.'
-                }
-            }
-        }
 
     # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
