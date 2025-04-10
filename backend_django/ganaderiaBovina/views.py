@@ -425,7 +425,7 @@ class VTAnimalesViewSet(viewsets.ModelViewSet):
         try:
             self.perform_destroy(instance)
             return Response(
-                {"ERROR": f"{'El' if tipo == 'tratamiento' else 'La'} "
+                {"mensaje": f"{'El' if tipo == 'tratamiento' else 'La'} "
                             f"{tipo} suministrad{'o' if tipo == 'tratamiento' else 'a'} "
                             f"{codigo} ha sido eliminad{'o' if tipo == 'tratamiento' else 'a'} "
                             f"correctamente."},
@@ -471,7 +471,7 @@ class ListaInseminacionesViewSet(viewsets.ModelViewSet):
             try:
                 self.perform_destroy(instance)
                 return Response(
-                    {f"La inseminación {codigo} ha sido eliminada correctamente."},
+                    {"mensaje":f"La inseminación {codigo} ha sido eliminada correctamente."},
                     status=status.HTTP_200_OK
                 )
             except Exception as e:
