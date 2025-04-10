@@ -226,6 +226,47 @@ def test_vtanimales_valores_fuera_de_rango():
     assert responseMax.data["dosis"][0] == (f"No hay suficientes unidades en el inventario. "
                                             f"Disponibles: {inventario.unidades}")
 
+@pytest.mark.django_db
+def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        nombre="Vacuna Prueba 1",
+        tipo="Vacuna",
+        unidades=10,
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        nombre="Vaca Prueba 1",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=120000,
+        produccion_leche=20.0,
+        calidad_patas=7,
+        calidad_ubres=6.5,
+        grasa=4.1,
+        proteinas=3.6,
+        corral=Corral.objects.create(nombre="Corral 1")
+    )
+
+    datos = {
+        "tipo": "Vacuna",
+        "ruta": "Oral",
+        "fecha_inicio": "2025-04-10", # posterior a la fecha de finalización
+        "fecha_finalizacion": "2025-04-05",  # anterior a la fecha de inicio
+        "responsable": "Veterinario X",
+        "inventario_vt": inventario.id,
+        "id_animal": animal.id,
+        "dosis": 2
+    }
+
+    response = client.post("/api/vtanimales/", datos, format="json")
+    assert response.status_code == 400
+    assert "fecha_finalizacion" in response.data
+    assert response.data["fecha_finalizacion"][0] == "La fecha de finalización debe ser posterior a la fecha de inicio."
 
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
@@ -279,7 +320,7 @@ def test_codigo_duplicado_vtanimales():
     response = client.post("/api/vtanimales/", datos_duplicados, format='json')
 
     assert response.status_code == 400
-    assert "codigo" in response.data
+    assert "codigo" in response.data # Error del campo "código"
     assert response.data["codigo"][0] == "El código ya existe en el sistema."  # Se comprueba que se obtiene el mensaje de error personalizado.
 
 # Test para comprobar si se generan códigos con formato incorrecto.
@@ -321,7 +362,7 @@ def test_crear_vtanimales_codigo_formato_incorrecto():
         "inventario_vt": inventario.id,
     }
 
-    # Se intenta crear un nuevo tratamiento/vacuna con un código incorrecto ("VTA-100").
+    # Se intenta crear un nuevo tratamiento/vacuna para suministrar con un código incorrecto ("ABC-999").
     response = client.post("/api/vtanimales/", datos_codigo_incorrecto, format='json')
 
     assert response.status_code == 400
@@ -523,7 +564,7 @@ def test_codigo_vtanimales_eliminacion_correcta():
     assert not VTAnimales.objects.filter(id=datos.id).exists()
 
     # Se comprueba que el mensaje personalizado es correcto
-    assert response.data["ERROR"] == f"La vacuna suministrada {datos.codigo} ha sido eliminada correctamente."
+    assert response.data["mensaje"] == f"La vacuna suministrada {datos.codigo} ha sido eliminada correctamente."
 
 # Test para comprobar que no se puede eliminar una vacuna/tratamiento suministrado inexistente.
 @pytest.mark.django_db
