@@ -35,7 +35,7 @@ def test_crear_toro_valido():
 
     # Se comprueba que el código se ha generado correctamente.
     assert "codigo" in response.data
-    assert response.data["codigo"].startswith("T-")
+    assert response.data["codigo"].startswith("T-") # Comprueba que el código comience por "T-".
     assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "T-" son números.
 
     # Se comprueba que el toro existe en la base de datos.
@@ -142,7 +142,7 @@ def test_codigo_duplicado_toro():
         proteinas = 3.2
     )
 
-    # Se intenta crear un nuevo toro con el mismo código ("V-100").
+    # Se intenta crear un nuevo toro con el mismo código ("T-100").
     datos_duplicados = {
         "codigo" : "T-100",
         "nombre": "ToroPrueba",
@@ -158,7 +158,7 @@ def test_codigo_duplicado_toro():
     response = client.post("/api/toros/", datos_duplicados, format='json')
 
     assert response.status_code == 400
-    assert "codigo" in response.data
+    assert "codigo" in response.data # Error del campo "código"
     assert response.data["codigo"][0] == "El código ya existe en el sistema."  # Se comprueba que se obtiene el mensaje de error personalizado.
 
 # Test para comprobar código con formato incorrecto.
