@@ -129,7 +129,8 @@ class Corral(models.Model):
     # Se le indica el código (key) para los corrales ("CORRAL-x", siendo "x" un número).
     codigo = models.CharField(max_length=10, unique=True, blank=True, null=True)
 
-    nombre = models.CharField(max_length=100)
+    # El nombre del corral debe ser único, ya que no puede haber dos corrales con el mismo nombre.
+    nombre = models.CharField(max_length=100, unique=True)
     # --- OBSERVACIONES ---
     # No hace falta guardar el campo: número de animales porque es un dato calculable mediante
     # la relación Animal y Corral. Usando: corral.animales.count()
