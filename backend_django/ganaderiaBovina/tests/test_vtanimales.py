@@ -61,7 +61,7 @@ def test_crear_vtanimales_valido():
     # Se comprueba que el código se ha generado correctamente.
     assert "codigo" in response.data
     assert response.data["codigo"].startswith("VTA-")
-    assert response.data["codigo"][4:].isdigit()
+    assert response.data["codigo"][4:].isdigit() # Comprueba que lo que le sigue a "VTA-" son números.
 
     # Se comprueba que la vacuna/tratamiento existe en la base de datos y tenga como estado "Activa".
     assert InventarioVT.objects.filter(nombre="Vacuna Prueba 1").exists()
