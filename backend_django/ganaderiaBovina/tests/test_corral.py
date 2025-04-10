@@ -235,7 +235,6 @@ def test_eliminar_corral_con_animales_asociados():
 #                                       Test de CORRAL: FILTRADO
 # --------------------------------------------------------------------------------------------------------------
 
-
 # Test para filtrar por el nombre del corral.
 @pytest.mark.django_db
 def test_filtrado_corral_por_nombre():
