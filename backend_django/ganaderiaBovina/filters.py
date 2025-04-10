@@ -12,8 +12,9 @@
 # -----------------------------------------------------------------------------------
 
 import django_filters
-from .models import Animal, Toro, InventarioVT, VTAnimales, ListaInseminaciones
-
+from .models import Animal, Toro, InventarioVT, VTAnimales, ListaInseminaciones, Corral
+from django_filters import rest_framework as filters
+from django.db.models import Count
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Filtrado para ANIMAL
@@ -97,6 +98,22 @@ class ToroFilter(django_filters.FilterSet):
 
 class CorralFilter(django_filters.FilterSet):
     nombre = django_filters.CharFilter(lookup_expr='icontains') # Se ignoran las mayúsculas y las minúsculas.
+
+    # Para realizar un filtrado por el número mínimo y máximo de animales del corral (campo calculado).
+    min_animales = filters.NumberFilter(method="filter_min_animales")
+    max_animales = filters.NumberFilter(method="filter_max_animales")
+
+    class Meta:
+        model = Corral
+        fields = ["nombre"]
+        # fields: se definen los campos que pueden ser filtrados por la url.
+        # Los campos calculados NO se ponen el fields, deben ir abajo.
+
+    def filter_min_animales(self, queryset, name, value):
+        return queryset.annotate(num_animales=Count("animales")).filter(num_animales__gte=value)
+
+    def filter_max_animales(self, queryset, name, value):
+        return queryset.annotate(num_animales=Count("animales")).filter(num_animales__lte=value)
 
 
 # --------------------------------------------------------------------------------------------------------------
