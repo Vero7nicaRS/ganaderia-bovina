@@ -242,6 +242,53 @@ def test_eliminar_toro_no_existente():
         f"Comprueba el identificador introducido."
     )
 
+# Test para comprobar la eliminación del toro sin indicarle ningún motivo.
+@pytest.mark.django_db
+def test_eliminar_toro_destroy_sin_motivo():
+    client = APIClient()
+
+    toro = Toro.objects.create(
+        nombre="ToroDestroy",
+        cantidad_semen=80,
+        transmision_leche=2.0,
+        celulas_somaticas=1.0,
+        calidad_patas=7.0,
+        calidad_ubres=6.5,
+        grasa=3.8,
+        proteinas=3.3
+    )
+
+    vaca = Animal.objects.create(
+        nombre="VacaDestroy",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-02-01",
+        celulas_somaticas=95000,
+        produccion_leche=24.0,
+        calidad_patas=6.0,
+        calidad_ubres=7.0,
+        grasa=4.0,
+        proteinas=3.5
+    )
+
+    inseminacion = ListaInseminaciones.objects.create(
+        id_vaca=vaca,
+        id_toro=toro,
+        razon="Celo",
+        fecha_inseminacion="2025-05-01",
+        hora_inseminacion="10:00",
+        es_sexado=False,
+        responsable="VetDestroy"
+    )
+
+    response = client.delete(f"/api/toros/{toro.id}/")
+
+    assert response.status_code == 204
+    assert not Toro.objects.filter(id=toro.id).exists()
+
+    # Se comprueba que la inseminación permanece con id_toro a null (por SET_NULL)
+    inseminacion.refresh_from_db()
+    assert inseminacion.id_toro is None
 
 # Test para comprobar la eliminación de un Toro por el motivo "ERROR"
 # ¿Qué se verifica?

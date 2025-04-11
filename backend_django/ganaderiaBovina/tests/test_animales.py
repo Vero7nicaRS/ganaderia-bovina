@@ -448,6 +448,91 @@ def test_eliminar_vaca_no_existente():
         f"Comprueba el identificador introducido."
     )
 
+# Test para comprobar la eliminación del animal sin indicarle ningún motivo.
+@pytest.mark.django_db
+def test_eliminar_animal_sin_motivo():
+    client = APIClient()
+
+    corral = Corral.objects.create(nombre="Corral Prueba 1")
+    toro = Toro.objects.create(
+        nombre="Toro Prueba 1",
+        cantidad_semen=10,
+        transmision_leche=3,
+        celulas_somaticas=1,
+        calidad_patas=7,
+        calidad_ubres=7,
+        grasa=3,
+        proteinas=3
+    )
+    animal = Animal.objects.create(
+        nombre="Vaca Prueba 1",
+        tipo="Vaca",
+        estado="Vacía",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=7,
+        calidad_ubres=7,
+        grasa=3.5,
+        proteinas=3.2,
+        padre=toro,
+        corral=corral
+    )
+    inseminacion = ListaInseminaciones.objects.create(
+        id_vaca=animal,
+        id_toro=toro,
+        razon="Celo",
+        fecha_inseminacion="2025-04-10",
+        hora_inseminacion="09:00",
+        es_sexado=True,
+        responsable="Vet Final"
+    )
+    inventario = InventarioVT.objects.create(
+        tipo="Vacuna",
+        nombre="Vacuna Prueba 1",
+        unidades=10,
+        cantidad="Botella",
+        estado="Activa"
+    )
+    vt = VTAnimales.objects.create(
+        id_animal=animal,
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2025-04-01",
+        fecha_finalizacion="2025-04-05",
+        responsable="Vet Final",
+        inventario_vt=inventario,
+        dosis=2
+    )
+
+    # Se elimina al animar sin indicarle ningún motivo (NO -> ?motivo=...)
+    # Por tanto, se utiliza el destroy normal.
+    response = client.delete(f"/api/animales/{animal.id}/")
+
+    assert response.status_code == 204
+
+    assert not Animal.objects.filter(id=animal.id).exists() # Se compruebe que ese animal NO existe en la base de datos.
+
+    # No se usa "animal" porque hemos eliminado su instancia. Por tanto, utilizamos corral para verificarlo.
+    # Se comprueba que no esté en ningún corral ese animal.
+    assert not corral.animales.filter(id=animal.id).exists() # Se comprueba que no esté en ningún corral ese animal.
+
+    # Se mantienen las relaciones con las inseminaciones y los suministros de vacunas/tratamientos.
+    # Deben estar a "null" (None) esas relaciones  (SET_NULL).
+    vt.refresh_from_db()
+    inseminacion.refresh_from_db()
+
+    assert vt.id_animal is None # La instancia "vt" no tiene un "id_animal".
+    assert inseminacion.id_vaca is None # La instancia inseminacion no tiene un "id_vaca"
+
+    assert VTAnimales.objects.filter(inventario_vt=inventario).exists()
+    assert VTAnimales.objects.filter(id_animal__isnull=True).exists() # Existe un registro al menos con "id_animal = null"
+    assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
+    assert ListaInseminaciones.objects.filter(id_vaca__isnull=True).exists() # Existe un registro al menos con "id_vaca = null"
+
+    # Se comprueba que no se haya modificado el tratamiento ni las dosis
+    assert vt.dosis == 2
+    assert vt.inventario_vt == inventario
 
 # Test para comprobar la eliminación de un Animal por el motivo "ERROR"
 # ¿Qué se verifica?
@@ -531,20 +616,25 @@ def test_eliminar_animal_error():
 
     assert response.status_code == 204
     assert not Animal.objects.filter(id=animal.id).exists() # Se compruebe que ese animal NO existe en la base de datos.
-    assert not corral.animales.filter(id=animal.id).exists() # Se comprueba que no esté en ningún corral ese animal.
+
     # No se usa "animal" porque hemos eliminado su instancia. Por tanto, utilizamos corral para verificarlo.
     # Se comprueba que no esté en ningún corral ese animal.
+    assert not corral.animales.filter(id=animal.id).exists() # Se comprueba que no esté en ningún corral ese animal.
 
     # Se mantienen las relaciones con las inseminaciones y los suministros de vacunas/tratamientos.
     # Deben estar a "null" (None) esas relaciones  (SET_NULL).
-    assert VTAnimales.objects.filter(inventario_vt=inventario).exists()
-    assert VTAnimales.objects.filter(id_animal__isnull=True).exists()
+    vt.refresh_from_db()
+    inseminacion.refresh_from_db()
 
+    assert vt.id_animal is None # La instancia "vt" no tiene un "id_animal".
+    assert inseminacion.id_vaca is None # La instancia inseminacion no tiene un "id_vaca"
+
+    assert VTAnimales.objects.filter(inventario_vt=inventario).exists()
+    assert VTAnimales.objects.filter(id_animal__isnull=True).exists() # Existe un registro al menos con "id_animal = null"
     assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
-    assert ListaInseminaciones.objects.filter(id_vaca__isnull=True).exists()
+    assert ListaInseminaciones.objects.filter(id_vaca__isnull=True).exists() # Existe un registro al menos con "id_vaca = null"
 
     # Se comprueba que no se haya modificado el tratamiento ni las dosis
-    vt.refresh_from_db()
     assert vt.dosis == 2
     assert vt.inventario_vt == inventario
 
