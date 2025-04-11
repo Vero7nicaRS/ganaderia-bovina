@@ -194,6 +194,23 @@ def test_codigo_inventariovt_generado_automaticamente():
     assert response.data["codigo"][3:].isdigit() # Comprueba que lo que le sigue a "VT-" son números.
 
 
+# Test para comprobar que no se puede eliminar un toro inexistente.
+@pytest.mark.django_db
+def test_eliminar_inventariovt_no_existente():
+    client = APIClient()
+
+    id_inexistente = 9999  # Un ID que seguramente no exista
+
+    response = client.delete(f"/api/inventariovt/{id_inexistente}/")
+
+    assert response.status_code == 404
+    assert "ERROR" in response.data
+    # Se comprueba que el mensaje personalizado es correcto
+    assert response.data["ERROR"] == (
+        f"El tratamiento/la vacuna {id_inexistente} del inventario no se ha encontrado. "
+        f"Comprueba el identificador introducido."
+    )
+
 # Test para comprobar la eliminación de una vacuna/tratamiento por el motivo "ERROR" sin relación existente.
 # ¿Qué se verifica?
 # - El tratamiento/vacuna es eliminado de la base de datos.

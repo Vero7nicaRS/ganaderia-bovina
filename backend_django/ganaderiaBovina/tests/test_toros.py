@@ -225,6 +225,24 @@ def test_codigo_toro_generado_automaticamente():
     assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "T-" son números.
 
 
+# Test para comprobar que no se puede eliminar un toro inexistente.
+@pytest.mark.django_db
+def test_eliminar_toro_no_existente():
+    client = APIClient()
+
+    id_inexistente = 9999  # Un ID que seguramente no exista
+
+    response = client.delete(f"/api/toros/{id_inexistente}/")
+
+    assert response.status_code == 404
+    assert "ERROR" in response.data
+    # Se comprueba que el mensaje personalizado es correcto
+    assert response.data["ERROR"] == (
+        f"El Toro {id_inexistente} no ha sido encontrado. "
+        f"Comprueba el identificador introducido."
+    )
+
+
 # Test para comprobar la eliminación de un Toro por el motivo "ERROR"
 # ¿Qué se verifica?
 # - Toro eliminado de la base de datos.

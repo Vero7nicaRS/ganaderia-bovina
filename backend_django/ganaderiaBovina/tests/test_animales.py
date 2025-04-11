@@ -431,6 +431,24 @@ def test_codigo_animales_generado_automaticamente():
     assert response.data["codigo"].startswith("V-") # Comprueba que el código comience por "V-".
     assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "V-" son números.
 
+# Test para comprobar que no se puede eliminar un animal (vaca/ternero) inexistente.
+@pytest.mark.django_db
+def test_eliminar_vaca_no_existente():
+    client = APIClient()
+
+    id_inexistente = 9999  # Un ID que seguramente no exista
+
+    response = client.delete(f"/api/animales/{id_inexistente}/")
+
+    assert response.status_code == 404
+    assert "ERROR" in response.data
+    # Se comprueba que el mensaje personalizado es correcto
+    assert response.data["ERROR"] == (
+        f"El Animal {id_inexistente} no ha sido encontrado. "
+        f"Comprueba el identificador introducido."
+    )
+
+
 # Test para comprobar la eliminación de un Animal por el motivo "ERROR"
 # ¿Qué se verifica?
 # - Animal eliminado de la base de datos.
