@@ -410,6 +410,13 @@ def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
 
     toro.refresh_from_db()
     assert response.status_code == 200
+    # Se comprueba que el mensaje de error sea el mismo.
+    mensaje_error = (
+        f'El Toro {toro.codigo} ha cambiado su estado a {toro.estado.lower()} '
+        f'(ha sido eliminado pero se mentiene en el sistema).'
+    )
+
+    assert response.data["mensaje"] == mensaje_error
     assert toro.estado == motivo.capitalize() # El estado del toro debe estar actualizado al motivo de su eliminación.
     assert toro.fecha_eliminacion is not None # La fecha de eliminación tiene que tener algún valor.
 
