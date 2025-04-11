@@ -283,7 +283,13 @@ def test_eliminar_toro_destroy_sin_motivo():
 
     response = client.delete(f"/api/toros/{toro.id}/")
 
-    assert response.status_code == 204
+    assert response.status_code == 200
+    # Se comprueba que el mensaje de error sea el mismo.
+    mensaje_error = (
+        f"El toro {toro.codigo} ha sido eliminado correctamente."
+    )
+
+    assert response.data["mensaje"] == mensaje_error
     assert not Toro.objects.filter(id=toro.id).exists()
 
     # Se comprueba que la inseminación permanece con id_toro a null (por SET_NULL)
@@ -338,7 +344,13 @@ def test_eliminar_toro_error():
     # Se elimina al toro por el motivo "ERROR"
     response = client.delete(f"/api/toros/{toro.id}/eliminar/?motivo=ERROR")
 
-    assert response.status_code == 204
+    assert response.status_code == 200
+    # Se comprueba que el mensaje de error sea el mismo.
+    mensaje_error = (
+        f"El toro {toro.codigo} ha sido eliminado correctamente."
+    )
+
+    assert response.data["mensaje"] == mensaje_error
     assert not Toro.objects.filter(id=toro.id).exists() # Se compruebe que ese toro NO existe en la base de datos.
 
     # Se comprueba que no haya habido modificaciones en la lista de inseminación

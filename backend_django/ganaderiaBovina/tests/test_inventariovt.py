@@ -231,7 +231,16 @@ def test_eliminar_inventariovt_error_sin_relacion():
     # Se elimina la vacuna/tratamiento por el motivo "ERROR"
     response = client.delete(f"/api/inventariovt/{inventario.id}/eliminar/?motivo=ERROR")
 
-    assert response.status_code == 204
+    assert response.status_code == 200
+    # Se comprueba que el mensaje de error sea el mismo.
+    mensaje_error = (
+        f"{'El' if inventario.tipo.lower() == 'tratamiento' else 'La'} "
+        f"{inventario.tipo.lower()} "
+        f"{inventario.codigo} ha sido eliminad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'} "
+        f"correctamente."
+    )
+
+    assert response.data["mensaje"] == mensaje_error
     assert not InventarioVT.objects.filter(id=inventario.id).exists() # Se compruebe que esa vacuna/tratamiento NO existe en la base de datos.
 
 

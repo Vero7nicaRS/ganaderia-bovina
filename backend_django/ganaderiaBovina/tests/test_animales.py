@@ -509,7 +509,16 @@ def test_eliminar_animal_sin_motivo():
     # Por tanto, se utiliza el destroy normal.
     response = client.delete(f"/api/animales/{animal.id}/")
 
-    assert response.status_code == 204
+    assert response.status_code == 200
+    # Se comprueba que el mensaje de error sea el mismo.
+    mensaje_error = (
+        f"{'El' if animal.tipo.lower() == 'Ternero' else 'La'} "
+        f"{animal.tipo.lower()} "
+        f"{animal.codigo} ha sido eliminad{'o' if animal.tipo.lower() == 'Ternero' else 'a'}"
+        f" correctamente."
+    )
+
+    assert response.data["mensaje"] == mensaje_error
 
     assert not Animal.objects.filter(id=animal.id).exists() # Se compruebe que ese animal NO existe en la base de datos.
 
@@ -589,7 +598,7 @@ def test_eliminar_animal_error():
         fecha_inseminacion="2025-04-01",
         hora_inseminacion="12:00",
         es_sexado=True,
-        responsable="Veterinario A"
+        responsable="Pepe"
     )
 
     # Se crea el tratamiento en el inventario para posteriormente suministrárselo al animal.
@@ -614,7 +623,16 @@ def test_eliminar_animal_error():
 
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=ERROR")
 
-    assert response.status_code == 204
+    assert response.status_code == 200
+    # Se comprueba que el mensaje de error sea el mismo.
+    mensaje_error = (
+        f"{'El' if animal.tipo.lower() == 'ternero' else 'La'} "
+        f"{animal.tipo.lower()} "
+        f"{animal.codigo} ha sido eliminad{'o' if animal.tipo.lower() == 'ternero' else 'a'}"
+        f" correctamente."
+    )
+
+    assert response.data["mensaje"] == mensaje_error
     assert not Animal.objects.filter(id=animal.id).exists() # Se compruebe que ese animal NO existe en la base de datos.
 
     # No se usa "animal" porque hemos eliminado su instancia. Por tanto, utilizamos corral para verificarlo.
