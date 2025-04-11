@@ -448,6 +448,30 @@ def test_eliminar_vaca_no_existente():
         f"Comprueba el identificador introducido."
     )
 
+# Test para comprobar que la fecha de eliminación debe ser posterior o igual a la fecha de nacimiento.
+@pytest.mark.django_db
+def test_fecha_eliminacion_menor_que_nacimiento():
+    client = APIClient()
+
+    datos = {
+        "nombre": "Vaca Error Fecha",
+        "tipo": "Vaca",
+        "estado": "Vacía",
+        "fecha_nacimiento": "2025-04-10",
+        "fecha_eliminacion": "2025-04-05",  # No, ya que es anterior a la fecha de nacimiento.
+        "celulas_somaticas": 100000,
+        "produccion_leche": 20.0,
+        "calidad_patas": 7.0,
+        "calidad_ubres": 6.5,
+        "grasa": 4.0,
+        "proteinas": 3.5
+    }
+
+    response = client.post("/api/animales/", datos, format="json")
+    assert response.status_code == 400
+    assert "fecha_eliminacion" in response.data
+    assert response.data["fecha_eliminacion"][0] == "La fecha de eliminación debe ser posterior o igual a la fecha de nacimiento."
+
 # Test para comprobar la eliminación del animal sin indicarle ningún motivo.
 @pytest.mark.django_db
 def test_eliminar_animal_sin_motivo():
