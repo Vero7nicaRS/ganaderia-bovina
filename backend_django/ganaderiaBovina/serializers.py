@@ -158,11 +158,13 @@ class AnimalSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Debe seleccionar un corral válido.')
         return value
 
+    # Se comprueba que la fecha de eliminación del animal sea POSTERIOR o IGUAL a la fecha de nacimiento.
     def validate(self,data):
         fecha_nacimiento = data.get('fecha_nacimiento')
         fecha_eliminacion = data.get('fecha_eliminacion')
 
-        if fecha_nacimiento and fecha_eliminacion and fecha_nacimiento >= fecha_eliminacion:
+        # Si la fecha de nacimiento es POSTERIOR a la de eliminación, se muestra un mensaje de error.
+        if fecha_nacimiento and fecha_eliminacion and fecha_nacimiento > fecha_eliminacion:
             raise serializers.ValidationError({
                 "fecha_eliminacion": "La fecha de eliminación debe ser posterior o igual a la fecha de nacimiento."
             })
