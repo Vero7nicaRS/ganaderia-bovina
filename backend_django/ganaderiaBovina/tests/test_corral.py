@@ -187,9 +187,11 @@ def test_corral_actualiza_numero_animales_al_eliminar_animal():
         proteinas=3.5,
         corral=corral)
 
-    # Se comprueba que el número de animales que hay en el corral es 2.
+    # Se obtiene el animal del coral.
     response = client.get(f"/api/corrales/{corral.id}/")
     assert response.status_code == 200
+
+    # Se comprueba que el número de animales que hay en el corral es 2.
     assert response.data["cantidad_animales"] == 2
 
     # Se elimina un animal (animal).
