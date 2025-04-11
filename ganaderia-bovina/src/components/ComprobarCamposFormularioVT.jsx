@@ -65,6 +65,21 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
             // erroresTemp.responsable = "El campo responsable es obligatorio";
             erroresTemp.responsable = "Campo obligatorio";
         }
+
+        /*
+        Se comprueba que la fecha de finalización de la vacuna/tratamiento sea POSTERIOR a la fecha
+        de inicio. Si no es así, se muestra un mensaje de error.
+        */
+        if (datosVT.fechaInicio && datosVT.fechaFinalizacion) {
+            const fechaInicio = new Date(datosVT.fechaInicio);
+            const fechaFinalizacion = new Date(datosVT.fechaFinalizacion);
+
+            // Fecha finalización ANTERIOR a fecha inicio, se muestra mensaje de error.
+            if (fechaFinalizacion < fechaInicio) {
+                erroresTemp.fechaFinalizacion = "Debe ser posterior o igual a la fecha de inicio.";
+            }
+        }
+
     }
     return erroresTemp; // Devuelve los errores encontrados
 };
