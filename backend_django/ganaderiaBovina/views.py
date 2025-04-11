@@ -86,6 +86,18 @@ class AnimalViewSet(viewsets.ModelViewSet):
                  f"{codigo} ha sido eliminad{'o' if tipo == 'Ternero' else 'a'} correctamente."},
                 status=status.HTTP_204_NO_CONTENT
             )
+        # OBSERVACIÓN:
+        # La excepción PROTECTED no se ha a ejecutar en ningún momento, ya que se usa SET_NULL en las relaciones.
+        # Sin embargo, se va a dejar esta excepción indicada por si en el futuro se cambia la lógica de eliminación.
+        except ProtectedError as e:
+            return Response(
+                {
+                    "ERROR": f"No se puede eliminar {'el' if tipo == 'Ternero' else 'la'} {tipo} {codigo} "
+                             f"porque está asociado a otros registros.",
+                    "MOTIVO DEL ERROR": "\n".join(f"- {obj}" for obj in e.protected_objects)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
         except Exception as e:
             return Response({
                 "ERROR": "Error inesperado.",
@@ -120,6 +132,7 @@ class AnimalViewSet(viewsets.ModelViewSet):
                 return Response({"ERROR": "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+        # Si se produce una excepción por relaciones protegidas de los animales.
         except ProtectedError as e:
             return Response({"ERROR": "No se puede eliminar"
                                       f"{'El' if tipo == 'Ternero' else 'La'} "
