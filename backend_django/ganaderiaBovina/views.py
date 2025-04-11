@@ -81,10 +81,10 @@ class AnimalViewSet(viewsets.ModelViewSet):
         try:
             self.perform_destroy(instance)
             return Response(
-                {f"{'El' if tipo == 'Ternero' else 'La'} "
-                 f"{tipo} "
-                 f"{codigo} ha sido eliminad{'o' if tipo == 'Ternero' else 'a'} correctamente."},
-                status=status.HTTP_204_NO_CONTENT
+                {"mensaje": f"{'El' if tipo.lower() == 'ternero' else 'La'} "
+                 f"{tipo.lower()} "
+                 f"{codigo} ha sido eliminad{'o' if tipo.lower() == 'ternero' else 'a'} correctamente."},
+                status=status.HTTP_200_OK
             )
         # OBSERVACIÓN:
         # La excepción PROTECTED no se ha a ejecutar en ningún momento, ya que se usa SET_NULL en las relaciones.
@@ -188,8 +188,8 @@ class ToroViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             return Response(
                 {
-                 f"El toro {codigo} ha sido eliminado correctamente."},
-                status=status.HTTP_204_NO_CONTENT
+                 "mensaje": f"El toro {codigo} ha sido eliminado correctamente."},
+                status=status.HTTP_200_OK
             )
         except Exception as e:
             return Response({
@@ -212,7 +212,8 @@ class ToroViewSet(viewsets.ModelViewSet):
                 instance.fecha_eliminacion = datetime.now()
                 instance.save()
                 return Response({f'El Toro {codigo} ha cambiado su estado a {instance.estado} '
-                                            f'(ha sido eliminado pero se mentiene en el sistema).'}, status=status.HTTP_200_OK)
+                                            f'(ha sido eliminado pero se mentiene en el sistema).'},
+                                status=status.HTTP_200_OK)
 
             else:
                 return Response({'ERROR': "El motivo seleccionado no es correcto. Usa: 'ERROR', 'MUERTE' u 'OTROS'."},
@@ -315,10 +316,10 @@ class InventarioVTViewSet(viewsets.ModelViewSet):
         try:
             self.perform_destroy(instance)
             return Response(
-                {f"{'El' if tipo == 'tratamiento' else 'La'} "
-                 f"{tipo} "
-                 f"{codigo} ha sido eliminad{'o' if tipo == 'tratamiento' else 'a'} correctamente."},
-                status=status.HTTP_204_NO_CONTENT
+                {"mensaje": f"{'El' if tipo.lower() == 'tratamiento' else 'La'} "
+                            f"{tipo.lower()} "
+                            f"{codigo} ha sido eliminad{'o' if tipo == 'tratamiento' else 'a'} correctamente."},
+                status=status.HTTP_200_OK
             )
         except ProtectedError as e:
             relaciones = "\n".join(f"- {obj}" for obj in e.protected_objects)
