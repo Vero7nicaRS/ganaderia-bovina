@@ -211,7 +211,8 @@ class ToroViewSet(viewsets.ModelViewSet):
                 instance.estado = 'Muerte' if motivo == 'MUERTE' else 'Otros'
                 instance.fecha_eliminacion = datetime.now()
                 instance.save()
-                return Response({f'El Toro {codigo} ha cambiado su estado a {instance.estado} '
+                return Response(
+                    {"mensaje": f'El Toro {codigo} ha cambiado su estado a {instance.estado.lower()} '
                                             f'(ha sido eliminado pero se mentiene en el sistema).'},
                                 status=status.HTTP_200_OK)
 
