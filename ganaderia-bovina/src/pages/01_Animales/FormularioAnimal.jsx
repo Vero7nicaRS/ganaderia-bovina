@@ -46,7 +46,8 @@ export const FormularioAnimal = () => {
         calidadPatas: "",
         calidadUbres: "",
         grasa: "",
-        proteinas: ""
+        proteinas: "",
+        fechaEliminacion: "",
     }
     const [animal, setAnimal] = useState(animalInicial || estadoInicial);
 
@@ -485,7 +486,20 @@ export const FormularioAnimal = () => {
                             {errores.proteinas && <div className="mensaje-error">{errores.proteinas}</div>}
 
                         </div>
-
+                        {/*Se muestra la fecha de eliminación del animal cuando se ha eliminado a un animal
+                        por los motivos de "Muerte" o "Vendida"*/}
+                        {["Muerte", "Vendida"].includes(animal.estado) && animal.fechaEliminacion && (
+                            <div className="contenedor-linea">
+                                <div className="label">Fecha de eliminación</div>
+                                <input
+                                    type="date"
+                                    className="cuadro-texto"
+                                    name="fechaEliminacion"
+                                    value={animal.fechaEliminacion}
+                                    disabled
+                                />
+                            </div>
+                        )}
                         {/*Si se ha añadido un comentario al animal cuando se ha eliminado,
                          aparece la información en color rojo
                          */}
@@ -515,7 +529,7 @@ export const FormularioAnimal = () => {
                                 ACEPTAR
                             </button>
                             <>
-                                {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
+                            {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
                                     BOTÓN DE ACEPTAR Y SEGUIR AÑADIENDO */}
                                 {esAgregar && (
                                     <button type="button"
