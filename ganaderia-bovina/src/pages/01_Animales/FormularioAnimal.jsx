@@ -379,7 +379,7 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.corral ? "error" : ""}`}
                                 name="corral"
                                 disabled={esVisualizar} //Se indica que el campo "Corral" no se puede modificar cuando se Visualiza.
-                                value={animal.corral}
+                                value={animal.corral = ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un corral</option>
