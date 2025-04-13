@@ -11,7 +11,8 @@
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
-
+import {ComprobarCamposEliminacionToro} from "../../components/ComprobarCamposEliminacionToro.jsx";
+import Swal from "sweetalert2";
 export  const EliminarToro = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y animal)
@@ -28,13 +29,22 @@ export  const EliminarToro = () => {
     */
 
     const { eliminarAnimal, modificarAnimal } = useContext(TorosContext);
-// Estado para almacenar el motivo de eliminación y comentarios
+    // Estado para almacenar el motivo de eliminación y comentarios
     const [motivo, setMotivo] = useState("");
     const [comentarios, setComentarios] = useState("");
+
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
+
 
     // Manejador para actualizar el motivo seleccionado
     const handleMotivoChange = (e) => {
         setMotivo(e.target.value);
+        // Limpiar errores al seleccionar motivo válido
+        setErrores((prevErrores) => ({
+            ...prevErrores,
+            motivo: "", // Se limpia el error.
+        }));
     };
 
     // Manejador para actualizar comentarios
@@ -42,15 +52,27 @@ export  const EliminarToro = () => {
         setComentarios(e.target.value);
     };
 
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposEliminacionToro({motivo});
+        setErrores(erroresTemp);
+
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    };
+
     /* ----------------------- MANEJADOR TOROSCONTEXT: ELIMINAR -----------------------*/
 // Manejador para eliminar el animal (toro)
     const handleEliminar = () => {
 
         {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/}
-        if (!motivo) {
-            alert("ERROR: Selecciona un motivo antes de eliminar el animal (toro).");
-            return;
-        }
+        // if (!motivo) {
+        //     alert("ERROR: Selecciona un motivo antes de eliminar el animal (toro).");
+        //     return;
+        // }
+
+        if (!validarFormulario()) return; // Si hay errores, no continúa
 
         /*
             Si el animal (toro) ha sido eliminado por el motivo de ERROR, se elimina directamente del sistema.
@@ -61,7 +83,14 @@ export  const EliminarToro = () => {
             eliminarAnimal(animalToro.id); // Se elimina directamente el animal (toro) del contexto
 
             {/*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo*/}
-            alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}`);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Toro eliminado',
+                html: `<strong>${animalToro.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
+                confirmButtonText: 'Aceptar'
+            });
+            //alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}`);
 
         }else{ //Motivo === MUERTA o VENDIDA
 
@@ -76,8 +105,13 @@ export  const EliminarToro = () => {
             {/*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
                 y dado unos comentarios
             */}
-            alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
-
+            //alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+            Swal.fire({
+                icon: 'success',
+                title: 'Toro eliminado',
+                html: `<strong>${animalToro.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
+                confirmButtonText: 'Aceptar'
+            });
         }
 
         navigate("/visualizar-toros"); // Redirige a la página que contiene la lista de toros.
@@ -95,6 +129,7 @@ export  const EliminarToro = () => {
                     <input
                         type="text"
                         className="cuadro-id"
+                        name="id"
                         value={animalToro.id || ""}
                         disabled
                     />
@@ -113,7 +148,7 @@ export  const EliminarToro = () => {
                         - MUERTE
                         - ERROR
                         - OTROS*/}
-                    <div className="form-check">
+                    <div className={`form-check ${errores.motivo ? "error" : ""}`}>
                         <input
                             className="form-check-input"
                             type="radio"
@@ -155,9 +190,11 @@ export  const EliminarToro = () => {
                             checked={motivo === "Otros"}
                             onChange={handleMotivoChange}
                         />
-                        <label className="form-check-label" htmlFor="motivoVendida">
+                        <label className="form-check-label" htmlFor="motivoOtros">
                             OTROS
                         </label>
+                        {errores.motivo && <div className="mensaje-error">{errores.motivo}</div>}
+
                     </div>
 
                     <div className="mb-3">
