@@ -24,6 +24,7 @@ export const animalesMock = [
         calidadUbres: "7",
         grasa: "4.5",
         proteinas: "3.2",
+        fechaeliminacion:"",
     },
     {
         id: "C-1",
@@ -40,6 +41,7 @@ export const animalesMock = [
         calidadUbres: "N/A",
         grasa: "N/A",
         proteinas: "N/A",
+        fechaeliminacion:""
     },
     {
         id: "V-2",
@@ -56,6 +58,7 @@ export const animalesMock = [
         calidadUbres: "4",
         grasa: "5.6",
         proteinas: "3.7",
+        fechaeliminacion:"",
     },
     {
         id: "C-2",
@@ -69,9 +72,10 @@ export const animalesMock = [
         celulasSomaticas: "14500",
         produccionLeche: "0",
         calidadPatas: "7",
-        calidadUbres: "N/A",
-        grasa: "N/A",
-        proteinas: "N/A",
+        calidadUbres: "5",
+        grasa: "3",
+        proteinas: "2",
+        fechaeliminacion:"",
     },
 ];
 
