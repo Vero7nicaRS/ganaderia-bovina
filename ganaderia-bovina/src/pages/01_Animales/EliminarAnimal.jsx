@@ -54,7 +54,7 @@ export const  EliminarAnimal = () => {
             motivo: "", // limpiamos el error si se ha seleccionado algo
         }));
 
-        // Si el motivo requiere fecha, limpiamos la anterior
+        // Si el motivo de eliminación es "Muerte" o "Vendida", se actualiza el valor.
         if (newMotivo === "Muerte" || newMotivo === "Vendida") {
             setFechaEliminacion("");
         }
@@ -70,7 +70,8 @@ export const  EliminarAnimal = () => {
         const newFechaEliminacion = e.target.value;
         setFechaEliminacion(newFechaEliminacion);
 
-        // Limpiar el error de fechaEliminacion si se introduce una fecha válida
+        // Se elimina el error (error + mensaje de error) cuando el usuario seleccione una opción válida en el campo correspondiente.
+        // En este caso, fecha de eliminación.
         setErrores((prevErrores) => ({
             ...prevErrores,
             fechaEliminacion: newFechaEliminacion ? "" : prevErrores.fechaEliminacion,
@@ -216,8 +217,8 @@ export const  EliminarAnimal = () => {
                     {errores.motivo && <div className="mensaje-error">{errores.motivo}</div>}
 
 
-                    {/* Se añade un campo para indicar la fecha de eliminación */}
-                    {/* El campo "fecha de fecha de fallecimiento solo si el motivo es "MUERTE" o "VENDIDA" */}
+                    {/* Se añade un campo para indicar la fecha de eliminación, */}
+                    {/* se muestra si se escoge el motivo de eliminación "MUERTE" o "VENDIDA" */}
                     {(motivo === "Muerte" || motivo === "Vendida") && (
                         <div className="mb-3">
                             <label htmlFor="fechaEliminacion" className="cuadradoMotivoComentario">
