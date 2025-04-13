@@ -6,7 +6,7 @@
 *  - Indicar que el campo es obligatorio.
 * -----------------------------------------------------------------------------------------------------------
 * */
-export const ComprobarCamposEliminacionAnimal = ({ motivo, fechaEliminacion }) => {
+export const ComprobarCamposEliminacionAnimal = ({ motivo, fechaNacimiento, fechaEliminacion }) => {
     const erroresTemp = {};
 
     // Validaciones comunes para la eliminación de los animales.
@@ -14,10 +14,18 @@ export const ComprobarCamposEliminacionAnimal = ({ motivo, fechaEliminacion }) =
         erroresTemp.motivo = "Campo obligatorio";
     }
 
-    // Validar la fecha de eliminación si el motivo es Muerte o Vendida
-    if ((motivo === "Muerte" || motivo === "Vendida") && !fechaEliminacion?.trim()) {
-        erroresTemp.fechaEliminacion = "Campo obligatorio";
+    // Validar la fecha de eliminación si el motivo es "Muerte" o "Vendida"
+    if (motivo === "Muerte" || motivo === "Vendida"){
+        if(!fechaEliminacion?.trim()){
+            erroresTemp.fechaEliminacion = "Campo obligatorio";
+
+            // Se comprueba que la fecha de eliminación sea IGUAL o POSTERIOR que la de nacimiento.
+        }else if(fechaNacimiento && fechaEliminacion?.trim() < fechaNacimiento){
+            erroresTemp.fechaEliminacion = "La fecha de eliminación debe ser igual o posterior a la fecha de nacimiento";
+        }
+
     }
+
 
     return erroresTemp;
 };
