@@ -13,6 +13,7 @@ import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx"
 import {ComprobarCamposEliminacionAnimal} from "../../components/ComprobarCamposEliminacionAnimal.jsx";
+import Swal from "sweetalert2";
 
 export const  EliminarAnimal = () => {
 
@@ -51,7 +52,7 @@ export const  EliminarAnimal = () => {
         // Limpiar errores al seleccionar motivo válido
         setErrores((prevErrores) => ({
             ...prevErrores,
-            motivo: "", // limpiamos el error si se ha seleccionado algo
+            motivo: "", // Se limpia el error.
         }));
 
         // Si el motivo de eliminación es "Muerte" o "Vendida", se actualiza el valor.
@@ -79,7 +80,11 @@ export const  EliminarAnimal = () => {
     };
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposEliminacionAnimal({ motivo, fechaEliminacion });
+        const erroresTemp = ComprobarCamposEliminacionAnimal({
+            motivo,
+            fechaNacimiento: animal.fechaNacimiento,
+            fechaEliminacion
+        });
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);
@@ -122,7 +127,15 @@ export const  EliminarAnimal = () => {
             eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
 
             {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
-            alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
+            //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
+            Swal.fire({
+                icon: 'success',
+                title: 'Animal eliminado',
+                html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>
+                       <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ? 
+                      `<br>Comentarios: ${comentarios}` : ""}`,
+                confirmButtonText: 'Aceptar'
+            });
 
         }else{ //Motivo === MUERTA o VENDIDA
             /*Se actualiza el ESTADO del animal a "Muerte" o "Vendida" y el corral a "Ninguno".
@@ -135,11 +148,18 @@ export const  EliminarAnimal = () => {
                 fechaEliminacion: fechaEliminacion
             };
             modificarAnimal(animalActualizado);
-            {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo
-                y dado unos comentarios
+            {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo,
+            su fecha de eliminación y los comentarios que se hayan puesto comentarios.
             */}
-            alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
-
+            //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+            Swal.fire({
+                icon: 'success',
+                title: 'Animal eliminado',
+                html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
+                       <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ? 
+                      `<br>Comentarios: ${comentarios}` : ""}`,
+                confirmButtonText: 'Aceptar'
+            });
         }
 
         navigate("/visualizar-animales"); // Redirige a la página que contiene la lista de animales.
@@ -222,7 +242,7 @@ export const  EliminarAnimal = () => {
                     {(motivo === "Muerte" || motivo === "Vendida") && (
                         <div className="mb-3">
                             <label htmlFor="fechaEliminacion" className="cuadradoMotivoComentario">
-                                Fecha de fallecimiento
+                                Fecha de eliminación
                             </label>
                             <input
                                 type="date"
