@@ -12,6 +12,7 @@ import "../../styles/EliminarAnimal.css";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx"
+import {ComprobarCamposEliminacionAnimal} from "../../components/ComprobarCamposEliminacionAnimal.jsx";
 
 export const  EliminarAnimal = () => {
 
@@ -32,18 +33,58 @@ export const  EliminarAnimal = () => {
     const { eliminarAnimal, modificarAnimal } = useContext(AnimalesContext);
 
 
-    // Estado para almacenar el motivo de eliminación y comentarios
+    // Estado para almacenar el motivo de eliminación, comentarios y la fecha de eliminación.
     const [motivo, setMotivo] = useState("");
     const [comentarios, setComentarios] = useState("");
+    const [fechaEliminacion, setFechaEliminacion]= useState("");
+
+
+    //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
+    const [errores, setErrores] = useState({});
+
 
     // Manejador para actualizar el motivo seleccionado
     const handleMotivoChange = (e) => {
-        setMotivo(e.target.value);
+        const newMotivo = e.target.value;
+        setMotivo(newMotivo);
+
+        // Limpiar errores al seleccionar motivo válido
+        setErrores((prevErrores) => ({
+            ...prevErrores,
+            motivo: "", // limpiamos el error si se ha seleccionado algo
+        }));
+
+        // Si el motivo requiere fecha, limpiamos la anterior
+        if (newMotivo === "Muerte" || newMotivo === "Vendida") {
+            setFechaEliminacion("");
+        }
     };
 
     // Manejador para actualizar comentarios
     const handleComentariosChange = (e) => {
         setComentarios(e.target.value);
+    };
+
+    // Manejador para actualizar la fecha de fallecimiento.
+    const handleFechaEliminacionChange = (e) => {
+        const newFechaEliminacion = e.target.value;
+        setFechaEliminacion(newFechaEliminacion);
+
+        // Limpiar el error de fechaEliminacion si se introduce una fecha válida
+        setErrores((prevErrores) => ({
+            ...prevErrores,
+            fechaEliminacion: newFechaEliminacion ? "" : prevErrores.fechaEliminacion,
+        }));
+    };
+
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposEliminacionAnimal({ motivo, fechaEliminacion });
+        setErrores(erroresTemp);
+
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
     };
 
     /* corralMV: Variable que contiene el valor "ninguno", se utilizará para actualizar el campo "corral"
@@ -56,17 +97,26 @@ export const  EliminarAnimal = () => {
     // Manejador para eliminar el animal
     const handleEliminar = () => {
 
+        if (!validarFormulario()) return; // Si hay errores, no continúa
+
         {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/}
-        if (!motivo) {
-            alert("ERROR: Selecciona un motivo antes de eliminar el animal.");
-            return;
-        }
+        // if (!motivo) {
+        //     alert("ERROR: Selecciona un motivo antes de eliminar el animal.");
+        //     return;
+        // }
 
         /*
             Si el animal ha sido eliminado por el motivo de ERROR, se elimina directamente del sistema.
             Si el animal ha sido eliminado por el motivo de MUERTE o VENDIDA se actualizan sus campos de
             estado y corral.
         * */
+
+        // Si el motivo es "MUERTE" o "VENDIDA", se comprueba que se añada una fecha de eliminaciónla fecha de fallecimiento
+        // if ((motivo === "Muerte" || motivo === "Vendida") && !fechaEliminacion) {
+        //     alert("ERROR: Por favor, ingresa la fecha de fallecimiento.");
+        //     return;
+        // }
+
         if(motivo === "Error"){
             eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
 
@@ -74,14 +124,14 @@ export const  EliminarAnimal = () => {
             alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
 
         }else{ //Motivo === MUERTA o VENDIDA
-
             /*Se actualiza el ESTADO del animal a "Muerte" o "Vendida" y el corral a "Ninguno".
             Además, se añade un comentario en caso de que haya introducido información el usuario*/
             const animalActualizado = {
                 ...animal,
                 estado: motivo,
                 corral: corralMV, /* CorralMV: contiene el valor "Ninguno"*/
-                comentario: comentarios
+                comentario: comentarios,
+                fechaEliminacion: fechaEliminacion
             };
             modificarAnimal(animalActualizado);
             {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo
@@ -114,6 +164,7 @@ export const  EliminarAnimal = () => {
 
             </div>
             <hr/>
+
             <div className="contenedor-flex">
                 <div className="contenedor-izquierda">
                     <div className="cuadradoMotivoComentario">
@@ -124,7 +175,7 @@ export const  EliminarAnimal = () => {
                         - MUERTE
                         - ERROR
                         - VENDIDA*/}
-                    <div className="form-check">
+                    <div className={`form-check ${errores.motivo ? "error" : ""}`}>
                         <input
                             className="form-check-input"
                             type="radio"
@@ -134,11 +185,8 @@ export const  EliminarAnimal = () => {
                             checked={motivo === "Muerte"}
                             onChange={handleMotivoChange}
                         />
-                        <label className="form-check-label" htmlFor="motivoMuerte">
-                            MUERTE
-                        </label>
+                        <label className="form-check-label" htmlFor="motivoMuerte">MUERTE</label>
                     </div>
-
 
                     <div className="form-check">
                         <input
@@ -150,12 +198,8 @@ export const  EliminarAnimal = () => {
                             checked={motivo === "Error"}
                             onChange={handleMotivoChange}
                         />
-                        <label className="form-check-label" htmlFor="motivoError">
-                            ERROR
-                        </label>
+                        <label className="form-check-label" htmlFor="motivoError">ERROR</label>
                     </div>
-
-
                     <div className="form-check">
                         <input
                             className="form-check-input"
@@ -166,11 +210,31 @@ export const  EliminarAnimal = () => {
                             checked={motivo === "Vendida"}
                             onChange={handleMotivoChange}
                         />
-                        <label className="form-check-label" htmlFor="motivoVendida">
-                            VENDIDA
-                        </label>
+                        <label className="form-check-label" htmlFor="motivoVendida">VENDIDA</label>
                     </div>
 
+                    {errores.motivo && <div className="mensaje-error">{errores.motivo}</div>}
+
+
+                    {/* Se añade un campo para indicar la fecha de eliminación */}
+                    {/* El campo "fecha de fecha de fallecimiento solo si el motivo es "MUERTE" o "VENDIDA" */}
+                    {(motivo === "Muerte" || motivo === "Vendida") && (
+                        <div className="mb-3">
+                            <label htmlFor="fechaEliminacion" className="cuadradoMotivoComentario">
+                                Fecha de fallecimiento
+                            </label>
+                            <input
+                                type="date"
+                                className={`cuadro-texto ${errores.fechaEliminacion ? "error" : ""}`}
+                                id="fechaEliminacion"
+                                value={fechaEliminacion}
+                                onChange={handleFechaEliminacionChange}
+                            />
+                            {errores.fechaEliminacion && (
+                                <div className="mensaje-error">{errores.fechaEliminacion}</div>
+                            )}
+                        </div>
+                    )}
                     <div className="mb-3">
                         <label htmlFor="comentarios" className="cuadradoMotivoComentario">Comentarios</label>
                         <textarea
@@ -181,9 +245,7 @@ export const  EliminarAnimal = () => {
                             onChange={handleComentariosChange}
                         ></textarea>
                     </div>
-
                 </div>
-
             </div>
 
 
