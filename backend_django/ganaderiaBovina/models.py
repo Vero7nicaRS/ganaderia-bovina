@@ -457,8 +457,15 @@ class Toro(models.Model):
     proteinas = models.FloatField()
 
     comentario = models.TextField(null=True, blank=True)
-    fecha_eliminacion = models.DateField(null=True, blank=True)   # Se añade fecha de eliminación si hay eliminación de "Vendida" o "Muerta"
 
+    # ---------------------  OBSERVACIÓN: ----------------------------------------------------------------------------
+    # Para el TORO no se va a almacenar la fecha de eliminación, ya que los datos del toro solamente
+    # se utilizan para realizar la simulación de las crías. Además, no se tiene ni la fecha de nacimiento del mismo.
+    # Por otra parte, al ser una ganadería bovina solamente se va a encargar de los terneros y vacas, dado a que
+    # no gestionan toros.
+
+    # fecha_eliminacion = models.DateField(null=True, blank=True)   # Se añade fecha de eliminación si hay eliminación de "Vendida" o "Muerta"
+    # ----------------------------------------------------------------------------------------------------------------
     def save(self, *args, **kwargs):
         if not self.codigo:
             self.codigo = generar_codigo_toro() # Para generar el código secuencial.
