@@ -433,7 +433,7 @@ def test_codigo_animales_generado_automaticamente():
 
 # Test para comprobar que no se puede eliminar un animal (vaca/ternero) inexistente.
 @pytest.mark.django_db
-def test_eliminar_vaca_no_existente():
+def test_eliminar_animal_no_existente():
     client = APIClient()
 
     id_inexistente = 9999  # Un ID que seguramente no exista
@@ -456,7 +456,7 @@ def test_fecha_eliminacion_menor_que_nacimiento():
     datos = {
         "nombre": "Vaca Error Fecha",
         "tipo": "Vaca",
-        "estado": "Vacía",
+        "estado": "Vendida",
         "fecha_nacimiento": "2025-04-10",
         "fecha_eliminacion": "2025-04-05",  # No, ya que es anterior a la fecha de nacimiento.
         "celulas_somaticas": 100000,
@@ -471,6 +471,90 @@ def test_fecha_eliminacion_menor_que_nacimiento():
     assert response.status_code == 400
     assert "fecha_eliminacion" in response.data
     assert response.data["fecha_eliminacion"][0] == "La fecha de eliminación debe ser posterior o igual a la fecha de nacimiento."
+
+# Test para comprobar que NO se puede guardar a un animal si tiene
+# el estado "Muerte" o "Vendida" y no tiene una fecha de eliminación.
+@pytest.mark.django_db
+@pytest.mark.parametrize("estado_valido", ["Muerte", "Vendida" ])
+def test_estados_necesarios_sin_fecha_eliminacion(estado_valido):
+    client = APIClient()
+    datosMuerte = {
+        "nombre": "Vaca Sin Fecha",
+        "tipo": "Vaca",
+        "estado": estado_valido, # El estado es "Muerte" o "Vendida".
+        "fecha_nacimiento": "2023-01-01",
+        "celulas_somaticas": 120000,
+        "produccion_leche": 18.5,
+        "calidad_patas": 6.5,
+        "calidad_ubres": 6.5,
+        "grasa": 3.9,
+        "proteinas": 3.4
+        # No se proporciona "fecha_eliminacion"
+    }
+    response = client.post("/api/animales/", datosMuerte, format="json")
+    assert response.status_code == 400
+    assert response.status_code == 400
+    assert "fecha_eliminacion" in response.data
+    assert (response.data["fecha_eliminacion"][0] ==
+            "Debe indicar la fecha de eliminación si el estado es: Muerte o Vendida.")
+
+
+# Test para comprobar que NO se puede guardar una vaca con fecha de eliminación y sin tener el
+# estado "MUERTE" o "VENDIDA".
+@pytest.mark.django_db
+@pytest.mark.parametrize("estado_no_valido", [
+    "Vacía", "Inseminada", "Preñada", "No inseminar", "Joven" ])
+def test_estado_incorrecto_con_fecha_eliminacion(estado_no_valido):
+    client = APIClient()
+
+    datos = {
+        "nombre": "Vaca Prueba 1",
+        "tipo": "Vaca",
+        "estado": estado_no_valido,  # El estado no es "Muerte" ni "Vendida"
+        "fecha_nacimiento": "2023-01-01",
+        "fecha_eliminacion": "2025-04-15",  # Se indica fecha de eliminación
+        "celulas_somaticas": 115000,
+        "produccion_leche": 21.0,
+        "calidad_patas": 7,
+        "calidad_ubres": 7,
+        "grasa": 4.1,
+        "proteinas": 3.6
+    }
+
+    response = client.post("/api/animales/", datos, format="json")
+
+    assert response.status_code == 400
+    assert "fecha_eliminacion" in response.data
+    assert (response.data["fecha_eliminacion"][0] ==
+            f"Solo debe indicar fecha de eliminación si el estado es:"
+            f" Muerte o Vendida.")
+
+# Test para guardar correctamente un animal con el estado "Muerte" o "Vendida" y una fecha de eliminación válida.
+@pytest.mark.django_db
+@pytest.mark.parametrize("estado_valido", ["Muerte", "Vendida" ])
+def test_estado_correcto_con_fecha_eliminacion(estado_valido):
+    client = APIClient()
+
+    datos = {
+        "nombre": "Vaca Prueba 1",
+        "tipo": "Vaca",
+        "estado": estado_valido,  # El estado es "Muerte" o "Vendida"
+        "fecha_nacimiento": "2025-01-01",
+        "fecha_eliminacion": "2025-01-04",  # Se indica fecha de eliminación que es POSTERIOR a la fecha de nacimiento
+        "celulas_somaticas": 115000,
+        "produccion_leche": 21.0,
+        "calidad_patas": 7,
+        "calidad_ubres": 7,
+        "grasa": 4.1,
+        "proteinas": 3.6
+    }
+
+    response = client.post("/api/animales/", datos, format="json")
+
+    assert response.status_code == 201
+    assert response.data["estado"] == estado_valido.capitalize()
+    assert response.data["fecha_eliminacion"] == "2025-01-04"
+
 
 # Test para comprobar la eliminación del animal sin indicarle ningún motivo.
 @pytest.mark.django_db
@@ -680,7 +764,7 @@ def test_eliminar_animal_error():
     assert vt.dosis == 2
     assert vt.inventario_vt == inventario
 
-# Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
+# Test para comprobar la eliminación de un Animal por el motivo "MUERTE" o VENDIDA"
 # ¿Qué se verifica?
 # - El Animal permanece en la base de datos.
 # - Ya no tiene ningún corral asignado.
@@ -688,7 +772,7 @@ def test_eliminar_animal_error():
 # - El historial de VTAnimales y ListaInseminaciones se mantiene con el identificador del animal (FK).
 # - Las relaciones con sus reproductores no se ven alteradas.
 @pytest.mark.django_db
-@pytest.mark.parametrize("motivo", ["MUERTA", "VENDIDA"])
+@pytest.mark.parametrize("motivo", ["MUERTE", "VENDIDA"])
 def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
     client = APIClient()
 
@@ -834,8 +918,8 @@ def test_eliminar_animal_motivo_invalido():
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=INCORRECTO")
 
     assert response.status_code == 400
-    assert response.data["ERROR"] == "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."
-    # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTA' o 'VENDIDA'
+    assert response.data["ERROR"] == "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTE' o 'VENDIDA'."
+    # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTe' o 'VENDIDA'
 
 
 # --------------------------------------------------------------------------------------------------------------
