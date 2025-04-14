@@ -165,7 +165,7 @@ class Animal(models.Model):
         ('Preñada', 'Preñada'),
         ('No inseminar', 'No inseminar'),
         ('Joven', 'Joven'),
-        ('Muerta', 'Muerta'),
+        ('Muerte', 'Muerte'),
         ('Vendida', 'Vendida')
     ]
 

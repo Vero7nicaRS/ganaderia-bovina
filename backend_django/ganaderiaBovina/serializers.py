@@ -166,19 +166,17 @@ class AnimalSerializer(serializers.ModelSerializer):
         fecha_eliminacion = data.get('fecha_eliminacion')
         estado = data.get('estado')
 
-        # Si el estado es "MUERTA" o "VENDIDA" y no tiene fecha de eliminación, se muestra mensaje de error.
-        if estado and (estado == "Muerta" or estado == "Vendida") and not fecha_eliminacion :
+        # Si el estado es "MUERTE" o "VENDIDA" y no tiene fecha de eliminación, se muestra mensaje de error.
+        if estado and (estado == "Muerte" or estado == "Vendida") and not fecha_eliminacion :
             raise serializers.ValidationError({
-                "fecha_eliminacion": f"Debe indicar la fecha de eliminación si el estado es '{estado}'. "
-                                     f" Estados para fecha de eliminación: Muerta o Vendida."
+                "fecha_eliminacion": f"Debe indicar la fecha de eliminación si el estado es: Muerte o Vendida."
             })
 
-        # Si el estado NO es "MUERTA" o "VENDIDA" y tiene fecha de eliminación, se muestra mensaje de error.
-        if estado and not(estado == "Muerta" or estado == "Vendida") and  fecha_eliminacion :
+        # Si el estado NO es "MUERTE" o "VENDIDA" y tiene fecha de eliminación, se muestra mensaje de error.
+        if estado and not(estado == "Muerte" or estado == "Vendida") and  fecha_eliminacion :
             raise serializers.ValidationError({
-                "fecha_eliminacion": f"No debe indicar fecha de eliminación si el estado es '{estado}'."
-                                     f" Estados que no requieren de fecha de eliminación: "
-                                     f"Vacía, Inseminada, Preñada, No inseminar y Joven ."
+                "fecha_eliminacion": f"Solo debe indicar fecha de eliminación si el estado es:"
+                                     f" Muerte o Vendida."
             })
 
         # Si la fecha de nacimiento es POSTERIOR a la de eliminación, se muestra un mensaje de error.

@@ -51,7 +51,7 @@ class AnimalViewSet(viewsets.ModelViewSet):
     filterset_class = AnimalFilter
     # Se van a filtrar los datos de los animales (Vacas/Terneros) por:
     # Células somáticas, produccion_leche, calidad_patas, calidad_ubres, grasa, proteintas,
-    # tipo (Vaca o Ternero), estado (Vacía, Inseminada, Preñada, No inseminar, Joven, Muerta y Vendida),
+    # tipo (Vaca o Ternero), estado (Vacía, Inseminada, Preñada, No inseminar, Joven, Muerte y Vendida),
     # corral donde estén, identificador de sus reproductores,nombre, fecha_nacimiento y fecha_eliminacion.
 
     # Se pueden ordenar los campos indicados en la URL.
@@ -116,7 +116,7 @@ class AnimalViewSet(viewsets.ModelViewSet):
             if motivo == "ERROR":
                 return self.destroy(request, pk=pk)  # Se utiliza el método destroy de arriba.
 
-            elif motivo in ["MUERTA", "VENDIDA"]:
+            elif motivo in ["MUERTE", "VENDIDA"]:
                 instance.estado = motivo.capitalize()
                 instance.fecha_eliminacion = datetime.now()
                 instance.corral = None  # Eliminar del corral
@@ -129,7 +129,7 @@ class AnimalViewSet(viewsets.ModelViewSet):
                 )
 
             else:
-                return Response({"ERROR": "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTA' o 'VENDIDA'."},
+                return Response({"ERROR": "El motivo seleccionado no es correcto. Usa 'ERROR', 'MUERTE' o 'VENDIDA'."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         # Si se produce una excepción por relaciones protegidas de los animales.
