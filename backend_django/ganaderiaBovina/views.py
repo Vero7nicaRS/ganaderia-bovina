@@ -167,7 +167,7 @@ class ToroViewSet(viewsets.ModelViewSet):
     # Ascendente: toros/?ordering= ... (No se le indica nada)
     # Descentente: toros/?ordering= - ... (Se le indica un símbolo "-")
     ordering_fields = ['nombre', 'celulas_somaticas','transmision_leche', 'cantidad_semen',
-                       'calidad_patas', 'calidad_ubres','grasa','proteinas', 'fecha_eliminacion']
+                       'calidad_patas', 'calidad_ubres','grasa','proteinas'] # , 'fecha_eliminacion'
     ordering = ['nombre'] # Ordenación por defecto.
 
     # get_object: obtiene la instancia del modelo en la base de datos y lanza excepción si no lo encuentra.
@@ -209,7 +209,7 @@ class ToroViewSet(viewsets.ModelViewSet):
                 return self.destroy(request, pk=pk)  # Se utiliza el método destroy de arriba.
             elif motivo in ['MUERTE', 'OTROS']:
                 instance.estado = 'Muerte' if motivo == 'MUERTE' else 'Otros'
-                instance.fecha_eliminacion = datetime.now()
+                # instance.fecha_eliminacion = datetime.now()
                 instance.save()
                 return Response(
                     {"mensaje": f'El Toro {codigo} ha cambiado su estado a {instance.estado.lower()} '
