@@ -80,7 +80,7 @@ class ToroFilter(django_filters.FilterSet):
             'calidad_ubres':['exact','gte','lte'],  # Puede ser un valor exacto o un rango (gte [>=] o lte[<=]).
             'grasa':['exact','gte','lte'],  # Puede ser un valor exacto o un rango (gte [>=] o lte[<=]).
             'proteinas':['exact','gte','lte'],  # Puede ser un valor exacto o un rango (gte [>=] o lte[<=]).
-            'fecha_eliminacion':['exact','gte', 'lte']  # Puede ser un valor exacto o un rango (gte [>=] o lte[<=]).
+            # 'fecha_eliminacion':['exact','gte', 'lte']  # Puede ser un valor exacto o un rango (gte [>=] o lte[<=]).
         }
 
 # --------------------------------------------------------------------------------------------------------------
