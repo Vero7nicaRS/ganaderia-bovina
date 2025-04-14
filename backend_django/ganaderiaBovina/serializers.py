@@ -160,8 +160,26 @@ class AnimalSerializer(serializers.ModelSerializer):
 
     # Se comprueba que la fecha de eliminación del animal sea POSTERIOR o IGUAL a la fecha de nacimiento.
     def validate(self,data):
+
+        # Se obtienen los valores que hay en los campos: fecha_nacimiento, fecha_eliminacion y estado.
         fecha_nacimiento = data.get('fecha_nacimiento')
         fecha_eliminacion = data.get('fecha_eliminacion')
+        estado = data.get('estado')
+
+        # Si el estado es "MUERTA" o "VENDIDA" y no tiene fecha de eliminación, se muestra mensaje de error.
+        if estado and (estado == "Muerta" or estado == "Vendida") and not fecha_eliminacion :
+            raise serializers.ValidationError({
+                "fecha_eliminacion": f"Debe indicar la fecha de eliminación si el estado es '{estado}'. "
+                                     f" Estados para fecha de eliminación: Muerta o Vendida."
+            })
+
+        # Si el estado NO es "MUERTA" o "VENDIDA" y tiene fecha de eliminación, se muestra mensaje de error.
+        if estado and not(estado == "Muerta" or estado == "Vendida") and  fecha_eliminacion :
+            raise serializers.ValidationError({
+                "fecha_eliminacion": f"No debe indicar fecha de eliminación si el estado es '{estado}'."
+                                     f" Estados que no requieren de fecha de eliminación: "
+                                     f"Vacía, Inseminada, Preñada, No inseminar y Joven ."
+            })
 
         # Si la fecha de nacimiento es POSTERIOR a la de eliminación, se muestra un mensaje de error.
         if fecha_nacimiento and fecha_eliminacion and fecha_nacimiento > fecha_eliminacion:
@@ -169,6 +187,7 @@ class AnimalSerializer(serializers.ModelSerializer):
                 "fecha_eliminacion": "La fecha de eliminación debe ser posterior o igual a la fecha de nacimiento."
             })
         return data
+
 # --------------------------------------------------------------------------------------------------------------
 #                                       Serializer de TORO
 # --------------------------------------------------------------------------------------------------------------
