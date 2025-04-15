@@ -563,9 +563,6 @@ export const FormularioAnimal = () => {
                     <NavLink to="/" className="btn btn-info">VOLVER AL MENÚ</NavLink>
                 </div>
             </form>
-
-
-
         </>
     );
 };
