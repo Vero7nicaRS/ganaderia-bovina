@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ganaderiaBovina', # Añadido
     'rest_framework',  # Para usar Django REST Framework
-    'django_filters' # Añadido para usar filtros en los datos mediante la URL.
+    'django_filters', # Añadido para usar filtros en los datos mediante la URL.
+    'corsheaders' # Añadido para permitir la conexión entre diferentes puertos (backend y frontend)
 ]
 
 REST_FRAMEWORK = { # Añadido para emplear filtros y ordenaciones en los datos en la URL.
@@ -49,13 +50,20 @@ REST_FRAMEWORK = { # Añadido para emplear filtros y ordenaciones en los datos e
     ]
 }
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', # Añadido para permitir la conexión entre diferentes puertos (backend y frontend)
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# Añadido para permitir la conexión entre diferentes puertos (backend y frontend)
+# Se indica el puerto del frontend (con Vite) que es el 5173
+CORS_ALLOWED_ORIGINS  = [
+    "http://localhost:5173",  # Puerto del frontend con Vite
 ]
 
 ROOT_URLCONF = 'backend_django.urls'
