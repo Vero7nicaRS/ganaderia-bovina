@@ -96,7 +96,10 @@ export const App = () => {
 
              </div>
          </>
-         //     <>
+     )
+}
+
+//     <>
          //         <NavBar></NavBar>
          //         <div>
          //             <Header /> {/* Tu componente de navegación */}
@@ -110,5 +113,3 @@ export const App = () => {
     //
     //         </>
 
-)
-}
