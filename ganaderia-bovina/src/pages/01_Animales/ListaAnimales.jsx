@@ -138,7 +138,7 @@ export const ListaAnimales = () => {
                         ) : (
                         animalesFiltrados.map((item) => (
                         <tr key={item.id}>
-                            <td>{item.id}</td>
+                            <td>{item.codigo}</td>
                             <td>{item.tipo}</td>
                             <td>{item.nombre}</td>
                             <td>
