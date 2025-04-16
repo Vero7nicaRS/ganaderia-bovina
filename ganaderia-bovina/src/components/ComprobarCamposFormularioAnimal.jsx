@@ -15,17 +15,17 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
         // erroresTemp.nombre = "El campo nombre es obligatorio";
         erroresTemp.nombre = "Campo obligatorio";
     }
-    if (!datosAnimal.celulasSomaticas) {
-        // erroresTemp.celulasSomaticas = "El campo células somáticas es obligatorio";
-        erroresTemp.celulasSomaticas = "Campo obligatorio";
+    if (!datosAnimal.celulas_somaticas) {
+        // erroresTemp.celulas_somaticas = "El campo células somáticas es obligatorio";
+        erroresTemp.celulas_somaticas = "Campo obligatorio";
     }
-    if (!datosAnimal.calidadPatas) {
-        // erroresTemp.calidadPatas = "El campo calidad de patas es obligatorio";
-        erroresTemp.calidadPatas = "Campo obligatorio";
+    if (!datosAnimal.calidad_patas) {
+        // erroresTemp.calidad_patas = "El campo calidad de patas es obligatorio";
+        erroresTemp.calidad_patas = "Campo obligatorio";
     }
-    if (!datosAnimal.calidadUbres) {
-        // erroresTemp.calidadUbres = "El campo calidad de ubres es obligatorio";
-        erroresTemp.calidadUbres = "Campo obligatorio";
+    if (!datosAnimal.calidad_ubres) {
+        // erroresTemp.calidad_ubres = "El campo calidad de ubres es obligatorio";
+        erroresTemp.calidad_ubres = "Campo obligatorio";
     }
     if (!datosAnimal.grasa) {
         // erroresTemp.grasa = "El campo grasa es obligatorio";
@@ -38,9 +38,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
     // Validaciones específicas para Vacas y Terneros
     if (tipoAnimal === "Vaca" || tipoAnimal === "Ternero") {
 
-        if (!datosAnimal.fechaNacimiento) {
-            // erroresTemp.fechaNacimiento = "La fecha de nacimiento es obligatorio";
-            erroresTemp.fechaNacimiento = "Campo obligatorio";
+        if (!datosAnimal.fecha_nacimiento) {
+            // erroresTemp.fecha_nacimiento = "La fecha de nacimiento es obligatorio";
+            erroresTemp.fecha_nacimiento = "Campo obligatorio";
         }
 
         if (!datosAnimal.padre) {
@@ -58,22 +58,22 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
             erroresTemp.corral = "Campo obligatorio";
         }
 
-        if (!datosAnimal.produccionLeche) {
-            // erroresTemp.produccionLeche = "El campo células somáticas es obligatorio";
-            erroresTemp.produccionLeche = "Campo obligatorio";
+        if (!datosAnimal.produccion_leche) {
+            // erroresTemp.produccion_leche = "El campo produccion de leche es obligatorio";
+            erroresTemp.produccion_leche = "Campo obligatorio";
         }
     }
 
     // Validaciones específicas para Toros
     if (tipoAnimal === "Toro") {
-        if (!datosAnimal.cantidadSemen) {
-            // erroresTemp.cantidadSemen = "El campo cantidad de semen es obligatorio";
-            erroresTemp.cantidadSemen = "Campo obligatorio";
+        if (!datosAnimal.cantidad_semen) {
+            // erroresTemp.cantidad_semen = "El campo cantidad de semen es obligatorio";
+            erroresTemp.cantidad_semen = "Campo obligatorio";
         }
 
-        if (!datosAnimal.transmisionLeche) {
-            // erroresTemp.produccionLeche = "El campo células somáticas es obligatorio";
-            erroresTemp.transmisionLeche = "Campo obligatorio";
+        if (!datosAnimal.transmision_leche) {
+            // erroresTemp.produccion_leche = "El campo transmisión de leche es obligatorio";
+            erroresTemp.transmision_leche = "Campo obligatorio";
         }
     }
 

@@ -3,6 +3,8 @@ import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
+// Fusión del backend con el frontend:
+import api from "../../api.js"
 
 /*
 * ------------------------------------------ FormularioToro.jsx: ------------------------------------------
@@ -24,14 +26,16 @@ export const FormularioToro = () => {
     const { modo, animalToro: animalInicialToro } = location.state; // Se recupera el modo y animal desde el state
 
     const estadoInicialToro ={
+        id: "",
+        codigo: "",
         tipo: "Toro",
         estado: "Vivo",
         nombre: "",
-        cantidadSemen: "",
-        celulasSomaticas: "",
-        transmisionLeche: "",
-        calidadPatas: "",
-        calidadUbres: "",
+        cantidad_semen: "",
+        celulas_somaticas: "",
+        transmision_leche: "",
+        calidad_patas: "",
+        calidad_ubres: "",
         grasa: "",
         proteinas: ""
     }
@@ -43,7 +47,7 @@ export const FormularioToro = () => {
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
        */
-    const {agregarAnimal, modificarAnimal} = useContext(TorosContext);
+    // const {agregarAnimal, modificarAnimal} = useContext(TorosContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modo === "ver";
@@ -79,20 +83,29 @@ export const FormularioToro = () => {
     /* ----------------------- MANEJADOR TOROSCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR un animal (toro).
-    const handleAgregar = (e) => {
+    const handleAgregar = async (e) => {
         console.log(animalToro); // Verifica el estado del animal (toro) antes de validar
 
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        if(esAgregar){
-            console.log("Se ha añadido el toro");
-            agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (toro)
+        try{
+            if (esAgregar) {
+                console.log("Se ha añadido el toro");
+                //agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (toro)
+                await api.post("/toros/", animalToro); //se crea un nuevo animal
 
-        }else if (esModificar){
-            console.log("Se ha modificado el toro");
-            modificarAnimal(animalToro); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
+            } else if (esModificar) {
+                console.log("Se ha modificado el toro");
+                // modificarAnimal(animalToro); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
+                await api.put(`/toros/${animalToro.id}/`, animalToro); // se actualiza el animal
+
+            }
+        }catch (error) {
+            console.error("❌ Error al guardar el toro:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
+
 
         /* Una vez que se haya agregado un nuevo animal (toro) o se modifique un animal existente (toro),
          el usuario es redirigido a la página de "visualizar-toros".
@@ -102,15 +115,16 @@ export const FormularioToro = () => {
 
     //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO un animal.
     //Le permite al usuario añadir un animal y continuar con el formulario vacio para añadir nuevos animales.
-    const handleAceptarYSeguir = (e) => {
+    const handleAceptarYSeguir = async (e) => {
         console.log(animalToro); // Verifica el estado de animal antes de validar
         e.preventDefault();
 
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        if(esAgregar){
+        if (esAgregar) {
             console.log("Se ha añadido el toro y se continua añadiendo nuevos toros");
-            agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (tooro)
+            //agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (tooro)
+            await api.post("/toros/", animalToro); //se añade el nuevo animal.
             setAnimalToro(estadoInicialToro); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
 
@@ -198,13 +212,13 @@ export const FormularioToro = () => {
                             <div className="label">Cantidad de semen</div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.cantidadSemen ? "error" : ""}`}
-                                name="cantidadSemen"
+                                className={`cuadro-texto ${errores.cantidad_semen ? "error" : ""}`}
+                                name="cantidad_semen"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
-                                value={animalToro.cantidadSemen || ""}
+                                value={animalToro.cantidad_semen || ""}
                                 onChange={handleChange}
                             />
-                            {errores.cantidadSemen && <div className="mensaje-error">{errores.cantidadSemen}</div>}
+                            {errores.cantidad_semen && <div className="mensaje-error">{errores.cantidad_semen}</div>}
 
                         </div>
 
@@ -212,13 +226,13 @@ export const FormularioToro = () => {
                             <div className="label">Transmisión de leche</div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.transmisionLeche ? "error" : ""}`}
-                                name="transmisionLeche"
+                                className={`cuadro-texto ${errores.transmision_leche ? "error" : ""}`}
+                                name="transmision_leche"
                                 disabled={esVisualizar} //Se indica que el campo "Transmisión de producción de leche" no se puede modificar cuando se Visualiza.
-                                value={animalToro.transmisionLeche || ""}
+                                value={animalToro.transmision_leche || ""}
                                 onChange={handleChange}
                             />
-                            {errores.transmisionLeche && <div className="mensaje-error">{errores.transmisionLeche}</div>}
+                            {errores.transmision_leche && <div className="mensaje-error">{errores.transmision_leche}</div>}
 
                         </div>
 
@@ -229,38 +243,38 @@ export const FormularioToro = () => {
                             <div className="label">Células somáticas</div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.celulasSomaticas ? "error" : ""}`}
-                                name="celulasSomaticas"
+                                className={`cuadro-texto ${errores.celulas_somaticas ? "error" : ""}`}
+                                name="celulas_somaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
-                                value={animalToro.celulasSomaticas || ""}
+                                value={animalToro.celulas_somaticas || ""}
                                 onChange={handleChange}
                             />
-                            {errores.celulasSomaticas && <div className="mensaje-error">{errores.celulasSomaticas}</div>}
+                            {errores.celulas_somaticas && <div className="mensaje-error">{errores.celulas_somaticas}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de patas</div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.calidadPatas ? "error" : ""}`}
-                                name="calidadPatas"
+                                className={`cuadro-texto ${errores.calidad_patas ? "error" : ""}`}
+                                name="calidad_patas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
-                                value={animalToro.calidadPatas || ""}
+                                value={animalToro.calidad_patas || ""}
                                 onChange={handleChange}
                             />
-                            {errores.calidadPatas && <div className="mensaje-error">{errores.calidadPatas}</div>}
+                            {errores.calidad_patas && <div className="mensaje-error">{errores.calidad_patas}</div>}
 
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Calidad de ubres</div>
                             <input
                                 type="text"
-                                className={`cuadro-texto ${errores.calidadUbres ? "error" : ""}`}
-                                name="calidadUbres"
+                                className={`cuadro-texto ${errores.calidad_ubres ? "error" : ""}`}
+                                name="calidad_ubres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
-                                value={animalToro.calidadUbres || ""}
+                                value={animalToro.calidad_ubres || ""}
                                 onChange={handleChange}
                             />
-                            {errores.calidadUbres && <div className="mensaje-error">{errores.calidadUbres}</div>}
+                            {errores.calidad_ubres && <div className="mensaje-error">{errores.calidad_ubres}</div>}
 
                         </div>
                         <div className="contenedor-linea">
