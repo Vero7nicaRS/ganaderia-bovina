@@ -38,6 +38,10 @@ def test_crear_toro_valido():
     assert response.data["codigo"].startswith("T-") # Comprueba que el código comience por "T-".
     assert response.data["codigo"][2:].isdigit() # Comprueba que lo que le sigue a "T-" son números.
 
+    # Se comprueba que el campo "tipo" esté en la respuesta del endpoint.
+    assert "tipo" in response.data
+    assert response.data["tipo"] == "Toro"
+
     # Se comprueba que el toro existe en la base de datos.
     assert Toro.objects.filter(nombre="ToroPrueba").exists()
 
