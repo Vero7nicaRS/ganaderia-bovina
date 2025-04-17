@@ -272,6 +272,11 @@ class ToroSerializer(serializers.ModelSerializer):
             }
         }
 
+    # to_representation: cuando se llame a /toros/ (endpoint), se devuelve { "id":3 , "codigo": "T-3", "tipo":Toro, ...}
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tipo'] = 'Toro'
+        return data
     # validate_<campo>: Validación para el campo "codigo".
     def validate_codigo(self, value):
         if not value:
