@@ -123,10 +123,24 @@ export const ListaCorrales = () => {
 
                                         <td>
                                             {/* BOTÓN VER */}
+                                            {/*<NavLink*/}
+                                            {/*    to="/formulario-corral"*/}
+                                            {/*    state={{modo: "ver", corral: item}} //Se le pasa el corral (item)*/}
+                                            {/*    className="btn-ver">*/}
+                                            {/*    VER*/}
+                                            {/*</NavLink>*/}
+                                            {/*<NavLink*/}
+                                            {/*    to={`/formulario-corral/${item.id}`}*/}
+                                            {/*    state={{ modo: "ver" }}*/}
+                                            {/*    className="btn-ver"*/}
+                                            {/*>*/}
+                                            {/*    VER*/}
+                                            {/*</NavLink>*/}
                                             <NavLink
-                                                to="/formulario-corral"
-                                                state={{modo: "ver", corral: item}} //Se le pasa el corral (item)
-                                                className="btn-ver">
+                                                to={`/formulario-animal/${item.id}`}
+                                                state={{modo: "ver", corral: item}}
+                                                className="btn-ver"
+                                            >
                                                 VER
                                             </NavLink>
 
@@ -134,9 +148,16 @@ export const ListaCorrales = () => {
 
                                             <>
                                                 {/* BOTÓN MODIFICAR */}
+                                                {/*<NavLink*/}
+                                                {/*    to="/formulario-corral"*/}
+                                                {/*    state={{modo: "modificar", corral: item}} //Se le pasa el MODO (modificar) y la inseminación (item)*/}
+                                                {/*    className="btn-modificar"*/}
+                                                {/*>*/}
+                                                {/*    MODIFICAR*/}
+                                                {/*</NavLink>*/}
                                                 <NavLink
-                                                    to="/formulario-corral"
-                                                    state={{modo: "modificar", corral: item}} //Se le pasa el MODO (modificar) y la inseminación (item)
+                                                    to={`/formulario-animal/${item.id}`}
+                                                    state={{modo: "modificar", corral: item}}
                                                     className="btn-modificar"
                                                 >
                                                     MODIFICAR
