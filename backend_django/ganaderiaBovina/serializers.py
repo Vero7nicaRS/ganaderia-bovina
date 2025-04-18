@@ -355,7 +355,12 @@ class CorralSerializer(serializers.ModelSerializer):
 
     # Se obtienen los animales que hay en el corral gracias a la relación con Animal.
     def get_animales(self, obj):
-        return [str(animal) for animal in obj.animales.all()]
+        # return [str(animal) for animal in obj.animales.all()]
+       return [{
+           "codigo": animal.codigo,
+           "nombre": animal.nombre
+       } for animal in obj.animales.all()]
+
 # --------------------------------------------------------------------------------------------------------------
 #                                       Serializer de INVENTARIOVT (Vacunas y tratamientos del inventario)
 # --------------------------------------------------------------------------------------------------------------
