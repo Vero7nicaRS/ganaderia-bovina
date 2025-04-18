@@ -6,12 +6,17 @@
 * -------------------------------------------------------------------------------------------------------
 * */
 export function convertirAnimalParaAPI(animal, corralesBackend, animalesBackend, torosBackend) {
-    return {
+    const convertido = {
         ...animal,
-        padre: buscarIdPorCodigo(animal.padre, torosBackend),
-        madre: buscarIdPorCodigo(animal.madre, animalesBackend),
+        padre: animal.padre || null,
+        madre: animal.madre || null,
         corral: buscarIdPorNombre(animal.corral, corralesBackend),
     };
+    // Evita enviar campos innecesarios
+    if (!convertido.codigo) delete convertido.codigo;
+    if (!convertido.fecha_eliminacion) delete convertido.fecha_eliminacion;
+    console.log("🐄 Animal convertido:", convertido);
+    return convertido;
 }
 
 function buscarIdPorCodigo(codigo, lista) {
