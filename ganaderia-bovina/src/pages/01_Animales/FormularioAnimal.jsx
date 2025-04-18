@@ -1,5 +1,5 @@
 import "../../styles/FormularioAnimal.css";
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {NavLink, useLocation, useNavigate, useParams} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
@@ -34,24 +34,23 @@ export const FormularioAnimal = () => {
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-
+    const {id} = useParams();
+    const modoFinal = modo || (id ? "ver" : "agregar")
     const estadoInicial = {
-        id: "",
-        codigo: "",
+        id: null,
         tipo: "Vaca",
         estado: "Vacía",
         nombre: "",
         fecha_nacimiento: "",
-        padre: "",
-        madre: "",
-        corral: "",
+        padre: null,
+        madre: null,
+        corral: null,
         celulas_somaticas: "",
         produccion_leche: "",
         calidad_patas: "",
         calidad_ubres: "",
         grasa: "",
         proteinas: "",
-        fecha_eliminacion: "",
     }
     const [animal, setAnimal] = useState(animalInicial || estadoInicial);
 
@@ -59,6 +58,7 @@ export const FormularioAnimal = () => {
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
     // const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
+
 
     /* Se extrae la información de las vacas, terneros, toros y corrales existentes para poder
     * utilizarlo en el formulario y seleccionar animales dichos animales. */
@@ -68,21 +68,28 @@ export const FormularioAnimal = () => {
     const { corrales, modificarCorral } = useContext(CorralesContext); // Lista de corrales
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
-    const esVisualizar = modo === "ver";
-    const esAgregar = modo === "agregar";
-    const esModificar = modo === "modificar";
+    const esVisualizar = modoFinal === "ver";
+    const esAgregar = modoFinal === "agregar";
+    const esModificar = modoFinal === "modificar";
 
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
     // Se emplea para comprobar si dos listas son iguales (en este caso, si dos corrales tienen los mismos elementos)
-    const sonIgualesListas = (lista1, lista2) => {
-        if (lista1.length !== lista2.length) return false;
-        // Se ordenan las listas para comparar los elementos.
-        const lista1Ordenada = [...lista1].sort();
-        const lista2Ordenada = [...lista2].sort();
-        return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
-    };
+    // const sonIgualesListas = (lista1, lista2) => {
+    //     if (lista1.length !== lista2.length) return false;
+    //     // Se ordenan las listas para comparar los elementos.
+    //     const lista1Ordenada = [...lista1].sort();
+    //     const lista2Ordenada = [...lista2].sort();
+    //     return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
+    // };
+    // const sonIgualesListas = (lista1 = [], lista2 = []) => {
+    //     if (lista1.length !== lista2.length) return false;
+    //
+    //     const lista1Ordenada = [...lista1].sort();
+    //     const lista2Ordenada = [...lista2].sort();
+    //     return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
+    // };
 
     /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
    renderización del componente y de los cambios realizados en las dependencias.
@@ -102,25 +109,43 @@ export const FormularioAnimal = () => {
     En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
     actualizada.
    * */
+    // useEffect(() => {
+    //
+    //     // Se recorre cada corral (corral) de la lista de corrales (corrales - Context) viendo los animales que tiene, para así actualizarlo.
+    //     corrales.forEach((corral) => {
+    //         // Se obtienen los IDs de los animales que tienen ese corral asignado.
+    //         const animalesAsignados = animales
+    //             .filter((animal) => animal.corral === corral.nombre) // ¿Animal está en ese corral?
+    //             .map((animal) => animal.id); //Si está, dame el identificador del animal.
+    //
+    //         // Si la lista del corral es distinta de los animales asignados, se actualiza el corral
+    //         if (!sonIgualesListas(corral.listaAnimales, animalesAsignados)) {
+    //             const updatedCorral = { ...corral, listaAnimales: animalesAsignados };
+    //             modificarCorral(updatedCorral);
+    //         }
+    //     });
+    //     console.log("Animales actualizados en el contexto:", animales);
+    //     console.log("Corrales actualizados en el contexto:", corrales);
+    // }, [animales, corrales, modificarCorral]);
+
+
     useEffect(() => {
-
-        // Se recorre cada corral (corral) de la lista de corrales (corrales - Context) viendo los animales que tiene, para así actualizarlo.
-        corrales.forEach((corral) => {
-            // Se obtienen los IDs de los animales que tienen ese corral asignado.
-            const animalesAsignados = animales
-                .filter((animal) => animal.corral === corral.nombre) // ¿Animal está en ese corral?
-                .map((animal) => animal.id); //Si está, dame el identificador del animal.
-
-            // Si la lista del corral es distinta de los animales asignados, se actualiza el corral
-            if (!sonIgualesListas(corral.listaAnimales, animalesAsignados)) {
-                const updatedCorral = { ...corral, listaAnimales: animalesAsignados };
-                modificarCorral(updatedCorral);
+        const fetchAnimal = async () => {
+            // Solo si no hay animal en el estado (por ejemplo, se accedió vía URL manualmente)
+            if (!animalInicial && (esVisualizar || esModificar) && id) {
+                try {
+                    const response = await api.get(`/animales/${id}/`);
+                    setAnimal(response.data);
+                } catch (error) {
+                    console.error("Error al cargar el animal:", error);
+                }
             }
-        });
+        };
+
+        fetchAnimal();
         console.log("Animales actualizados en el contexto:", animales);
         console.log("Corrales actualizados en el contexto:", corrales);
-    }, [animales, corrales, modificarCorral]);
-
+    }, [id, esVisualizar, esModificar, animalInicial,animales, corrales]);
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -162,8 +187,8 @@ export const FormularioAnimal = () => {
             if (esAgregar) {
                 console.log("Se ha añadido el animal");
                 //nuevoAnimalConId = agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
-                await api.post("/animales/", animalConvertido); //se crea un nuevo animal
-
+                const response = await api.post("/animales/", animalConvertido); //se crea un nuevo animal
+                nuevoAnimalConId = response.data;
             } else if (esModificar) {
                 console.log("Se ha modificado el animal");
                 //nuevoAnimalConId = modificarAnimal(animal); // Llamada a la función modificar de AnimalesContext: Se modifica el animal existente (vaca/ternero)
@@ -207,12 +232,16 @@ export const FormularioAnimal = () => {
         if (!validarFormulario()) return; // Si hay errores, no continúa
         const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
 
-
-        if (esAgregar) {
-            console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
-            //agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
-            await api.post("/animales/", animalConvertido); //se añade el nuevo animal.
-            setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+        try{
+            if (esAgregar) {
+                console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
+                //agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
+                await api.post("/animales/", animalConvertido); //se añade el nuevo animal.
+                setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            }
+        }catch(error){
+            console.error("❌ Error al guardar el animal:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data); // <-- Añade esto
         }
     }
 
@@ -410,19 +439,20 @@ export const FormularioAnimal = () => {
                                 {/* Si el animal ha sido vendido o muerto, el corral tiene como valor
                                     ninguno */}
                                 {/* Opción oculta pero mostrada si ya estaba asignada */}
-                                {["Ninguno"].includes(animal.corral) && (
+                                {animal.corral && (
+                                    !corrales.some((c) => c.nombre === animal.corral) || animal.corral === "Ninguno"
+                                ) && (
                                     <option value={animal.corral}>{animal.corral}</option>
                                 )}
                                 {/* Aparece un listado de los nombres de los corrales existentes.*/}
-                                {corrales && corrales.length > 0 ? (
-                                    corrales
-                                        .map((corral) => (
-                                            <option key={corral.nombre} value={corral.nombre}>
-                                                {corral.nombre}
-                                            </option>
-                                        ))
+                                {corrales.length > 0 ? (
+                                    corrales.map((corral) => (
+                                        <option key={corral.nombre} value={corral.nombre}>
+                                            {corral.nombre}
+                                        </option>
+                                    ))
                                 ) : (
-                                    <option>No hay corrales disponibles</option>
+                                    <option disabled>No hay corrales disponibles</option>
                                 )}
                             </select>
                             {errores.corral && <div className="mensaje-error">{errores.corral}</div>}
