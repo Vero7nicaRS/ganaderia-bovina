@@ -8,20 +8,24 @@
 * */
 export const corralesMock= [
     {
-        id: "CORRAL-1",
+        id: "1",
+        codigo: "CORRAL-1",
         nombre: "Corral vacas 1",
         listaAnimales: ["V-1", "V-2"],
     },
     {
-        id: "CORRAL-2",
+        id: "2",
+        codigo: "CORRAL-2",
         nombre: "Corral terneros",
         listaAnimales: ["C-1", "C-2"],
     }, {
-        id: "CORRAL-3",
+        id: "3",
+        codigo: "CORRAL-3",
         nombre: "Corral vacas 2",
         listaAnimales: [],
     }, {
-        id: "CORRAL-4",
+        id: "4",
+        codigo: "CORRAL-4",
         nombre: "Corral vacas 3",
         listaAnimales: [],
     },
