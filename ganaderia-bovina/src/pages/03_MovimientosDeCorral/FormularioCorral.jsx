@@ -1,5 +1,5 @@
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import "../../styles/FormularioCorral.css";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {ComprobarCamposFormularioCorral} from "../../components/ComprobarCamposFormularioCorral.jsx";
@@ -85,24 +85,53 @@ export const FormularioCorral = () => {
         }));
     };
 
+    /* useEffect:
+    Se encarga de cargar el corral desde el backend y asociar los animales que están asignados a ese corral.
+    Se hace separado (se usa dos useEffects)
+    ¿Por qué se separa el corral de los animales?
+    Porque puede ser que los animales se encuentren vacios (no se hayan cargado) cuando se realice el filtrado
+    porque procede del contexto y este, puede tardar un poquito más en iniciliazarse.
+
+    La página de formulario-corral se ve correctamente tanto si:
+     - Se accede desde la lista de corrales.
+     - Introduciendo URL con id del corral.
+     - Recargando la página del corral.
+    */
+
+    /* useEffect 1: Se realiza la carga del corral desde el backend cuando se accede mediante URL
+     (no hay información en el location.state porque no se ha llegado por un NavLink que enviaba el estado)
+     */
+
+    const animalesOriginalesRef = useRef([]);
+
     useEffect(() => {
         const fetchCorral = async () => {
             if (!corralInicial && id) {
                 try {
                     const response = await api.get(`/corrales/${id}/`);
                     setCorral(response.data);
-                    const relacionados = animales.filter(a => a.corral === parseInt(id));
-                    setAnimalesSeleccionados(relacionados.map(a => a.id));
                 } catch (error) {
                     console.error("Error al cargar el corral:", error);
                 }
             }
         };
+             console.log("Animales actualizados en el contexto:", animales);
+             console.log("Corrales actualizados en el contexto:", corrales);
         fetchCorral();
-        console.log("Animales actualizados en el contexto:", animales);
-        console.log("Corrales actualizados en el contexto:", corrales);
-    }, [ id, corralInicial, animales, corrales]);
+    }, [id, corralInicial,animales,corrales]);
 
+    /* useEffect 2: Se realiza la asociación de los animales a ese corral una vez que
+     el corral ya está cargado (corral.id) y los animales están disponibles (animales.length>0) */
+    useEffect(() => {
+        if (corral.id && animales.length > 0) {
+            const relacionados = animales.filter(a => a.corral === corral.id);
+            //setAnimalesSeleccionados(relacionados.map(a => a.id));
+            const ids = relacionados.map(a => a.id);
+            animalesOriginalesRef.current = ids; // guardamos los originales
+            setAnimalesSeleccionados(ids);       // también los usamos como seleccionados iniciales
+
+        }
+    }, [corral.id, animales]);
 
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
@@ -323,33 +352,55 @@ export const FormularioCorral = () => {
                                     <div className="label">Añadir animales</div>
                                     <div className="lista-animales">
                                         {animales
-                                            .filter(animal => !animalesSeleccionados.includes(animal.id))
-                                            .map((animal) => (
-                                                <label key={animal.id} className="item-animal">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={animalesSeleccionados.includes(animal.id)}
-                                                        onChange={() => toggleSeleccionAnimal(animal.id)}
-                                                    />
-                                                    {animal.id} ({animal.corral})
-                                                </label>
-                                            ))}
-                                        {/*{animales*/}
-                                        {/*    //Filtramos por los animales que NO están en el corral y obtenemos su identificador y corral donde están.*/}
-                                        {/*    .filter(animal => !corral.listaAnimales.includes(animal.id))*/}
-                                        {/*    .map((animal) => (*/}
-                                        {/*        <label key={animal.id} className="item-animal">*/}
-                                        {/*            <input*/}
-                                        {/*                type="checkbox"*/}
-                                        {/*                name="listaAnimales"*/}
-                                        {/*                checked={animalesSeleccionados.includes(animal.id)}*/}
-                                        {/*                onChange={() => toggleSeleccionAnimal(animal.id)}*/}
-                                        {/*                disabled={esVisualizar}*/}
-                                        {/*            />*/}
-                                        {/*            /!*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra*!/*/}
-                                        {/*          {animal.id} ({animal.corral})*/}
-                                        {/*        </label>*/}
-                                        {/*))}*/}
+                                            /* Se filtra por los animales que NO están en el corral y no tienen el estado
+                                             "MUERTE" o "VENDIDA".
+                                             De estos animales, se obtiene el identificador y corral donde están*/
+                                            .filter(animal =>
+                                                !animalesSeleccionados.includes(animal.id) &&
+                                                animal.estado.toUpperCase() !== "MUERTE" &&
+                                                animal.estado.toUpperCase() !== "VENDIDA"
+                                            ).length === 0 ? (
+                                                <div className="mensaje-no-animales">
+                                                    No hay animales disponibles para añadir al corral.
+                                                </div>
+                                             ) : (
+                                                animales
+                                                .filter(animal =>
+                                                    !animalesSeleccionados.includes(animal.id) &&
+                                                    animal.estado.toUpperCase() !== "MUERTE" &&
+                                                    animal.estado.toUpperCase() !== "VENDIDA"
+                                                )
+                                        //         .map((animal) => (
+                                        //
+                                        //             <label key={animal.id} className="item-animal">
+                                        //                 <input
+                                        //                     type="checkbox"
+                                        //                     checked={animalesSeleccionados.includes(animal.id)}
+                                        //                     onChange={() => toggleSeleccionAnimal(animal.id)}
+                                        //                 />
+                                        //                 {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra */}
+                                        //                 {animal.codigo} ({animal.corral})
+                                        //             </label>
+                                        //         ))
+                                        //      )
+                                        // }
+                                                    .map((animal) => {
+                                                        // 🔎 Buscamos el corral correspondiente por id
+                                                        const corralAsignado = corrales.find(c => c.id === animal.corral);
+                                                        const nombreCorral = corralAsignado ? corralAsignado.codigo : "Ninguno";
+
+                                                        return (
+                                                            <label key={animal.id} className="item-animal">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={animalesSeleccionados.includes(animal.id)}
+                                                                    onChange={() => toggleSeleccionAnimal(animal.id)}
+                                                                />
+                                                                {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra */}
+                                                                {animal.codigo} ({nombreCorral})
+                                                            </label>
+                                                        );
+                                                    }))}
                                     </div>
                                 </div>
                             </>
@@ -368,7 +419,13 @@ export const FormularioCorral = () => {
                                 </thead>
                                 <tbody>
                                 {animalesSeleccionados.length === 0 ? (
+
                                     <tr>
+                                        {/* - Si se VISUALIZA se muestra un mensaje indicando que no hay animales*/}
+                                        {/*    en el corral. */}
+
+                                        {/* - Si se AGREGA o MODIFICA se muestra un mensaje indicando que no*/}
+                                        {/*    hay aniamles seleccionados.*/}
                                         <td colSpan="2" className="mensaje-no-animales">
                                             {esVisualizar ? "No hay animales en el corral" : "No hay animales seleccionados"}
                                         </td>
@@ -378,8 +435,12 @@ export const FormularioCorral = () => {
                                         const animal = animales.find((a) => a.id === id);
                                         return animal ? (
                                             <tr key={id}>
-                                                <td>{animal.id}</td>
-                                                {!esVisualizar && (
+                                                <td>{animal.codigo}</td>
+                                                {/*El botón de QUITAR solo aparece cuando se AGREGA o MODIFICA un corral.*/}
+                                                {/*Además, el botón solo aparece en los animales que NO estaban en el corral, es decir,*/}
+                                                {/*se pone el botón en los que se están añadiendo ahora. Por tanto,*/}
+                                                {/*se comprueba que los animales NO estén en la lista de animales del corral.*!/*/}
+                                                {!esVisualizar && !animalesOriginalesRef.current.includes(id) && (
                                                     <td>
                                                         <button
                                                             type="button"
