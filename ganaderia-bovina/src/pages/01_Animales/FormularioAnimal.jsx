@@ -129,9 +129,27 @@ export const FormularioAnimal = () => {
     // }, [animales, corrales, modificarCorral]);
 
 
+    /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
+    renderización del componente y de los cambios realizados en las dependencias.
+    En este caso, el useEffect se ejecutará cuando se hayan realizado la ejecución
+    de todas las funciones, y una vez renderizado, se evalúan las dependencias que son
+    "animales", "corrales" y "modificarCorral".
+    Por tanto, cada vez que el estado "animales" o "corrales" cambie, se ejecutará el UseEffect.
+    Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
+    Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
+
+    Razón de las dependencias escogidas:
+     - animales: cada vez que cambie la lista de animales (agregar o modificar), se quiere que se ejecute
+     para que la información esté sincronizada.
+     - corrales: cada vez que cambie la lista de corrales (agregar o modificar), "".
+     - modificarCorral: aparece dentro del UseEffect.
+
+     En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
+     actualizada.
+    * */
     useEffect(() => {
         const fetchAnimal = async () => {
-            // Solo si no hay animal en el estado (por ejemplo, se accedió vía URL manualmente)
+            // Si se accedió mediante URL, es decir, no se ha pasado ningún animal en el estado.
             if (!animalInicial && (esVisualizar || esModificar) && id) {
                 try {
                     const response = await api.get(`/animales/${id}/`);
@@ -183,6 +201,7 @@ export const FormularioAnimal = () => {
         let nuevoAnimalConId;
         const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
 
+        // 1. Se realiza la petición al backend.
         try{
             if (esAgregar) {
                 console.log("Se ha añadido el animal");
@@ -199,17 +218,21 @@ export const FormularioAnimal = () => {
             console.error("❌ Error al guardar el animal:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
+        // 2. Se actualiza el estado del corral (contexto) con el animal asignado.
         try{
             if (nuevoAnimalConId) {
-                const corralSeleccionado = corrales.find((c) => c.nombre === nuevoAnimalConId.corral);
+                const corralSeleccionado = corrales.find((c) => c.id === nuevoAnimalConId.corral);
                 console.log("Corral seleccionado:", corralSeleccionado);
+                // if (corralSeleccionado) {
+                //     // Creamos un nuevo objeto corral agregando el id del animal
+                //     const nuevoCorral = {
+                //         ...corralSeleccionado,
+                //         listaAnimales: [...corralSeleccionado.listaAnimales, nuevoAnimalConId.id],
+                //     };
+                //     modificarCorral(nuevoCorral);
+                // }
                 if (corralSeleccionado) {
-                    // Creamos un nuevo objeto corral agregando el id del animal
-                    const nuevoCorral = {
-                        ...corralSeleccionado,
-                        listaAnimales: [...corralSeleccionado.listaAnimales, nuevoAnimalConId.id],
-                    };
-                    modificarCorral(nuevoCorral);
+                    modificarCorral(corralSeleccionado);
                 }
             }
         }catch(error){
@@ -246,7 +269,8 @@ export const FormularioAnimal = () => {
     }
 
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR  -----------------------*/
-
+    const corralSeleccionado = corrales.find((c) => c.id === animal.corral);
+    const codigoCorralActual = corralSeleccionado ? corralSeleccionado.codigo : animal.corral;
     return (
         <>
 
@@ -384,7 +408,7 @@ export const FormularioAnimal = () => {
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
-                                                {toro.codigo} {/*Se pone código en vez de id. Para ver "V-2" en vez "5" */}
+                                                {toro.codigo} {/*Se pone código en vez de id. Para ver "T-x" en vez "5" */}
                                             </option>
                                         ))
                                 ) : (
@@ -417,7 +441,7 @@ export const FormularioAnimal = () => {
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((vaca) => (
                                             <option key={vaca.id} value={vaca.id}>
-                                                {vaca.codigo} {/*Se pone código en vez de id. Para ver "V-2" en vez "5" */}
+                                                {vaca.codigo} {/*Se pone código en vez de id. Para ver "V-x" en vez "5" */}
                                             </option>
                                         ))
                                 ) : (
@@ -432,7 +456,7 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.corral ? "error" : ""}`}
                                 name="corral"
                                 disabled={esVisualizar} //Se indica que el campo "Corral" no se puede modificar cuando se Visualiza.
-                                value={animal.corral || ""}
+                                value={esVisualizar ? codigoCorralActual : animal.corral || ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un corral</option>
@@ -440,15 +464,15 @@ export const FormularioAnimal = () => {
                                     ninguno */}
                                 {/* Opción oculta pero mostrada si ya estaba asignada */}
                                 {animal.corral && (
-                                    !corrales.some((c) => c.nombre === animal.corral) || animal.corral === "Ninguno"
+                                    !corrales.some((c) => c.codigo === animal.corral) || animal.corral === "Ninguno"
                                 ) && (
                                     <option value={animal.corral}>{animal.corral}</option>
                                 )}
                                 {/* Aparece un listado de los nombres de los corrales existentes.*/}
                                 {corrales.length > 0 ? (
                                     corrales.map((corral) => (
-                                        <option key={corral.nombre} value={corral.nombre}>
-                                            {corral.nombre}
+                                        <option key={corral.id} value={corral.codigo}>
+                                            {corral.codigo} {/*Se pone código en vez de id. Para ver "CORRAL-x" en vez "5" */}
                                         </option>
                                     ))
                                 ) : (
