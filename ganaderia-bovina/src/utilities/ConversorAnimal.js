@@ -10,7 +10,7 @@ export function convertirAnimalParaAPI(animal, corralesBackend, animalesBackend,
         ...animal,
         padre: animal.padre || null,
         madre: animal.madre || null,
-        corral: buscarIdPorNombre(animal.corral, corralesBackend),
+        corral: buscarIdPorCodigo(animal.corral, corralesBackend),
     };
     // Evita enviar campos innecesarios
     if (!convertido.codigo) delete convertido.codigo;
