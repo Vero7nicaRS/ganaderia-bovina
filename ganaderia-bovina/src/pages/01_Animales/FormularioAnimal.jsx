@@ -20,8 +20,6 @@ import { convertirAnimalParaAPI } from "../../utilities/ConversorAnimal.js"
 * --------------------------------------------------------------------------------------------------------
 * */
 
-//import "../01_Animales/ListaAnimales.jsx"
-//export const FormularioAnimal = ({ modo, animal: animalInicial, onSubmit }) => {
 export const FormularioAnimal = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y animal)
@@ -31,11 +29,11 @@ export const FormularioAnimal = () => {
     const navigate = useNavigate();
 
     const { modo, animal: animalInicial } = location.state || { tipo: "Vaca", estado:"Vacía", corral: "Corral vacas 1"}; // Se recupera el modo y animal desde el state
+    const {id} = useParams(); // Se emplea para acceder mediante URL
+    const modoFinal = modo || (id ? "ver" : "agregar") // Se indica el modo en el que debe estar el formulario, si ha sido pasado por el state o no.
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const {id} = useParams();
-    const modoFinal = modo || (id ? "ver" : "agregar")
     const estadoInicial = {
         id: null,
         tipo: "Vaca",
@@ -57,14 +55,12 @@ export const FormularioAnimal = () => {
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
-    // const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
-
+     const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
 
     /* Se extrae la información de las vacas, terneros, toros y corrales existentes para poder
     * utilizarlo en el formulario y seleccionar animales dichos animales. */
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
-
     const { corrales, modificarCorral } = useContext(CorralesContext); // Lista de corrales
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
@@ -75,40 +71,29 @@ export const FormularioAnimal = () => {
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
-    // Se emplea para comprobar si dos listas son iguales (en este caso, si dos corrales tienen los mismos elementos)
-    // const sonIgualesListas = (lista1, lista2) => {
-    //     if (lista1.length !== lista2.length) return false;
-    //     // Se ordenan las listas para comparar los elementos.
-    //     const lista1Ordenada = [...lista1].sort();
-    //     const lista2Ordenada = [...lista2].sort();
-    //     return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
-    // };
-    // const sonIgualesListas = (lista1 = [], lista2 = []) => {
-    //     if (lista1.length !== lista2.length) return false;
-    //
-    //     const lista1Ordenada = [...lista1].sort();
-    //     const lista2Ordenada = [...lista2].sort();
-    //     return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
-    // };
-
-
     /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
     renderización del componente y de los cambios realizados en las dependencias.
     En este caso, el useEffect se ejecutará cuando se hayan realizado la ejecución
-    de todas las funciones, y una vez renderizado, se evalúan las dependencias que son
-    "animales", "corrales" y "modificarCorral".
-    Por tanto, cada vez que el estado "animales" o "corrales" cambie, se ejecutará el UseEffect.
+    de todas las funciones, y una vez renderizado, se evalúan las dependencias que son:
+    "id", "esVisualizar", "esModificar", "animalInicial", "animales" y "corrales".
+    Por tanto, cada vez que el estado de las dependencias ("id", "animales", "corrales", etc.) cambie,
+    se ejecutará el UseEffect.
     Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
     Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
 
-    Razón de las dependencias escogidas:
-     - animales: cada vez que cambie la lista de animales (agregar o modificar), se quiere que se ejecute
-     para que la información esté sincronizada.
-     - corrales: cada vez que cambie la lista de corrales (agregar o modificar), "".
-     - modificarCorral: aparece dentro del UseEffect.
+    En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
+    actualizada.
 
-     En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
-     actualizada.
+    Este useEffect se encarga de cargar el animal desde el backend en caso de que se acceda al formulario
+    mediante URL (es decir, sin que venga desde un NavLink con estado [location.state]).
+
+    OBSERVACIONES:
+    - NO se puede hacer "useEffect(async () => {...})", por ello se tiene que definir "fetchAnimal" dentro
+    y se le llama posteriormente.
+    - Se ejecuta cuando:
+       - Hay un ID en la URL (modo "ver" o "modificar").
+       - No se ha recibido al animal desde el Navlink (es decir, desde el location.state).
+
     * */
     useEffect(() => {
         const fetchAnimal = async () => {
@@ -122,11 +107,11 @@ export const FormularioAnimal = () => {
                 }
             }
         };
-
-        fetchAnimal();
+        fetchAnimal(); // Se llama después una única vez. Se ha añadido de nuevo porque no se puede poner async el "useEffect".
         console.log("Animales actualizados en el contexto:", animales);
         console.log("Corrales actualizados en el contexto:", corrales);
     }, [id, esVisualizar, esModificar, animalInicial,animales, corrales]);
+
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -161,48 +146,38 @@ export const FormularioAnimal = () => {
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         console.log("Animal antes de ser añadido: ", animal); // Verifica el estado de animal antes de validar
-        let nuevoAnimalConId;
+        let nuevoAnimalConId; // Almacena el resultado de "agregarAnimal".
         const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
 
         // 1. Se realiza la petición al backend.
         try{
             if (esAgregar) {
                 console.log("Se ha añadido el animal");
-                //nuevoAnimalConId = agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
-                const response = await api.post("/animales/", animalConvertido); //se crea un nuevo animal
-                nuevoAnimalConId = response.data;
+                nuevoAnimalConId = await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
             } else if (esModificar) {
                 console.log("Se ha modificado el animal");
-                //nuevoAnimalConId = modificarAnimal(animal); // Llamada a la función modificar de AnimalesContext: Se modifica el animal existente (vaca/ternero)
-                await api.put(`/animales/${animal.id}/`, animalConvertido); // se actualiza el animal
+                const animal_actualizado = await modificarAnimal(animalConvertido); // Se modifica el animal existente
+                setAnimal(animal_actualizado); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
-
         }catch (error){
             console.error("❌ Error al guardar el animal:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
+
         // 2. Se actualiza el estado del corral (contexto) con el animal asignado.
         try{
             if (nuevoAnimalConId) {
                 const corralSeleccionado = corrales.find((c) => c.id === nuevoAnimalConId.corral);
                 console.log("Corral seleccionado:", corralSeleccionado);
-                // if (corralSeleccionado) {
-                //     // Creamos un nuevo objeto corral agregando el id del animal
-                //     const nuevoCorral = {
-                //         ...corralSeleccionado,
-                //         listaAnimales: [...corralSeleccionado.listaAnimales, nuevoAnimalConId.id],
-                //     };
-                //     modificarCorral(nuevoCorral);
-                // }
+                // Ahora, se actualiza el corral al que se asigna el animal
                 if (corralSeleccionado) {
                     modificarCorral(corralSeleccionado);
                 }
             }
         }catch(error){
             console.error("❌ Error al guardar el animal:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data); // <-- Añade esto
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
-        // Ahora, actualizamos el corral al que se asigna el animal
 
         /* Una vez que se haya agregado un nuevo animal o se modifique un animal existente,
          el usuario es redirigido a la página de "visualizar-animales".
@@ -221,8 +196,7 @@ export const FormularioAnimal = () => {
         try{
             if (esAgregar) {
                 console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
-                //agregarAnimal(animal); // Llamada a la función agregar de AnimalesContext: Se añade el nuevo animal (vaca/ternero)
-                await api.post("/animales/", animalConvertido); //se añade el nuevo animal.
+                await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
                 setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
             }
         }catch(error){
@@ -232,19 +206,20 @@ export const FormularioAnimal = () => {
     }
 
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR  -----------------------*/
+
+    /* Se utiliza para mostrar "CODIGO" en vez de "ID" en el campo corral cuando se agrega un nuevo animal
+       como cuando se modifica.
+    */
     const corralSeleccionado = corrales.find((c) => c.id === animal.corral);
     const codigoCorralActual = corralSeleccionado ? corralSeleccionado.codigo : animal.corral;
     return (
         <>
-
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
                 - VISUALIZAR ANIMAL.
                 - AGREGAR ANIMAL.
                 - MODIFICAR ANIMAL.
             */}
-
             <div className="contenedor">
-
                 <div className="cuadradoVisualizarAgregarModificar">
                     {esVisualizar
                         ? "VISUALIZAR ANIMAL"
@@ -256,7 +231,6 @@ export const FormularioAnimal = () => {
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
                 se mostrará el ID del animal dentro de un cuadrado. */}
                 {!esAgregar && (
-
                         <div className="cuadradoID">
                             <span className="identificador">ID</span>
                             <input
@@ -266,11 +240,8 @@ export const FormularioAnimal = () => {
                                 value={animal.codigo || ""}
                                 disabled
                             />
-
-
                     </div>
                 )}
-
             </div>
 
             <hr/>
@@ -293,8 +264,8 @@ export const FormularioAnimal = () => {
                                 <option value="Vaca">Vaca</option>
                                 <option value="Ternero">Ternero</option>
                             </select>
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Estado</div>
                             <select
@@ -312,13 +283,13 @@ export const FormularioAnimal = () => {
                                 {/*<option value="Muerta" disabled>Muerta</option>*/}
                                 {/*<option value="Vendida" disabled>Vendida</option>*/}
 
-
                                 {/* Opción oculta pero mostrada si ya estaba asignada */}
                                 {["Muerte", "Vendida"].includes(animal.estado) && (
                                     <option value={animal.estado}>{animal.estado}</option>
                                 )}
                             </select>
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Nombre</div>
                             <input
@@ -333,8 +304,8 @@ export const FormularioAnimal = () => {
 
                             />
                             {errores.nombre && <div className="mensaje-error">{errores.nombre}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Fecha de nacimiento</div>
                             <input
@@ -346,8 +317,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                             {errores.fecha_nacimiento && <div className="mensaje-error">{errores.fecha_nacimiento}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Identificador padre</div>
                             <select
@@ -379,8 +350,8 @@ export const FormularioAnimal = () => {
                                 )}
                             </select>
                             {errores.padre && <div className="mensaje-error">{errores.padre}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Identificador madre</div>
                             <select
@@ -413,6 +384,7 @@ export const FormularioAnimal = () => {
                             </select>
                             {errores.madre && <div className="mensaje-error">{errores.madre}</div>}
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Corral</div>
                             <select
@@ -443,7 +415,6 @@ export const FormularioAnimal = () => {
                                 )}
                             </select>
                             {errores.corral && <div className="mensaje-error">{errores.corral}</div>}
-
                         </div>
                     </div>
 
@@ -460,8 +431,8 @@ export const FormularioAnimal = () => {
                             />
                             {errores.celulas_somaticas &&
                                 <div className="mensaje-error">{errores.celulas_somaticas}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Producción de leche</div>
                             <input
@@ -473,8 +444,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                             {errores.produccion_leche && <div className="mensaje-error">{errores.produccion_leche}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Calidad de patas</div>
                             <input
@@ -486,8 +457,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                             {errores.calidad_patas && <div className="mensaje-error">{errores.calidad_patas}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Calidad de ubres</div>
                             <input
@@ -499,8 +470,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                             {errores.calidad_ubres && <div className="mensaje-error">{errores.calidad_ubres}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Grasa</div>
                             <input
@@ -512,8 +483,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                             {errores.grasa && <div className="mensaje-error">{errores.grasa}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Proteínas</div>
                             <input
@@ -525,8 +496,8 @@ export const FormularioAnimal = () => {
                                 onChange={handleChange}
                             />
                             {errores.proteinas && <div className="mensaje-error">{errores.proteinas}</div>}
-
                         </div>
+
                         {/*Se muestra la fecha de eliminación del animal cuando se ha eliminado a un animal
                         por los motivos de "Muerte" o "Vendida"*/}
                         {["Muerte", "Vendida"].includes(animal.estado) && animal.fecha_eliminacion && (
@@ -551,10 +522,8 @@ export const FormularioAnimal = () => {
                                 </div>
                             )}
                         </div>
-
                     </div>
                 </div>
-
 
                 <>
                     {/* Si es una acción de AGREGAR o MODIFICAR: Aparecen los siguientes botones:
@@ -579,20 +548,15 @@ export const FormularioAnimal = () => {
                                         ACEPTAR Y SEGUIR AÑADIENDO
                                     </button>
                                 )}
-
                             </>
-
                             {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
                             {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
                             <NavLink to="/visualizar-animales" className="btn btn-info">CANCELAR</NavLink>
-
                         </div>
                     )}
 
-
                     {esVisualizar && (
-
                         <div className="boton-espacio">
                             <NavLink to="/visualizar-animales" className="btn btn-info">VISUALIZAR OTROS ANIMALES</NavLink>
                         </div>
