@@ -27,7 +27,7 @@ export const FormularioCorral = () => {
     const modoFinal = modo || (id ? "ver" : "agregar")
 
     const [corral, setCorral] = useState(corralInicial ||{
-        id: "",
+        id: null,
         codigo: "",
         nombre: "",
     });
@@ -47,13 +47,14 @@ export const FormularioCorral = () => {
     acceder al listado de los mismos. Para ello, se obtiene dicha información
     con "AnimalesContext"  */
 
-    const {animales} = useContext(AnimalesContext); // Lista de vacas/terneros
+    const {animales, modificarAnimal} = useContext(AnimalesContext); // Lista de vacas/terneros
     /* Se obtiene las funciones: agregarCorral y modificarCorral para hacer CU (agregar y modificar).
           Para ello se emplea useContext (se accede al contexto) ----> Se utiliza CorralesContext.
           También obtenemos "corrales", para ver los corrales que hay existentes y hacer comprobaciones
           en los nombres y evitar nombres duplicados.
     */
     const {agregarCorral, modificarCorral, corrales} = useContext(CorralesContext);
+
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modoFinal === "ver";
@@ -126,7 +127,7 @@ export const FormularioCorral = () => {
         if (corral.id && animales.length > 0) {
             const relacionados = animales.filter(a => a.corral === corral.id);
             //setAnimalesSeleccionados(relacionados.map(a => a.id));
-            const ids = relacionados.map(a => a.id);
+            const ids = relacionados.map(a => Number(a.id));
             animalesOriginalesRef.current = ids; // guardamos los originales
             setAnimalesSeleccionados(ids);       // también los usamos como seleccionados iniciales
 
@@ -134,6 +135,7 @@ export const FormularioCorral = () => {
     }, [corral.id, animales]);
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
+        console.log('😉 Animal seleccionado: ', id);
         setAnimalesSeleccionados((prev) =>
             prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
         );
@@ -156,24 +158,39 @@ export const FormularioCorral = () => {
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
+        const corralConvertido = convertirCorralParaAPI(corral);
+        console.log("😀 Corral convertido: ", corral);
         let nuevoCorralId = corral.id;
-
         try {
             if (esAgregar) {
-                const response = await api.post("/corrales/", corral);
-                nuevoCorralId = response.data.id;
-                console.log("✅ Corral añadido:", response.data);
+                const nuevoCorralCreado = await agregarCorral(corralConvertido);
+                nuevoCorralId = nuevoCorralCreado.id;
+                console.log("✅ Corral añadido:", nuevoCorralCreado);
             }
 
             /* Recorre la lista de animales (vacas/terneros) que han sido seleccionados
                para actualizar el "corral" donde se encuentra -----> (AnimalesContext).
                (Actualización de los animales en el contexto)
             */
-            // Se actualiza los animales, eliminándolos de sus corrales anteriores
-            for (const id of animalesSeleccionados) {
-                const animal = animales.find((animal) => animal.id === id);
 
+            console.log("📋 Todos los animales en contexto:");
+            animales.forEach(a => {
+                console.log(`  → id: ${a.id}, código: ${a.codigo}`);
+            });
+            console.log("🧠 IDs seleccionados:", animalesSeleccionados);
+            const nuevosAnimales = animalesSeleccionados.filter(
+                id => !animalesOriginalesRef.current.includes(id)
+            );
+            // Se actualiza los animales, eliminándolos de sus corrales anteriores
+            for (const id of nuevosAnimales) {
+                // console.log("OEOEO id: ",id);
+                // const animal = animales.find((animal) => animal.id === id);
+                const idNum = Number(id); // 👈 Asegúrate de que sea número
+                const animal = animales.find((a) => a.id === idNum);
+
+                console.log("🔍 Buscando animal con ID:", idNum);
                 if (animal) {
+                    console.log("✅ Animal encontrado:", animal.codigo);
                     // Se elimina el animal del corral anterior para poder añadirlo al nuevo corral.
                     //const corralAnterior = corrales.find((corralBuscado) => corralBuscado.nombre === animal.corral);
 
@@ -192,13 +209,15 @@ export const FormularioCorral = () => {
                     // Se asigna al animal el nuevo corral.
                     //modificarAnimal({ ...animal, corral: corral.nombre });
                     await api.put(`/animales/${animal.id}/`, animalActualizado);
+                    modificarAnimal(animalActualizado); // 👈 ACTUALIZA el contexto
+
                 }
             }
             // Se crea el nuevo objeto corral con la lista actualizada de las vacas/terneros.
             //const nuevoCorral = {...corral, listaAnimales: animalesSeleccionados};
-            const nuevoCorral = { ...corral };
+            //const nuevoCorral = { ...corral };
             if (esModificar) {
-                const response = await api.put(`/corrales/${corral.id}/`, nuevoCorral);
+                const response = await api.put(`/corrales/${corral.id}/`, corralConvertido);
                 console.log("✅ Corral modificado:", response.data);
             }
 
@@ -227,32 +246,62 @@ export const FormularioCorral = () => {
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
-        el usuario puese seguir añadiendo nuevos corrales. ".
-        */
+        const corralConvertido = convertirCorralParaAPI(corral);
+        let nuevoCorralId = corral.id;
         try {
-            // 1. Actualizar el corral de cada animal seleccionado
-            for (const id of animalesSeleccionados) {
-                const animal = animales.find((a) => a.id === id);
+            if (esAgregar) {
+                const nuevoCorralCreado = await agregarCorral(corralConvertido); // 👈 Solo usamos el Context
+                nuevoCorralId = nuevoCorralCreado.id;
+                console.log("✅ Corral añadido:", nuevoCorralCreado);
+            }
+
+            // Actualizar animales con el nuevo corral
+            const nuevosAnimales = animalesSeleccionados.filter(
+                id => !animalesOriginalesRef.current.includes(id)
+            );
+
+            for (const id of nuevosAnimales) {
+                const idNum = Number(id);
+                const animal = animales.find(a => a.id === idNum);
+
                 if (animal) {
                     const animalActualizado = {
                         ...animal,
-                        corral: corral.id // Usamos el ID del nuevo corral
+                        corral: nuevoCorralId
                     };
                     await api.put(`/animales/${animal.id}/`, animalActualizado);
+                    modificarAnimal(animalActualizado); // 👈 Actualiza el contexto
                 }
             }
+        /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
+        el usuario puese seguir añadiendo nuevos corrales. ".
+        */
 
-            // 2. Crear el nuevo corral en el backend
-            if (esAgregar) {
-                const nuevoCorral = {
-                    ...corral,
-                    //listaAnimales: animalesSeleccionados
-                };
 
-                const response = await api.post("/corrales/", nuevoCorral);
-                console.log("✅ Corral añadido:", response.data);
-            }
+
+        // try {
+        //     // 1. Actualizar el corral de cada animal seleccionado
+        //     for (const id of animalesSeleccionados) {
+        //         const animal = animales.find((a) => a.id === id);
+        //         if (animal) {
+        //             const animalActualizado = {
+        //                 ...animal,
+        //                 corral: corral.id // Usamos el ID del nuevo corral
+        //             };
+        //             await api.put(`/animales/${animal.id}/`, animalActualizado);
+        //         }
+        //     }
+        //
+        //     // 2. Crear el nuevo corral en el backend
+        //     if (esAgregar) {
+        //         const nuevoCorral = {
+        //             ...corral,
+        //             //listaAnimales: animalesSeleccionados
+        //         };
+        //
+        //         const response = await api.post("/corrales/", nuevoCorral);
+        //         console.log("✅ Corral añadido:", response.data);
+        //     }
 
             // 3. Limpiar formulario para seguir añadiendo
             setCorral({
