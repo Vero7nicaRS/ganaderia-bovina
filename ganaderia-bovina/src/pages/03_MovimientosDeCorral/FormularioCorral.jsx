@@ -308,7 +308,7 @@ export const FormularioCorral = () => {
                             type="text"
                             name="id"
                             className="cuadro-texto"
-                            value={corral.id || ""}
+                            value={corral.codigo || ""}
                             disabled
                         />
                     </div>
