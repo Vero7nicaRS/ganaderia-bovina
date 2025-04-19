@@ -118,7 +118,7 @@ export const ListaCorrales = () => {
                             ) : (
                                 datosFiltrados.map((item) => (
                                     <tr key={item.id}>
-                                        <td>{item.id}</td>
+                                        <td>{item.codigo}</td>
                                         <td>{item.nombre}</td>
 
                                         <td>
@@ -137,7 +137,7 @@ export const ListaCorrales = () => {
                                             {/*    VER*/}
                                             {/*</NavLink>*/}
                                             <NavLink
-                                                to={`/formulario-animal/${item.id}`}
+                                                to={`/formulario-corral/${item.id}`}
                                                 state={{modo: "ver", corral: item}}
                                                 className="btn-ver"
                                             >
@@ -156,7 +156,7 @@ export const ListaCorrales = () => {
                                                 {/*    MODIFICAR*/}
                                                 {/*</NavLink>*/}
                                                 <NavLink
-                                                    to={`/formulario-animal/${item.id}`}
+                                                    to={`/formulario-corral/${item.id}`}
                                                     state={{modo: "modificar", corral: item}}
                                                     className="btn-modificar"
                                                 >
