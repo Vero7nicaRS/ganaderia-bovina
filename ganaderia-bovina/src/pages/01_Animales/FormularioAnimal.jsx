@@ -91,43 +91,6 @@ export const FormularioAnimal = () => {
     //     return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
     // };
 
-    /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
-   renderización del componente y de los cambios realizados en las dependencias.
-   En este caso, el useEffect se ejecutará cuando se hayan realizado la ejecución
-   de todas las funciones, y una vez renderizado, se evalúan las dependencias que son
-   "animales", "corrales" y "modificarCorral".
-   Por tanto, cada vez que el estado "animales" o "corrales" cambie, se ejecutará el UseEffect.
-   Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
-   Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
-
-   Razón de las dependencias escogidas:
-    - animales: cada vez que cambie la lista de animales (agregar o modificar), se quiere que se ejecute
-    para que la información esté sincronizada.
-    - corrales: cada vez que cambie la lista de corrales (agregar o modificar), "".
-    - modificarCorral: aparece dentro del UseEffect.
-
-    En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
-    actualizada.
-   * */
-    // useEffect(() => {
-    //
-    //     // Se recorre cada corral (corral) de la lista de corrales (corrales - Context) viendo los animales que tiene, para así actualizarlo.
-    //     corrales.forEach((corral) => {
-    //         // Se obtienen los IDs de los animales que tienen ese corral asignado.
-    //         const animalesAsignados = animales
-    //             .filter((animal) => animal.corral === corral.nombre) // ¿Animal está en ese corral?
-    //             .map((animal) => animal.id); //Si está, dame el identificador del animal.
-    //
-    //         // Si la lista del corral es distinta de los animales asignados, se actualiza el corral
-    //         if (!sonIgualesListas(corral.listaAnimales, animalesAsignados)) {
-    //             const updatedCorral = { ...corral, listaAnimales: animalesAsignados };
-    //             modificarCorral(updatedCorral);
-    //         }
-    //     });
-    //     console.log("Animales actualizados en el contexto:", animales);
-    //     console.log("Corrales actualizados en el contexto:", corrales);
-    // }, [animales, corrales, modificarCorral]);
-
 
     /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
     renderización del componente y de los cambios realizados en las dependencias.
@@ -300,7 +263,7 @@ export const FormularioAnimal = () => {
                                 type="text"
                                 name="id"
                                 className="cuadro-texto"
-                                value={animal.id || ""}
+                                value={animal.codigo || ""}
                                 disabled
                             />
 
