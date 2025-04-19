@@ -131,10 +131,13 @@ class AnimalSerializer(serializers.ModelSerializer):
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
-        # Si el código existe en el sistema, se lanza un mensaje de error.
+
         #if Animal.objects.filter(codigo=value).exists():
         #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
-        if Animal.objects.filter(codigo=value).exists():
+
+        # Si el código existe en el sistema, se lanza un mensaje de error.
+        # También, si se modifica el animal se excluye ese "id" de la lista para que no haya conflicto en el filtrado.
+        if Animal.objects.filter(codigo=value).exclude(id=self.instance.id).exists():
             raise serializers.ValidationError(
                 f"El código '{value}' ya existe en el sistema."
             )
