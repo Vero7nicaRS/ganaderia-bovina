@@ -78,6 +78,15 @@ export const AnimalesProvider = ({children}) => {
             console.error("Error al eliminar animal:", error.response?.data || error.message);
         }
     };
+
+    const actualizarAnimalEnContexto = (animalActualizado) => {
+        setAnimales(prev =>
+            prev.map(animal =>
+                animal.id === animalActualizado.id ? animalActualizado : animal
+            )
+        );
+    };
+
     // const agregarAnimal = (nuevoAnimal) => {
     //
     //     if (!nuevoAnimal.tipo) {
@@ -121,7 +130,7 @@ export const AnimalesProvider = ({children}) => {
     // };
 
     return (
-        <AnimalesContext.Provider value={{ animales, agregarAnimal, modificarAnimal, eliminarAnimal }}>
+        <AnimalesContext.Provider value={{ animales, agregarAnimal, modificarAnimal, eliminarAnimal, actualizarAnimalEnContexto }}>
             {children}
         </AnimalesContext.Provider>
     );
