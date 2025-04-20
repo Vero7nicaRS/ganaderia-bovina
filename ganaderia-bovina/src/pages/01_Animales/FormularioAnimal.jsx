@@ -391,13 +391,24 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.corral ? "error" : ""}`}
                                 name="corral"
                                 disabled={esVisualizar} //Se indica que el campo "Corral" no se puede modificar cuando se Visualiza.
-                                value={esVisualizar ? codigoCorralActual : animal.corral || ""}
+                                //value={esVisualizar ? codigoCorralActual : animal.corral || ""}
+                                /* El valor del campo "corral" es:
+                                    - null: aparece "Ninguno" (esta situación es cuando un animal tiene el estado
+                                        "VENDIDA" o "MUERTE").
+                                    - codigoCorralActual: se muestra el código del corral.
+                                   Cuando estamos MODIFICANDO al animal, NO se puede escoger "Ninguno".
+                                */
+                                value={esVisualizar
+                                    ? (animal.corral === null ? "Ninguno" : codigoCorralActual)
+                                    : animal.corral || ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un corral</option>
                                 {/* Si el animal ha sido vendido o muerto, el corral tiene como valor
-                                    ninguno */}
-                                {/* Opción oculta pero mostrada si ya estaba asignada */}
+                                    ninguno. Opción oculta pero mostrada si ya estaba asignada */}
+                                {esVisualizar && (
+                                    <option value="Ninguno">Ninguno</option>
+                                )}
                                 {animal.corral && (
                                     !corrales.some((c) => c.codigo === animal.corral) || animal.corral === "Ninguno"
                                 ) && (
