@@ -15,7 +15,7 @@ import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesConte
 import {ComprobarCamposEliminacionAnimal} from "../../components/ComprobarCamposEliminacionAnimal.jsx";
 import Swal from "sweetalert2";
 import api from "../../api.js";
-import {convertirAnimalParaAPI} from "../../utilities/ConversorAnimal.js";
+
 
 export const  EliminarAnimal = () => {
 
@@ -33,7 +33,7 @@ export const  EliminarAnimal = () => {
     /* Se obtiene la función eliminarAnimal para hacer D (eliminar).
          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
     */
-    const { eliminarAnimal, modificarAnimal } = useContext(AnimalesContext);
+    const { eliminarAnimal, actualizarAnimalEnContexto , modificarAnimal} = useContext(AnimalesContext);
 
 
     // Estado para almacenar el motivo de eliminación, comentarios y la fecha de eliminación.
@@ -98,7 +98,7 @@ export const  EliminarAnimal = () => {
     /* corralMV: Variable que contiene el valor "ninguno", se utilizará para actualizar el campo "corral"
     cuando el animal tenga como estado "vendida" o "muerte".
     * */
-    const corralMV = 'Ninguno';
+    //const corralMV = 'Ninguno';
 
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
 
@@ -125,19 +125,26 @@ export const  EliminarAnimal = () => {
         //     return;
         // }
         try {
-            const response = await api.delete(`/animales/${animal.id}/eliminar/`, {
-                params: { motivo }
+
+            console.log("🧩 ID del animal que se va a eliminar:", animal.id);
+            await api.delete(`/animales/${animal.id}/eliminar/`, {
+                params: {
+                    motivo,
+                    fechaEliminacion: fechaEliminacion || undefined,
+                    comentario: comentarios || undefined
+                }
             });
 
             if (motivo === "Error") {
-                eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
+                eliminarAnimal(animal.id, false); // ❌ no volver a contactar con el backend, solo contexto
+                // Se elimina directamente el animal del contexto
 
                 {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
                 //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
                 Swal.fire({
                     icon: 'success',
                     title: 'Animal eliminado',
-                    html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>
+                    html: `<strong>${animal.codigo}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>
                        <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ?
                         `<br>Comentarios: ${comentarios}` : ""}`,
                     confirmButtonText: 'Aceptar'
@@ -146,31 +153,33 @@ export const  EliminarAnimal = () => {
             } else { //Motivo === MUERTA o VENDIDA
                 /*Se actualiza el ESTADO del animal a "Muerte" o "Vendida" y el corral a "Ninguno".
                 Además, se añade un comentario en caso de que haya introducido información el usuario*/
-                const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
 
-                const animalActualizado = {
-                    ...animal,
-                    estado: motivo,
-                    corral: corralMV, /* CorralMV: contiene el valor "Ninguno"*/
-                    comentario: comentarios,
-                    fechaEliminacion: fechaEliminacion
-                };
-                modificarAnimal(animalActualizado);
                 {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo,
             su fecha de eliminación y los comentarios que se hayan puesto comentarios.
             */
                 }
+
+                const animalActualizado = {
+                    ...animal,
+                    estado: motivo,
+                    corral: "Ninguno", // Para mostrar "Ninguno" en la interfaz
+                    comentario: comentarios,
+                    fechaEliminacion: fechaEliminacion
+                };
+
+               // actualizarAnimalEnContexto(animalActualizado);
+                eliminarAnimal(animalActualizado.id, false); // ❌ no volver a contactar con el backend, solo contexto
+
                 //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
                 Swal.fire({
                     icon: 'success',
                     title: 'Animal eliminado',
-                    html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
+                    html: `<strong>${animal.codigo}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
                        <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ?
                         `<br>Comentarios: ${comentarios}` : ""}`,
                     confirmButtonText: 'Aceptar'
                 });
             }
-
             navigate("/visualizar-animales"); // Redirige a la página que contiene la lista de animales.
 
         }catch(error){
@@ -286,7 +295,6 @@ export const  EliminarAnimal = () => {
                     </div>
                 </div>
             </div>
-
 
             <>
                 {/* BOTÓN DE CONFIRMAR ELIMINACIÓN (se vuelve a la lista de animales) */}
