@@ -117,9 +117,19 @@ class AnimalViewSet(viewsets.ModelViewSet):
                 return self.destroy(request, pk=pk)  # Se utiliza el método destroy de arriba.
 
             elif motivo in ["MUERTE", "VENDIDA"]:
+                # Se le da la posibilidad al usuario que introduzca una fecha de eliminación.
+                # Si no se indica, se tomará la del día actual.
+                fecha_eliminacion = request.query_params.get('fecha_eliminacion')
+                if fecha_eliminacion:
+                    instance.fecha_eliminacion = fecha_eliminacion
+                else:
+                    instance.fecha_eliminacion = datetime.now()
                 instance.estado = motivo.capitalize()
                 instance.fecha_eliminacion = datetime.now()
                 instance.corral = None  # Eliminar del corral
+                # Se añade el comentario que se ha podido indicar en la eliminación.
+                comentario = request.query_params.get('comentario', '')
+                instance.comentario = comentario
                 instance.save()
                 return Response(
                     {f"{'El' if tipo == 'Ternero' else 'La'} "
