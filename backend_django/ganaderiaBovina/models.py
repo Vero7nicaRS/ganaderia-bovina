@@ -231,6 +231,7 @@ class Animal(models.Model):
 
     comentario = models.TextField(null=True, blank=True)
     fecha_eliminacion = models.DateField(null=True, blank=True)  # Se añade fecha de eliminación si hay eliminación de "Vendida" o "Muerta"
+    comentario = models.TextField(blank=True, null=True) # Se añade comentario si hay eliminación de "Vendida" o "Muerta"
 
     def save(self, *args, **kwargs):
         if not self.codigo:
