@@ -198,6 +198,7 @@ export const FormularioAnimal = () => {
                 console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
                 await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
                 setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+                // También, se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
         }catch(error){
             console.error("❌ Error al guardar el animal:", error);
