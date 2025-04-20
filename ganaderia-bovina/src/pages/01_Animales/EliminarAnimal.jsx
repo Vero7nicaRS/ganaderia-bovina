@@ -14,6 +14,8 @@ import {useContext, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx"
 import {ComprobarCamposEliminacionAnimal} from "../../components/ComprobarCamposEliminacionAnimal.jsx";
 import Swal from "sweetalert2";
+import api from "../../api.js";
+import {convertirAnimalParaAPI} from "../../utilities/ConversorAnimal.js";
 
 export const  EliminarAnimal = () => {
 
@@ -101,7 +103,7 @@ export const  EliminarAnimal = () => {
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
 
     // Manejador para eliminar el animal
-    const handleEliminar = () => {
+    const handleEliminar = async () => {
 
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
@@ -122,47 +124,63 @@ export const  EliminarAnimal = () => {
         //     alert("ERROR: Por favor, ingresa la fecha de fallecimiento.");
         //     return;
         // }
-
-        if(motivo === "Error"){
-            eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
-
-            {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
-            //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
-            Swal.fire({
-                icon: 'success',
-                title: 'Animal eliminado',
-                html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>
-                       <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ? 
-                      `<br>Comentarios: ${comentarios}` : ""}`,
-                confirmButtonText: 'Aceptar'
+        try {
+            const response = await api.delete(`/animales/${animal.id}/eliminar/`, {
+                params: { motivo }
             });
 
-        }else{ //Motivo === MUERTA o VENDIDA
-            /*Se actualiza el ESTADO del animal a "Muerte" o "Vendida" y el corral a "Ninguno".
-            Además, se añade un comentario en caso de que haya introducido información el usuario*/
-            const animalActualizado = {
-                ...animal,
-                estado: motivo,
-                corral: corralMV, /* CorralMV: contiene el valor "Ninguno"*/
-                comentario: comentarios,
-                fechaEliminacion: fechaEliminacion
-            };
-            modificarAnimal(animalActualizado);
-            {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo,
+            if (motivo === "Error") {
+                eliminarAnimal(animal.id); // Se elimina directamente el animal del contexto
+
+                {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
+                //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Animal eliminado',
+                    html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>
+                       <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ?
+                        `<br>Comentarios: ${comentarios}` : ""}`,
+                    confirmButtonText: 'Aceptar'
+                });
+
+            } else { //Motivo === MUERTA o VENDIDA
+                /*Se actualiza el ESTADO del animal a "Muerte" o "Vendida" y el corral a "Ninguno".
+                Además, se añade un comentario en caso de que haya introducido información el usuario*/
+                const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
+
+                const animalActualizado = {
+                    ...animal,
+                    estado: motivo,
+                    corral: corralMV, /* CorralMV: contiene el valor "Ninguno"*/
+                    comentario: comentarios,
+                    fechaEliminacion: fechaEliminacion
+                };
+                modificarAnimal(animalActualizado);
+                {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo,
             su fecha de eliminación y los comentarios que se hayan puesto comentarios.
-            */}
-            //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+            */
+                }
+                //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Animal eliminado',
+                    html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
+                       <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ?
+                        `<br>Comentarios: ${comentarios}` : ""}`,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+
+            navigate("/visualizar-animales"); // Redirige a la página que contiene la lista de animales.
+
+        }catch(error){
+                console.error("❌ Error al eliminar el animal:", error.response?.data || error.message);
             Swal.fire({
-                icon: 'success',
-                title: 'Animal eliminado',
-                html: `<strong>${animal.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
-                       <br>Fecha de eliminación: <strong>${fechaEliminacion}</strong>${comentarios ? 
-                      `<br>Comentarios: ${comentarios}` : ""}`,
-                confirmButtonText: 'Aceptar'
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo eliminar el animal. Revisa los datos o intenta más tarde.'
             });
         }
-
-        navigate("/visualizar-animales"); // Redirige a la página que contiene la lista de animales.
     };
 
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
