@@ -111,21 +111,27 @@ class AnimalViewSet(viewsets.ModelViewSet):
         codigo = instance.codigo
         tipo = instance.tipo.lower()
         try:
-            motivo = request.query_params.get('motivo', '').upper()
 
+
+            motivo = request.query_params.get('motivo', '').upper()
             if motivo == "ERROR":
                 return self.destroy(request, pk=pk)  # Se utiliza el método destroy de arriba.
 
             elif motivo in ["MUERTE", "VENDIDA"]:
                 # Se le da la posibilidad al usuario que introduzca una fecha de eliminación.
                 # Si no se indica, se tomará la del día actual.
-                fecha_eliminacion = request.query_params.get('fecha_eliminacion')
+                fecha_eliminacion = request.query_params.get('fechaEliminacion')
                 if fecha_eliminacion:
-                    instance.fecha_eliminacion = fecha_eliminacion
+                    try:
+                        instance.fecha_eliminacion = datetime.strptime(fecha_eliminacion, "%Y-%m-%d").date()
+                    except ValueError:
+                        return Response({
+                            "ERROR": "Formato de fecha inválido. Usa AAAA-MM-DD (ejemplo: 2025-04-20)."
+                        }, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    instance.fecha_eliminacion = datetime.now()
+                    instance.fecha_eliminacion = datetime.now().date()
+
                 instance.estado = motivo.capitalize()
-                instance.fecha_eliminacion = datetime.now()
                 instance.corral = None  # Eliminar del corral
                 # Se añade el comentario que se ha podido indicar en la eliminación.
                 comentario = request.query_params.get('comentario', '')
