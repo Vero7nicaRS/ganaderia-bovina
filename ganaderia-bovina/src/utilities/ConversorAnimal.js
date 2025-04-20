@@ -35,6 +35,14 @@ function buscarIdPorNombre(nombre, lista) {
     return item ? item.id : null;
 }
 
+export function convertirAnimalDeleteParaAPI(animal, motivo, fechaEliminacion, comentario) {
+    return {
+        estado: motivo,
+        corral: null, // Se elimina del corral
+        comentario: comentario || "",
+        fecha_eliminacion: fechaEliminacion || null,
+    };
+}
 /*
 * -------------------------------------------------------------------------------------------------------
 *                                       Función para TORO
