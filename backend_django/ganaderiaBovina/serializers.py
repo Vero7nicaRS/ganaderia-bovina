@@ -350,6 +350,14 @@ class CorralSerializer(serializers.ModelSerializer):
         #if Corral.objects.filter(codigo=value).exists():
         #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
+        # Si el código existe en el sistema, se lanza un mensaje de error.
+        # También, si se modifica el corral se excluye ese "id" de la lista para que no haya conflicto en el filtrado.
+        if Corral.objects.filter(codigo=value).exclude(id=self.instance.id).exists():
+            raise serializers.ValidationError(
+                f"El código '{value}' ya existe en el sistema."
+            )
+        return value
+
         return value
 
     # Se obtiene el número de animales que tiene el corral con el campo calculado.
