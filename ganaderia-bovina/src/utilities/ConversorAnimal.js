@@ -34,14 +34,15 @@ function buscarIdPorNombre(nombre, lista) {
     const item = lista.find((obj) => obj.nombre === nombre);
     return item ? item.id : null;
 }
-
 export function convertirAnimalDeleteParaAPI(animal, motivo, fechaEliminacion, comentario) {
-    return {
+    const convertido = {
+        ...animal,
         estado: motivo,
-        corral: null, // Se elimina del corral
-        comentario: comentario || "",
         fecha_eliminacion: fechaEliminacion || null,
+        comentario: comentario || "",
+        corral: null // Se elimina el corral del animal.
     };
+    return convertido;
 }
 /*
 * -------------------------------------------------------------------------------------------------------
