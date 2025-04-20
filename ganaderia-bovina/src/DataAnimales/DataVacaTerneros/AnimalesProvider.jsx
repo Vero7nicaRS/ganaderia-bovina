@@ -70,9 +70,11 @@ export const AnimalesProvider = ({children}) => {
 *                       eliminarAnimal: ELIMINACIÓN del ANIMAL (DELETE)
 * ----------------------------------------------------------------------------------------------
 */
-    const eliminarAnimal = async (id) => {
+    const eliminarAnimal = async (id,desdeBackend) => {
         try {
-            await api.delete(`/animales/${id}/`);
+            if (desdeBackend) {
+                await api.delete(`/animales/${id}/`);
+            }
             setAnimales(prev => prev.filter(animal => animal.id !== id));
         } catch (error) {
             console.error("Error al eliminar animal:", error.response?.data || error.message);
