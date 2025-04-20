@@ -6,8 +6,7 @@ import {ComprobarCamposFormularioCorral} from "../../components/ComprobarCamposF
 import {CorralesContext} from "../../DataAnimales/DataCorrales/CorralesContext.jsx";
 import api from "../../api.js";
 import { useParams } from "react-router-dom";
-import {convertirAnimalParaAPI, convertirCorralParaAPI} from "../../utilities/ConversorAnimal.js";
-import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
+import { convertirCorralParaAPI} from "../../utilities/ConversorAnimal.js";
 export const FormularioCorral = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento)
@@ -21,24 +20,17 @@ export const FormularioCorral = () => {
     * state={{modo: "ver", corral: item}}
     * Por lo que tiene que tener el mismo nombre para referenciarlo correctamente.
     * */
-    //const { modo, corral: corralInicial } = location.state || {}; // Se recupera el modo y corral desde el state
     const { id } = useParams();  // si defines la ruta como /formulario-corral/:id
-    const { modo, corral: corralInicial } = location.state || {};
+    const { modo, corral: corralInicial } = location.state || {}; // Se recupera el modo y corral desde el state
     const modoFinal = modo || (id ? "ver" : "agregar")
 
+    /* Se inicializa el corral con los datos del state.
+    En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
     const [corral, setCorral] = useState(corralInicial ||{
         id: null,
         codigo: "",
         nombre: "",
     });
-
-    /* Se inicializa el corral con los datos del state.
-       En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    // const [corral, setCorral] = useState(corralInicial || {
-    //     id: "",
-    //     codigo: "",
-    //     nombre: ""
-    // });
 
     /*
     - Se obtiene "modificarAnimal" de "AnimalesContext" para actualizar el estado del "corral".
@@ -73,6 +65,7 @@ export const FormularioCorral = () => {
         }
         return [];
     });
+
     //Manejador para llevar acabo las modificaciones de los corrales (actualizar el estado de corral)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -133,6 +126,7 @@ export const FormularioCorral = () => {
 
         }
     }, [corral.id, animales]);
+
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
         console.log('😉 Animal seleccionado: ', id);
@@ -143,8 +137,9 @@ export const FormularioCorral = () => {
 
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposFormularioCorral(corral, corrales); // Revisa todos los campos
-        // Contemplamos que puede haber corrales vacios.
-        // if (animalesSeleccionados.length === 0) erroresTemp.listaAnimales = "Debes seleccionar al menos un animal.";
+        /* Se contempla que puede haber corrales vacíos, es decir, sin ningún animal.
+         if (animalesSeleccionados.length === 0) erroresTemp.listaAnimales = "Debes seleccionar al menos un animal.";
+         */
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);
@@ -213,12 +208,11 @@ export const FormularioCorral = () => {
 
                 }
             }
-            // Se crea el nuevo objeto corral con la lista actualizada de las vacas/terneros.
-            //const nuevoCorral = {...corral, listaAnimales: animalesSeleccionados};
-            //const nuevoCorral = { ...corral };
+
             if (esModificar) {
-                const response = await api.put(`/corrales/${corral.id}/`, corralConvertido);
-                console.log("✅ Corral modificado:", response.data);
+                const corral_actualizado = await modificarCorral(corralConvertido);
+                setCorral(corralConvertido); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
+                console.log("✅ Corral modificado:", corral_actualizado);
             }
 
             /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
@@ -229,16 +223,6 @@ export const FormularioCorral = () => {
             console.error("❌ Error al guardar el corral o actualizar animales:", error);
             console.log("💬 Detalles del error:", error.response?.data);
         }
-
-        // Si el corral no existe, se agrega como un nuevo corral
-        // if (!corrales.find((corralBuscado) => corralBuscado.id === nuevoCorral.id)) {
-        //     // Se agrega el corral.
-        //     agregarCorral(nuevoCorral); // Se llama a "agregarCorral" de "FormularioContext".
-        // } else {
-        //     // Si el corral ya existe, lo modificamos
-        //     modificarCorral(nuevoCorral); // Se llama a "modificarCorral" de "FormularioContext".
-        // }
-
     };
 
     const handleAceptarYSeguir = async (e) => {
@@ -250,7 +234,7 @@ export const FormularioCorral = () => {
         let nuevoCorralId = corral.id;
         try {
             if (esAgregar) {
-                const nuevoCorralCreado = await agregarCorral(corralConvertido); // 👈 Solo usamos el Context
+                const nuevoCorralCreado = await agregarCorral(corralConvertido);  // Se añade el nuevo corral al backend y se muestra la información en el frontend.
                 nuevoCorralId = nuevoCorralCreado.id;
                 console.log("✅ Corral añadido:", nuevoCorralCreado);
             }
@@ -273,36 +257,9 @@ export const FormularioCorral = () => {
                     modificarAnimal(animalActualizado); // 👈 Actualiza el contexto
                 }
             }
-        /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
-        el usuario puese seguir añadiendo nuevos corrales. ".
-        */
-
-
-
-        // try {
-        //     // 1. Actualizar el corral de cada animal seleccionado
-        //     for (const id of animalesSeleccionados) {
-        //         const animal = animales.find((a) => a.id === id);
-        //         if (animal) {
-        //             const animalActualizado = {
-        //                 ...animal,
-        //                 corral: corral.id // Usamos el ID del nuevo corral
-        //             };
-        //             await api.put(`/animales/${animal.id}/`, animalActualizado);
-        //         }
-        //     }
-        //
-        //     // 2. Crear el nuevo corral en el backend
-        //     if (esAgregar) {
-        //         const nuevoCorral = {
-        //             ...corral,
-        //             //listaAnimales: animalesSeleccionados
-        //         };
-        //
-        //         const response = await api.post("/corrales/", nuevoCorral);
-        //         console.log("✅ Corral añadido:", response.data);
-        //     }
-
+            /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
+            el usuario puese seguir añadiendo nuevos corrales. ".
+            */
             // 3. Limpiar formulario para seguir añadiendo
             setCorral({
                 nombre: "",
@@ -315,12 +272,6 @@ export const FormularioCorral = () => {
             console.error("❌ Error al guardar el corral o actualizar animales:", error);
             console.log("💬 Detalles del error:", error.response?.data);
         }
-        // if(esAgregar){
-        //     console.log("Se ha añadido el nuevo corral y se continúa añadiendo nuevos corrales");
-        //     agregarCorral({ ...corral, listaAnimales: animalesSeleccionados }); // Llamada a la función agregar de CorralesContext: Se añade el nuevo corral al listado de corrales
-        //     setCorral({ nombre: "", listaAnimales: [] }); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
-        //     setAnimalesSeleccionados([]); //La lista de animales seleccionados se pone vacía.
-        // }
     }
 
     // Manejo de la selección de animales
@@ -421,11 +372,16 @@ export const FormularioCorral = () => {
                                                             <label key={animal.id} className="item-animal">
                                                                 <input
                                                                     type="checkbox"
+                                                                    id={`animal-${animal.id}`}
+                                                                    name={`animal-${animal.id}`}
                                                                     checked={animalesSeleccionados.includes(animal.id)}
                                                                     onChange={() => toggleSeleccionAnimal(animal.id)}
                                                                 />
                                                                 {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra */}
-                                                                {animal.codigo} ({nombreCorral})
+                                                                {/*{animal.codigo} ({nombreCorral})*/}
+                                                                <label htmlFor={`animal-${animal.id}`}>
+                                                                    {animal.codigo} ({nombreCorral})
+                                                                </label>
                                                             </label>
                                                         );
                                                 })
