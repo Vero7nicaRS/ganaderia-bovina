@@ -24,7 +24,7 @@ from django.core.exceptions import ValidationError
 
 # Incluye todos los campos del modelo Animal, por tanto se podrá hacer CRUD mediante la API
 class AnimalSerializer(serializers.ModelSerializer):
-    comentario = serializers.CharField(required=False, allow_blank=True)
+    #Ya está incluido en el '__al__' --> comentario = serializers.CharField(required=False, allow_blank=True)
     # La comprobación del campo "unique" se hace antes que la del validate_codigo.
     # Por ello, se hace la comprobación aquí.
     # Si el código existe en el sistema, se lanza un mensaje de error
