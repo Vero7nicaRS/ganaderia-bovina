@@ -3,6 +3,7 @@ import {useContext, useMemo, useState} from "react";
 import Swal from "sweetalert2";
 import "../../styles/ListaCorrales.css"
 import {CorralesContext} from "../../DataAnimales/DataCorrales/CorralesContext.jsx";
+import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 export const ListaCorrales = () => {
 
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListaCorrales.
@@ -10,7 +11,7 @@ export const ListaCorrales = () => {
     */
     const {corrales} = useContext(CorralesContext);
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por nombre en la lista de corrales.
-
+    const {animales} = useContext(AnimalesContext);
 
     /* Se filtra la lista de corrales por el ID de la vaca o toro y por la fecha de inseminación */
     /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
@@ -87,13 +88,10 @@ export const ListaCorrales = () => {
                     <NavLink to="/movimiento-de-corral" className="btn btn-info">
                         MOVER DE CORRAL
                     </NavLink>
-
                 </div>
             </div>
 
-
             <div className="listaVacunasTratamientos">Lista de corrales:</div>
-
             <div>
                 <div className = "contenedor-tablaLI">
                     <table className="table">
@@ -123,19 +121,6 @@ export const ListaCorrales = () => {
 
                                         <td>
                                             {/* BOTÓN VER */}
-                                            {/*<NavLink*/}
-                                            {/*    to="/formulario-corral"*/}
-                                            {/*    state={{modo: "ver", corral: item}} //Se le pasa el corral (item)*/}
-                                            {/*    className="btn-ver">*/}
-                                            {/*    VER*/}
-                                            {/*</NavLink>*/}
-                                            {/*<NavLink*/}
-                                            {/*    to={`/formulario-corral/${item.id}`}*/}
-                                            {/*    state={{ modo: "ver" }}*/}
-                                            {/*    className="btn-ver"*/}
-                                            {/*>*/}
-                                            {/*    VER*/}
-                                            {/*</NavLink>*/}
                                             <NavLink
                                                 to={`/formulario-corral/${item.id}`}
                                                 state={{modo: "ver", corral: item}}
@@ -148,13 +133,6 @@ export const ListaCorrales = () => {
 
                                             <>
                                                 {/* BOTÓN MODIFICAR */}
-                                                {/*<NavLink*/}
-                                                {/*    to="/formulario-corral"*/}
-                                                {/*    state={{modo: "modificar", corral: item}} //Se le pasa el MODO (modificar) y la inseminación (item)*/}
-                                                {/*    className="btn-modificar"*/}
-                                                {/*>*/}
-                                                {/*    MODIFICAR*/}
-                                                {/*</NavLink>*/}
                                                 <NavLink
                                                     to={`/formulario-corral/${item.id}`}
                                                     state={{modo: "modificar", corral: item}}
@@ -164,9 +142,9 @@ export const ListaCorrales = () => {
                                                 </NavLink>
                                                 {/* BOTÓN ELIMINAR */}
 
-                                                {/* Solo se muestra el botón "ELIMINAR" si el corral no tiene ningun animal, es decir,
-                                                 está el corral vacío */}
-                                                {!item.listaAnimales || item.listaAnimales.length === 0 ? (
+                                                {/* Solo se muestra el botón "ELIMINAR" si el corral no
+                                                tiene ningun animal, es decir, está el corral vacío */}
+                                                {!animales.some(animal => animal.corral === item.id) ? (
                                                     //Si NO hay animales, aparece el botón de ELIMINAR.
                                                     <button
                                                         className="btn-eliminar"
@@ -181,7 +159,6 @@ export const ListaCorrales = () => {
                                                         ELIMINAR
                                                     </button>
                                                 )}
-
                                             </>
                                         </td>
                                     </tr>
@@ -192,13 +169,11 @@ export const ListaCorrales = () => {
                 </div>
             </div>
 
-
             {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
             <div className="boton-volver">
                 <NavLink to="/" className="btn btn-info">
                     VOLVER AL MENÚ
                 </NavLink>
-
             </div>
         </>
     )
