@@ -33,10 +33,15 @@ export const ListaCorrales = () => {
         setBusquedaID(e.target.value);
     };
     const {eliminarCorral} = useContext(CorralesContext);
-    // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2.
-    const manejarEliminar = (id) => {
+
+    /* Ventana de confirmación de la eliminación de del corral SweetAlert2.
+        Se le pasa por parámetro el "id" y el "código" del corral.
+        El "código" es para mostrar por mensaje el corral que se va a eliminar, mientras que el "id"
+        es para realizar la eliminación de dicho corral.
+    * */
+    const manejarEliminar = (id, codigo) => {
         Swal.fire({
-            title: `¿Desea eliminar el corral  ${id} seleccionado?`,
+            title: `¿Desea eliminar el corral ${codigo} seleccionado?`,
             text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -146,9 +151,12 @@ export const ListaCorrales = () => {
                                                 tiene ningun animal, es decir, está el corral vacío */}
                                                 {!animales.some(animal => animal.corral === item.id) ? (
                                                     //Si NO hay animales, aparece el botón de ELIMINAR.
+
                                                     <button
                                                         className="btn-eliminar"
-                                                        onClick={() => manejarEliminar(item.id)}
+                                                        onClick={() => manejarEliminar(item.id, item.codigo)}
+                                                        /* Se le pasa el "id" y el "código" para borrar el corral
+                                                  y mostrar un mensaje de error indicándole el código del corral. */
                                                     >
                                                         ELIMINAR
                                                     </button>
