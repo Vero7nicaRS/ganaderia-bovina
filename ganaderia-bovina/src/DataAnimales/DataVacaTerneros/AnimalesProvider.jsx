@@ -73,15 +73,28 @@ export const AnimalesProvider = ({children}) => {
     const eliminarAnimal = async (id,desdeBackend) => {
         try {
             if (desdeBackend) {
+                // Se borra del backend.
                 await api.delete(`/animales/${id}/`);
             }
+
+            // Se elimina del contexto al animal (se borra de la lista de animales y no aparece).
             setAnimales(prev => prev.filter(animal => animal.id !== id));
         } catch (error) {
             console.error("Error al eliminar animal:", error.response?.data || error.message);
         }
     };
 
+    // Se encarga de actualizar los datos de un animal en el contexto (lista de animales) gracias al map.
     const actualizarAnimalEnContexto = (animalActualizado) => {
+        /* Se recorren todos los animales y en el momento que el animal que haya sido pasado por parámetro
+            coincida con uno existente, se reemplaza ese animal por el nuevo
+            (que es el mismo pero con los datos actualizados)
+            En el caso de la eliminación por "MUERTE" o "VENDIDA", se actualiza:
+              - Estado.
+              - Corral.
+              - Comentario.
+              - Fecha de eliminación.
+        * */
         setAnimales(prev =>
             prev.map(animal =>
                 animal.id === animalActualizado.id ? animalActualizado : animal
