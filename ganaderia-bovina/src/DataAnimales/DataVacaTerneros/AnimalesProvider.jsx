@@ -55,9 +55,14 @@ export const AnimalesProvider = ({children}) => {
         try {
             // Se actualiza el animal en el backend
             const response = await api.put(`/animales/${animalModificado.id}/`, animalModificado);
-            setAnimales(prev =>
-                prev.map(animal => animal.id === animalModificado.id ? response.data : animal)
-            );
+             setAnimales(prev =>
+                 prev.map(animal => animal.id === animalModificado.id ? response.data : animal)
+             );
+
+            // Se recarga la lista de animales en el backend.
+            //const updatedList = await api.get("/animales/");
+            //setAnimales(updatedList.data); //Se actualiza el contexto.
+
             return response.data;
         } catch (error) {
             console.error("Error al modificar animal:", error.response?.data || error.message);
