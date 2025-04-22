@@ -29,11 +29,11 @@ export const  EliminarAnimal = () => {
     //Se obtiene al animal.
     const {animal: animalInicial } = location.state; // Se recupera  animal desde el state
     const [animal] = useState(animalInicial);
-    //setAnimal
+
     /* Se obtiene la función eliminarAnimal para hacer D (eliminar).
          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
     */
-    const { eliminarAnimal, actualizarAnimalEnContexto , modificarAnimal} = useContext(AnimalesContext);
+    const { eliminarAnimal, actualizarAnimalEnContexto} = useContext(AnimalesContext);
 
 
     // Estado para almacenar el motivo de eliminación, comentarios y la fecha de eliminación.
@@ -157,8 +157,7 @@ export const  EliminarAnimal = () => {
                 const animalActualizado = {
                     ...animal,
                     estado: motivo,
-                    corral: "Ninguno", /* Para mostrar "Ninguno" en la interfaz,
-                                            ya que este valor NO está registrado en el backend */
+                    corral: null, /* En el formulario se mostrará "Ninguno" cuando el valor del corral sea "null"*/
                     comentario: comentarios,
                     fechaEliminacion: fechaEliminacion
                 };
