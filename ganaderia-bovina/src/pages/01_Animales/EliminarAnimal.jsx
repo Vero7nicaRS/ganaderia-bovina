@@ -161,6 +161,7 @@ export const  EliminarAnimal = () => {
                     comentario: comentarios,
                     fechaEliminacion: fechaEliminacion
                 };
+
                 actualizarAnimalEnContexto(animalActualizado); // Se actualiza el estado del animal en el contexto.
 
                 //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
