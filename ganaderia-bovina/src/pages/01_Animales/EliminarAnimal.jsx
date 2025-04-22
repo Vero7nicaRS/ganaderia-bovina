@@ -107,26 +107,13 @@ export const  EliminarAnimal = () => {
 
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/}
-        // if (!motivo) {
-        //     alert("ERROR: Selecciona un motivo antes de eliminar el animal.");
-        //     return;
-        // }
-
-        /*
-            Si el animal ha sido eliminado por el motivo de ERROR, se elimina directamente del sistema.
-            Si el animal ha sido eliminado por el motivo de MUERTE o VENDIDA se actualizan sus campos de
-            estado y corral.
-        * */
-
-        // Si el motivo es "MUERTE" o "VENDIDA", se comprueba que se añada una fecha de eliminaciónla fecha de fallecimiento
-        // if ((motivo === "Muerte" || motivo === "Vendida") && !fechaEliminacion) {
-        //     alert("ERROR: Por favor, ingresa la fecha de fallecimiento.");
-        //     return;
-        // }
         try {
-
             console.log("🧩 ID del animal que se va a eliminar:", animal.id);
+            /* 1. Se elimina el animal del backend pasándole el motivo, fechaEliminacion y comentario en la petición.
+                Y el backend se encarga de:
+                    - Motivo ERROR: elimina al animal completamente del sistema (base de datos).
+                    - Motivo VENDIDA o MUERTE: NO elimina al animal del sistema, sino que se actualizan sus datos (campos estado [con el motivo] y corral ["Ninguno"]).
+            */
             await api.delete(`/animales/${animal.id}/eliminar/`, {
                 params: {
                     motivo,
@@ -135,9 +122,15 @@ export const  EliminarAnimal = () => {
                 }
             });
 
+            /* 2. Una vez que el animal ha sido tratado en el backend, ahora hay que ver qué hacer en el frontend.
+                    - Motivo ERROR: se elimina del contexto.
+                    - Motivo VENDIDA o MUERTE: se mantiene en el contexto y aparece con los campos actualizados.
+             */
             if (motivo === "Error") {
-                eliminarAnimal(animal.id, false); // ❌ no volver a contactar con el backend, solo contexto
-                // Se elimina directamente el animal del contexto
+                /* 2.1 Se elimina SOLAMENTE al animal del contexto porque ya ha sido eliminado antes del backend.
+                  Por ello se le pasa el "id" y "false", y "false" significa que no tiene que volver a hacer la petición al backend.
+                */
+                eliminarAnimal(animal.id, false);
 
                 {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
                 //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
@@ -151,24 +144,25 @@ export const  EliminarAnimal = () => {
                 });
 
             } else { //Motivo === MUERTA o VENDIDA
-                /*Se actualiza el ESTADO del animal a "Muerte" o "Vendida" y el corral a "Ninguno".
-                Además, se añade un comentario en caso de que haya introducido información el usuario*/
+                /* 2.2 Se actualizan los datos del animal al animal del contexto porque
+                ya ha sido eliminado antes del backend. no volver a contactar con el backend, solo contexto
+                Actualización del animal:
+                    - Estado: "Muerte" o "Vendida".
+                    - Corral: "Ninguno".
+                    - Comentario: se añade un comentario en caso de que haya introducido información el usuario.
+                */
 
-                {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo,
-            su fecha de eliminación y los comentarios que se hayan puesto comentarios.
-            */
-                }
-
+                /* Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo,
+                su fecha de eliminación y los comentarios que se hayan puesto comentarios. */
                 const animalActualizado = {
                     ...animal,
                     estado: motivo,
-                    corral: "Ninguno", // Para mostrar "Ninguno" en la interfaz
+                    corral: "Ninguno", /* Para mostrar "Ninguno" en la interfaz,
+                                            ya que este valor NO está registrado en el backend */
                     comentario: comentarios,
                     fechaEliminacion: fechaEliminacion
                 };
-
-               // actualizarAnimalEnContexto(animalActualizado);
-                eliminarAnimal(animalActualizado.id, false); // ❌ no volver a contactar con el backend, solo contexto
+                actualizarAnimalEnContexto(animalActualizado); // Se actualiza el estado del animal en el contexto.
 
                 //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
                 Swal.fire({
