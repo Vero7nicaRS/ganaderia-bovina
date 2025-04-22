@@ -22,22 +22,24 @@ export const MovimientoCorral = () => {
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
-    const [animal, setAnimal] = useState( {
-        id: "",
+
+    const estadoInicial = {
+        id: null,
         tipo: "Vaca",
         estado: "Vacía",
         nombre: "",
-        fechaNacimiento: "",
-        padre: "",
-        madre: "",
-        corral: "",
-        celulasSomaticas: "",
-        produccionLeche: "",
-        calidadPatas: "",
-        calidadUbres: "",
+        fecha_nacimiento: "",
+        padre: null,
+        madre: null,
+        corral: null,
+        celulas_somaticas: "",
+        produccion_leche: "",
+        calidad_patas: "",
+        calidad_ubres: "",
         grasa: "",
-        proteinas: ""
-    });
+        proteinas: "",
+    }
+    const [animal, setAnimal] = useState( estadoInicial);
 
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
@@ -53,62 +55,16 @@ export const MovimientoCorral = () => {
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
-
     // Se almacena el estado del animal seleccionado.
     const [animalSeleccionado, setAnimalSeleccionado] = useState("");
 
     // Se almacena el estado del corral origen del animal que ha sido seleccionado.
     const [corralOrigen, setCorralOrigen] = useState("");
+    const [corralOrigenId, setCorralOrigenId] = useState(null);
+
 
     // Me creo "una variable temporal" para almacenar el corral destino del animal.
     const [corralDestino, setCorralDestino] = useState(""); // Variable temporal para el corral destino
-
-
-    // Se emplea para comprobar si dos listas son iguales (en este caso, si dos corrales tienen los mismos elementos)
-    const sonIgualesListas = (lista1, lista2) => {
-        if (lista1.length !== lista2.length) return false;
-        // Se ordenan las listas para comparar los elementos.
-        const lista1Ordenada = [...lista1].sort();
-        const lista2Ordenada = [...lista2].sort();
-        return lista1Ordenada.every((val, index) => val === lista2Ordenada[index]);
-    };
-
-    /* El "useEffect" gestiona la actualización de los datos. Se ejecuta después de la
-   renderización del componente y de los cambios realizados en las dependencias.
-   En este caso, el useEffect se ejecutará cuando se hayan realizado la ejecución
-   de todas las funciones, y una vez renderizado, se evalúan las dependencias que son
-   "animales", "corrales" y "modificarCorral".
-   Por tanto, cada vez que el estado "animales" o "corrales" cambie, se ejecutará el UseEffect.
-   Esto asegura que los animales y los corrales están actualizándose en el contexto (tienen todos los valores actualizados).
-   Además, con "console.log" nos muestra por consola el estado actualizado de "animales" y "corrales".
-
-   Razón de las dependencias escogidas:
-    - animales: cada vez que cambie la lista de animales (agregar o modificar), se quiere que se ejecute
-    para que la información esté sincronizada.
-    - corrales: cada vez que cambie la lista de corrales (agregar o modificar), "".
-    - modificarCorral: aparece dentro del UseEffect.
-
-    En resumen, cada vez que haya un cambio en las dependencias, queremos que la información esté
-    actualizada.
-   * */
-    useEffect(() => {
-
-        // Se recorre cada corral (corral) de la lista de corrales (corrales - Context) viendo los animales que tiene, para así actualizarlo.
-        corrales.forEach((corral) => {
-            // Se obtienen los IDs de los animales que tienen ese corral asignado.
-            const animalesAsignados = animales
-                .filter((animal) => animal.corral === corral.nombre) // ¿Animal está en ese corral?
-                .map((animal) => animal.id); //Si está, dame el identificador del animal.
-
-            // Si la lista del corral es distinta de los animales asignados, se actualiza el corral
-            if (!sonIgualesListas(corral.listaAnimales, animalesAsignados)) {
-                const actualizarCorral = { ...corral, listaAnimales: animalesAsignados };
-                modificarCorral(actualizarCorral);
-            }
-        });
-        console.log("Animales actualizados en el contexto:", animales);
-        console.log("Corrales actualizados en el contexto:", corrales);
-    }, [animales, corrales, modificarCorral]);
 
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
@@ -142,69 +98,59 @@ export const MovimientoCorral = () => {
 
 
     // handleAgregar: agreg
-    const handleAgregar = (e) => {
+    const handleAgregar = async (e) => {
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         // Se obtiene el animal que ha sido seleccionado
-        const animalObjSelec = animales.find((animal) => animal.id === animalSeleccionado); // Buscar el animal seleccionado (id)
+        const animalObjSelec = animales.find((animal) => animal.id === parseInt(animalSeleccionado));
+        console.log("😀 Animal seleccionado ID: ", animalObjSelec.id, " con CODIGO: ",animalObjSelec.codigo)
+        console.log("--- Corral origen: ", animalObjSelec.corral)
         if (animalObjSelec) {
+            // Buscar el corral destino por su nombre (corralDestino guarda el nombre del corral seleccionado)
+            const corralDestinoObj = corrales.find((corral) => corral.nombre === corralDestino);
+            console.log("--- Corral destino: ", corralDestinoObj.id)
+            if (corralDestinoObj) {
 
-            // Se busca el corral Origen --> Se recorren todos los corrales y se busca el corral donde está el animal "animalObjSelec".
-            const corralOrigenObj = corrales.find((corralOrigenBuscado) => corralOrigenBuscado.nombre === animalObjSelec.corral);
-
-            // Se busca el corral Destino --> Se recorren todos los corrales y se busca el corral donde quiere estar el animal "corralDestinoObj".
-            const corralDestinoObj = corrales.find((corralDestinoBuscado) => corralDestinoBuscado.nombre === corralDestino);
-
-            // Si tenemos datos del corral origen y el de destino, realizamos las modificaciones en los corrales.
-            if (corralOrigenObj && corralDestinoObj) {
-                /* Se elimina el animal del corral origen --> Se escogen todos los animales del corral EXCEPTO el seleccionado porque lo
-                queremos eliminar */
-                corralOrigenObj.listaAnimales = corralOrigenObj.listaAnimales.filter((id) => id !== animalSeleccionado);
-                modificarCorral(corralOrigenObj);
-
-                // Se añade el animal al corral nuevo (destino).
-                corralDestinoObj.listaAnimales = [...corralDestinoObj.listaAnimales, animalSeleccionado];
-                modificarCorral(corralDestinoObj);
-
-                // Se modifica el animal para actualizar su corral.
-                modificarAnimal({ ...animalObjSelec, corral: corralDestino });
+                // Se modifica el animal existente
+                const animal_actualizado = await modificarAnimal({
+                    ...animalObjSelec,
+                    corral: corralDestinoObj.id,
+                });
+                setAnimal(animal_actualizado); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
         }
+
         /* Una vez que se haya agregado un nuevo corral de destino para el animal.
            El usuario es redirigido a la página de "lista-corrales".
         */
+        console.log("El animal", animalObjSelec.codigo,"ha sido movido de corral.");
         navigate("/lista-corrales");
     };
 
     //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO un animal.
     //Le permite al usuario añadir un animal y continuar con el formulario vacio para añadir nuevos animales.
-    const handleAceptarYSeguir = (e) => {
+    const handleAceptarYSeguir = async (e) => {
         e.preventDefault();
 
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         // Se obtiene el animal que ha sido seleccionado
-        const animalObjSelec = animales.find((animal) => animal.id === animalSeleccionado); // Buscar el animal seleccionado (id)
-
+        const animalObjSelec = animales.find((animal) => animal.id === parseInt(animalSeleccionado));
+        console.log("😀 Animal seleccionado ID: ", animalObjSelec.id, " con CODIGO: ",animalObjSelec.codigo)
+        console.log("--- Corral origen: ", animalObjSelec.corral)
         if (animalObjSelec) {
-            // Obtener el corral de origen y el corral de destino
-            const corralOrigenObj = corrales.find((corralBuscado) => corralBuscado.nombre === animalObjSelec.corral);
-            const corralDestinoObj = corrales.find((corralBuscado) => corralBuscado.nombre === corralDestino);
+            // Buscar el corral destino por su nombre (corralDestino guarda el nombre del corral seleccionado)
+            const corralDestinoObj = corrales.find((corral) => corral.nombre === corralDestino);
+            console.log("--- Corral destino: ", corralDestinoObj.id)
+            if (corralDestinoObj) {
 
-            // Si tenemos datos del corral origen y el de destino, realizamos las modificaciones en los corrales.
-            if (corralOrigenObj && corralDestinoObj) {
-                /* Se elimina el animal del corral origen --> Se escogen todos los animales del corral EXCEPTO el seleccionado porque lo
-                queremos eliminar */
-                corralOrigenObj.listaAnimales = corralOrigenObj.listaAnimales.filter((id) => id !== animalSeleccionado);
-                modificarCorral(corralOrigenObj); // Actualizamos el corral de origen
-
-                // Se añade el animal al corral nuevo (destino).
-                corralDestinoObj.listaAnimales = [...corralDestinoObj.listaAnimales, animalSeleccionado];
-                modificarCorral(corralDestinoObj); // Actualizamos el corral de destino
-
-                // Se modifica el animal para actualizar su corral.
-                modificarAnimal({ ...animalObjSelec, corral: corralDestino });
+                // Se modifica el animal existente
+                const animal_actualizado = await modificarAnimal({
+                    ...animalObjSelec,
+                    corral: corralDestinoObj.id,
+                });
+                setAnimal(animal_actualizado); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
         }
 
@@ -214,22 +160,26 @@ export const MovimientoCorral = () => {
 
         setAnimalSeleccionado(""); //El campo de identificador del animal se vuelve vacío.
         setCorralOrigen(""); // El campo de origen del corral se vuelve vacío.
-        setCorralDestino({}); // El campo de destino del corral se vuelve vacío.
+        setCorralDestino(""); // El campo de destino del corral se vuelve vacío.
         setAnimal({}); // El estado del animal se pone vacío.
 
-        console.log("El animal ha sido movido de corral, se continúa haciendo más movimientos de corral.");
+        console.log("El animal", animalObjSelec.codigo,"ha sido movido de corral, se continúa haciendo más movimientos de corral.");
     };
 
       // Función para manejar la selección del animal y por tanto, actualizar el corral de origen.
         const handleSeleccionAnimal = (e) => {
             const id = e.target.value;
             setAnimalSeleccionado(id);
+            console.log("🧩 ID del animal seleccionado: ", id)
             // Se busca el animal por su identificador en la lista de animales (Context).
-            const animalObj = animales.find((animal) => animal.id === id);
-            if (animalObj) {
-                setCorralOrigen(animalObj.corral);
+            const animalObj = animales.find((animal) => animal.id === parseInt(id));
+            if (animalObj && animalObj.corral !== null) {
+                const corral = corrales.find((c) => c.id === animalObj.corral);
+                setCorralOrigen(corral ? corral.codigo : "Ninguno");
+                setCorralOrigenId(corral ? corral.id : null); // <-- guardar ID
             } else {
-                setCorralOrigen("");
+                setCorralOrigen("Ninguno");
+                setCorralOrigenId(null);
             }
         };
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: ACEPTAR MOVIMIENTO DE CORRAL Y AGREGAR Y SEGUIR MOVIENDO ANIMALES ----------------------- */
@@ -275,7 +225,7 @@ export const MovimientoCorral = () => {
                                             <option
                                                 key={animalVacaTernero.id}
                                                 value={animalVacaTernero.id}>
-                                                {animalVacaTernero.id}
+                                                {animalVacaTernero.codigo}
                                             </option>
                                         ))
                                 ) : (
@@ -283,8 +233,8 @@ export const MovimientoCorral = () => {
                                 )}
                             </select>
                             {errores.idAnimal && <div className="mensaje-error-movimiento-corral">{errores.idAnimal}</div>}
-
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Corral origen</div>
                             {/* Se muestra el corral del Identificador del animal (campo anterior) */}
@@ -314,10 +264,10 @@ export const MovimientoCorral = () => {
                                 <option value="">Selecciona un corral</option>
                                 {corrales && corrales.length > 0 ? (
                                     corrales
-                                        .filter((corral) => corral.nombre !== corralOrigen) //Almacena todos los corrales excepto el corral de origen.
+                                        .filter((corral) => corral.id !== corralOrigenId) //Almacena todos los corrales excepto el corral de origen.
                                         .map((corral) => (
-                                            <option key={corral.nombre} value={corral.nombre}>
-                                                {corral.nombre}
+                                            <option key={corral.id} value={corral.nombre}>
+                                                {corral.codigo}
                                             </option>
                                         ))
                                 ) : (
