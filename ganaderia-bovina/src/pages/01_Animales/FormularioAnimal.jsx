@@ -399,7 +399,7 @@ export const FormularioAnimal = () => {
                                     - codigoCorralActual: se muestra el código del corral.
                                    Cuando estamos MODIFICANDO al animal, NO se puede escoger "Ninguno".
                                 */
-                                value={esVisualizar
+                                value={esVisualizar || esModificar
                                     ? (animal.corral === null ? "Ninguno" : codigoCorralActual)
                                     : animal.corral || ""}
                                 onChange={handleChange}
@@ -407,14 +407,15 @@ export const FormularioAnimal = () => {
                                 <option value="">Selecciona un corral</option>
                                 {/* Si el animal ha sido vendido o muerto, el corral tiene como valor
                                     ninguno. Opción oculta pero mostrada si ya estaba asignada */}
-                                {esVisualizar && (
+                                {esVisualizar && animal.corral === null && (
                                     <option value="Ninguno">Ninguno</option>
                                 )}
-                                {animal.corral && (
-                                    !corrales.some((c) => c.codigo === animal.corral) || animal.corral === "Ninguno"
-                                ) && (
-                                    <option value={animal.corral}>{animal.corral}</option>
-                                )}
+                                {/*{animal.corral && (*/}
+                                {/*    !corrales.some((c) => c.codigo === animal.corral) */}
+                                {/*                                || animal.corral === "Ninguno"*/}
+                                {/*) && (*/}
+                                {/*    <option value={animal.corral}>{animal.corral}</option>*/}
+                                {/*)}*/}
                                 {/* Aparece un listado de los nombres de los corrales existentes.*/}
                                 {corrales.length > 0 ? (
                                     corrales.map((corral) => (
