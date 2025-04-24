@@ -156,8 +156,8 @@ export const FormularioAnimal = () => {
                 nuevoAnimalConId = await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
             } else if (esModificar) {
                 console.log("Se ha modificado el animal");
-                const animal_actualizado = await modificarAnimal(animalConvertido); // Se modifica el animal existente
-                setAnimal(animal_actualizado); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
+                // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
+                await modificarAnimal(animalConvertido); // Se modifica el animal existente
             }
         }catch (error){
             console.error("❌ Error al guardar el animal:", error);
