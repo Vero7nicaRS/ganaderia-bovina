@@ -153,7 +153,8 @@ export const FormularioAnimal = () => {
         try{
             if (esAgregar) {
                 console.log("Se ha añadido el animal");
-                nuevoAnimalConId = await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
+                // Se añade el nuevo animal al backend y se muestra la información en el frontend.
+                nuevoAnimalConId = await agregarAnimal(animalConvertido);
             } else if (esModificar) {
                 console.log("Se ha modificado el animal");
                 // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
