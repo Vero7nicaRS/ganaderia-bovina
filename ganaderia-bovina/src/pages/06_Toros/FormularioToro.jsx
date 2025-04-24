@@ -1,6 +1,6 @@
 import "../../styles/FormularioAnimal.css";
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
+import {NavLink, useLocation, useNavigate, useParams} from "react-router-dom";
+import {useContext, useEffect, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposFormularioAnimal.jsx";
 // Fusión del backend con el frontend:
@@ -23,11 +23,14 @@ export const FormularioToro = () => {
     const navigate = useNavigate();
 
 
-    const { modo, animalToro: animalInicialToro } = location.state; // Se recupera el modo y animal desde el state
+    const { modo, animalToro: animalInicialToro } = location.state || {}; // Se recupera el modo y animal desde el state
+    const {id} = useParams(); // Se emplea para acceder mediante URL
+    const modoFinal = modo || (id ? "ver" : "agregar") // Se indica el modo en el que debe estar el formulario, si ha sido pasado por el state o no.
+
+
 
     const estadoInicialToro ={
-        id: "",
-        codigo: "",
+        id: null,
         tipo: "Toro",
         estado: "Vivo",
         nombre: "",
@@ -47,12 +50,12 @@ export const FormularioToro = () => {
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
        */
-    // const {agregarAnimal, modificarAnimal} = useContext(TorosContext);
+     const {agregarToro, modificarToro} = useContext(TorosContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
-    const esVisualizar = modo === "ver";
-    const esAgregar = modo === "agregar";
-    const esModificar = modo === "modificar";
+    const esVisualizar = modoFinal === "ver";
+    const esAgregar = modoFinal === "agregar";
+    const esModificar = modoFinal === "modificar";
 
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
@@ -71,6 +74,34 @@ export const FormularioToro = () => {
 
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
+
+    /*
+    Este useEffect se encarga de cargar el animal desde el backend en caso de que se acceda al formulario
+    mediante URL (es decir, sin que venga desde un NavLink con estado [location.state]).
+
+    OBSERVACIONES:
+    - NO se puede hacer "useEffect(async () => {...})", por ello se tiene que definir "fetchAnimal" dentro
+    y se le llama posteriormente.
+    - Se ejecuta cuando:
+       - Hay un ID en la URL (modo "ver" o "modificar").
+       - No se ha recibido al animal desde el Navlink (es decir, desde el location.state).
+     */
+    useEffect(() => {
+        const fetchToro = async () => {
+            // Si se accedió mediante URL, es decir, no se ha pasado ningún animal en el estado.
+            if (!animalInicialToro && (esVisualizar || esModificar) && id) {
+                try {
+                    const response = await api.get(`/toros/${id}/`);
+                    setAnimalToro(response.data);
+                } catch (error) {
+                    console.error("Error al cargar el animal:", error);
+                }
+            }
+        };
+        fetchToro(); // Se llama después una única vez. Se ha añadido de nuevo porque no se puede poner async el "useEffect".
+    }, [id, esVisualizar, esModificar]);
+
+
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposFormularioAnimal(animalToro, animalToro.tipo); // Revisa todos los campos
         setErrores(erroresTemp);
@@ -92,14 +123,17 @@ export const FormularioToro = () => {
         try{
             if (esAgregar) {
                 console.log("Se ha añadido el toro");
-                //agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (toro)
-                await api.post("/toros/", animalToro); //se crea un nuevo animal
-
+                //await api.post("/toros/", animalToro); //se crea un nuevo animal
+                // Se añade el nuevo toro al backend y se muestra la información en el frontend.
+                agregarToro(animalToro);
             } else if (esModificar) {
                 console.log("Se ha modificado el toro");
                 // modificarAnimal(animalToro); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
-                await api.put(`/toros/${animalToro.id}/`, animalToro); // se actualiza el animal
 
+
+                // Se actualiza el toro en el contexto (frontend) y se muestra la información en el frontend.
+                //await api.put(`/toros/${animalToro.id}/`, animalToro); // se actualiza el animal
+                modificarToro(animalToro);
             }
         }catch (error) {
             console.error("❌ Error al guardar el toro:", error);
@@ -161,7 +195,7 @@ export const FormularioToro = () => {
                             type="text"
                             id="id"
                             className="cuadro-texto"
-                            value={animalToro.id || ""}
+                            value={animalToro.codigo || ""}
                             disabled
                         />
 
