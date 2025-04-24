@@ -71,11 +71,12 @@ export const TorosProvider = ({children}) => {
 *                       eliminarToro: ELIMINACIÓN del TORO (DELETE)
 * ----------------------------------------------------------------------------------------------
 */
-    const eliminarToro = async (id) => {
+    const eliminarToro = async (id, desdeBackend) => {
         try {
-            // Se actualiza el backend: se elimina.
-            await api.delete(`/toros/${id}/`);
-
+            if (desdeBackend) {
+                // Se borra del backend.
+                await api.delete(`/animales/${id}/`);
+            }
             // Se actualiza el contexto: desaparece el toro del listado de toros.
             setAnimalesToros(prev =>
                 prev.filter(toro => toro.id !== id));
@@ -83,6 +84,25 @@ export const TorosProvider = ({children}) => {
             console.error("Error al eliminar toro:", error.response?.data || error.message);
         }
     };
+
+    // Se encarga de actualizar los datos de un animal en el contexto (lista de animales) gracias al map.
+    const actualizarToroEnContexto = (toroActualizado) => {
+        /* Se recorren todos los animales y en el momento que el animal que haya sido pasado por parámetro
+            coincida con uno existente, se reemplaza ese animal por el nuevo
+            (que es el mismo pero con los datos actualizados)
+            En el caso de la eliminación por "MUERTE" o "VENDIDA", se actualiza:
+              - Estado.
+              - Corral.
+              - Comentario.
+              - Fecha de eliminación.
+        * */
+        setAnimalesToros(prev =>
+            prev.map(toro =>
+                toro.id === toroActualizado.id ? toroActualizado : toro
+            )
+        );
+    };
+
     //  const [animalesToros, setAnimalesToros] = useState(torosMock);
     // const agregarAnimal = (nuevoToro) => {
     //
@@ -145,7 +165,7 @@ export const TorosProvider = ({children}) => {
     // };
 
     return (
-        <TorosContext.Provider value={{ animalesToros, agregarToro, modificarToro, eliminarToro }}>
+        <TorosContext.Provider value={{ animalesToros, agregarToro, modificarToro, eliminarToro, actualizarToroEnContexto }}>
             {children}
         </TorosContext.Provider>
     );
