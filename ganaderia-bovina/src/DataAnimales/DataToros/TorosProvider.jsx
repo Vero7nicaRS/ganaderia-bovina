@@ -35,7 +35,10 @@ export const TorosProvider = ({children}) => {
 */
     const agregarAnimal = async (nuevoToro) => {
         try {
+            // Se añade el toro en el backend.
             const response = await api.post("/toros/", nuevoToro);
+
+            // Se añade el toro en el contexto: aparece en la lista de toros.
             setAnimalesToros(prev => [...prev, response.data]);
             return response.data; // Se devuelve el toro con toda su información (incluyendo: id y codigo)
         } catch (error) {
@@ -50,7 +53,10 @@ export const TorosProvider = ({children}) => {
 */
     const modificarAnimal = async (animalModificado) => {
         try {
+            // Se actualiza el toro en el backend.
             const response = await api.put(`/toros/${animalModificado.id}/`, animalModificado);
+
+            // Se actualiza el toro en el contexto.
             setAnimalesToros(prev =>
                 prev.map(toro => toro.id === animalModificado.id ? response.data : toro)
             );
@@ -67,7 +73,10 @@ export const TorosProvider = ({children}) => {
 */
     const eliminarAnimal = async (id) => {
         try {
+            // Se actualiza el backend: se elimina.
             await api.delete(`/toros/${id}/`);
+
+            // Se actualiza el contexto: desaparece el toro del listado de toros.
             setAnimalesToros(prev =>
                 prev.filter(toro => toro.id !== id));
         } catch (error) {
