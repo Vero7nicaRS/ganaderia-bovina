@@ -17,13 +17,13 @@ export const ListaInseminaciones = () => {
     /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
         return inseminaciones.filter((item) => {
-            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
-                busquedaID === "" || item.idVaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
-                                  || item.idToro.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === "" || item.id_vaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
+                                  || item.id_toro.toString().toUpperCase().includes(busquedaID.toUpperCase());
             const coincideFecha =
-                fechaSeleccionada === "Sin filtro" || item.fechaInseminacion === fechaSeleccionada;
+                fechaSeleccionada === "Sin filtro" || item.fecha_inseminacion === fechaSeleccionada;
             return coincideBusqueda && coincideFecha;
         });
     }, [inseminaciones, busquedaID, fechaSeleccionada]);
@@ -131,15 +131,15 @@ export const ListaInseminaciones = () => {
                             datosFiltrados.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.id}</td>
-                                <td>{item.fechaInseminacion}</td>
-                                <td>{item.horaInseminacion}</td>
-                                <td>{item.idVaca}</td>
-                                <td>{item.idToro}</td>
+                                <td>{item.fecha_inseminacion}</td>
+                                <td>{item.hora_inseminacion}</td>
+                                <td>{item.id_vaca}</td>
+                                <td>{item.id_toro}</td>
 
                                 <td>
                                     {/* BOTÓN VER */}
                                     <NavLink
-                                        to="/formulario-inseminacion"
+                                        to={`/formulario-inseminacion/${item.id}`}
                                         state={{modo: "ver", inseminacion: item}} //Se le pasa la vacuna/tratamiento (item)
                                         className="btn-ver">
                                         VER
@@ -150,7 +150,7 @@ export const ListaInseminaciones = () => {
                                     <>
                                         {/* BOTÓN MODIFICAR */}
                                         <NavLink
-                                            to="/formulario-inseminacion"
+                                            to={`/formulario-inseminacion/${item.id}`}
                                             state={{modo: "modificar", inseminacion: item}} //Se le pasa el MODO (modificar) y la inseminación (item)
                                             className="btn-modificar"
                                         >
