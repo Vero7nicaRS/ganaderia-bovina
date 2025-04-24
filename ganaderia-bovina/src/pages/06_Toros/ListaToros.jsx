@@ -29,9 +29,9 @@ export const ListaToros = () => {
     useEffect(() => {
         const datosFiltrados = animalesToros.filter((item) => {
             const coincideBusqueda =
-                /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+                /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
                 se convierten a mayúsculas (toUpperCase)*/
-                busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
+                busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
             return coincideBusqueda ;
         });
         // Actualizar el estado de los animales filtrados
