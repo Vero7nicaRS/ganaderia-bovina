@@ -41,9 +41,9 @@ export const ListaAnimales = () => {
         // Filtrar animales cada vez que cambien los filtros de búsqueda
         const datosFiltrados = animales.filter((item) => {
             const coincideBusqueda =
-                /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+                /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
                  se convierten a mayúsculas (toUpperCase)*/
-                busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase());
             const coincideTipo = tipoSeleccionado === "Sin filtro" || item.tipo === tipoSeleccionado;
             return coincideBusqueda && coincideTipo;
         });
