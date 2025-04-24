@@ -16,7 +16,7 @@ import api from "../../api.js";
 export const CorralesProvider = ({children}) => {
     const [corrales, setCorrales] = useState([]);
 
-    // Se cargan los datos de los toros que están en el backend.
+    // Se cargan los datos de los corrales que están en el backend.
     useEffect(() => {
         api.get("/corrales/")
             .then(response => {
@@ -34,9 +34,12 @@ export const CorralesProvider = ({children}) => {
     */
     const agregarCorral = async (nuevoCorral) => {
         try {
+            // Se añade al backend: se añade el corral al backend.
             const response = await api.post("/corrales/", nuevoCorral);
+
+            // Se añade al contexto: se incorpora el corral al listado de corrales.
             setCorrales(prev => [...prev, response.data]);
-            return response.data; // Se devuelve el toro con toda su información (incluyendo: id y codigo)
+            return response.data; // Se devuelve el corral con toda su información (incluyendo: id y codigo)
         } catch (error) {
             console.error("Error al crear corral:", error.response?.data || error.message);
             throw error;
@@ -49,7 +52,10 @@ export const CorralesProvider = ({children}) => {
     */
     const modificarCorral = async (corralModificado) => {
         try {
+            // Se actualiza el backend.
             const response = await api.put(`/corrales/${corralModificado.id}/`, corralModificado);
+
+            // Se actualiza el contexto: se busca el corral en el listado de corrales y se modifican sus datos.
             setCorrales(prev =>
                 prev.map(corral => corral.id === corralModificado.id ? response.data : corral)
             );
@@ -66,7 +72,10 @@ export const CorralesProvider = ({children}) => {
     */
     const eliminarCorral = async (id) => {
         try {
+            // Se elimina del backend.
             await api.delete(`/corrales/${id}/`);
+
+            // Se elimina del contexto: el corral desaparece de la lista de corrales.
             setCorrales(prev =>
                 prev.filter(corral => corral.id !== id));
         } catch (error) {
