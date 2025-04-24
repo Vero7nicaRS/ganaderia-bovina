@@ -13,6 +13,7 @@ import {useContext, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposEliminacionToro} from "../../components/ComprobarCamposEliminacionToro.jsx";
 import Swal from "sweetalert2";
+import api from "../../api.js";
 export  const EliminarToro = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y animal)
@@ -28,7 +29,7 @@ export  const EliminarToro = () => {
          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
     */
 
-    const { eliminarAnimal, modificarAnimal } = useContext(TorosContext);
+    const { eliminarToro,actualizarToroEnContexto } = useContext(TorosContext);
     // Estado para almacenar el motivo de eliminación y comentarios
     const [motivo, setMotivo] = useState("");
     const [comentarios, setComentarios] = useState("");
@@ -64,9 +65,10 @@ export  const EliminarToro = () => {
 
     /* ----------------------- MANEJADOR TOROSCONTEXT: ELIMINAR -----------------------*/
 // Manejador para eliminar el animal (toro)
-    const handleEliminar = () => {
+    const handleEliminar = async () => {
 
-        {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/}
+        {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/
+        }
         // if (!motivo) {
         //     alert("ERROR: Selecciona un motivo antes de eliminar el animal (toro).");
         //     return;
@@ -79,21 +81,46 @@ export  const EliminarToro = () => {
             Si el animal (toro) ha sido eliminado por el motivo de MUERTE o OTROS se actualiza el campo de
             estado.
         * */
-        if(motivo === "Error"){
-            eliminarAnimal(animalToro.id); // Se elimina directamente el animal (toro) del contexto
 
-            {/*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo*/}
+        console.log("🧩 ID del toro que se va a eliminar:", animalToro.id);
+        /* 1. Se elimina el toro del backend pasándole el motivo y comentario en la petición.
+            Y el backend se encarga de:
+                - Motivo ERROR: elimina al toro completamente del sistema (base de datos).
+                - Motivo VENDIDA o MUERTE: NO elimina al toro del sistema, sino que se actualizan sus datos
+                (campos estado [con el motivo]).
+        */
+        await api.delete(`/toros/${animalToro.id}/eliminar/`, {
+            params: {
+                motivo,
+                comentario: comentarios || undefined
+            }
+        });
 
+        /* 2. Una vez que el toro ha sido tratado en el backend, ahora hay que ver qué hacer en el frontend.
+                   - Motivo ERROR: se elimina del contexto.
+                   - Motivo VENDIDA o MUERTE: se mantiene en el contexto y aparece con los campos actualizados.
+            */
+        if (motivo === "Error") {
+            /* 2.1 Se elimina SOLAMENTE al toro del contexto porque ya ha sido eliminado antes del backend.
+                  Por ello se le pasa el "id" y "false", y "false" significa que no tiene que volver a hacer la petición al backend.
+                */
+            eliminarToro(animalToro.id,false); // Se elimina directamente el animal (toro) del contexto
+
+            /*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo*/
             Swal.fire({
                 icon: 'success',
                 title: 'Toro eliminado',
                 html: `<strong>${animalToro.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
                 confirmButtonText: 'Aceptar'
             });
-            //alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}`);
 
-        }else{ //Motivo === MUERTA o VENDIDA
-
+        } else { //Motivo === MUERTA o VENDIDA
+            /* 2.2 Se actualizan los datos del animal al animal del contexto porque
+             ya ha sido eliminado antes del backend. no volver a contactar con el backend, solo contexto
+             Actualización del animal:
+                 - Estado: "Muerte" o "Otros".
+                 - Comentario: se añade un comentario en caso de que haya introducido información el usuario.
+             */
             /*Se actualiza el ESTADO del animal a "Muerta" o "Vendida" y el corral a "Ninguno".
             Además, se añade un comentario en caso de que haya introducido información el usuario*/
             const animalToroActualizado = {
@@ -101,15 +128,16 @@ export  const EliminarToro = () => {
                 estado: motivo,
                 comentario: comentarios
             };
-            modificarAnimal(animalToroActualizado);
-            {/*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
-                y dado unos comentarios
-            */}
-            //alert(`El toro ${animalToro.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
+            actualizarToroEnContexto(animalToroActualizado); // Se actualiza el estado del animal en el contexto.
+
+            /* Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
+                y dado unos comentarios */
             Swal.fire({
                 icon: 'success',
-                title: 'Toro eliminado',
-                html: `<strong>${animalToro.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
+                title: 'Animal eliminado',
+                html: `<strong>${animalToro.codigo}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
+                       </strong>${comentarios ?
+                    `<br>Comentarios: ${comentarios}` : ""}`,
                 confirmButtonText: 'Aceptar'
             });
         }
@@ -118,9 +146,7 @@ export  const EliminarToro = () => {
     };
     /* ----------------------- FIN MANEJADOR TOROSCONTEXT: ELIMINAR -----------------------*/
 
-
     return (
-
         <>
             <div className="contenedor">
                 <div className="cuadradoEliminar"> ELIMINAR TORO</div>
@@ -134,8 +160,8 @@ export  const EliminarToro = () => {
                         disabled
                     />
                 </div>
-
             </div>
+
             <hr/>
 
             <div className="contenedor-flex">
@@ -163,7 +189,6 @@ export  const EliminarToro = () => {
                         </label>
                     </div>
 
-
                     <div className="form-check">
                         <input
                             className="form-check-input"
@@ -179,7 +204,6 @@ export  const EliminarToro = () => {
                         </label>
                     </div>
 
-
                     <div className="form-check">
                         <input
                             className="form-check-input"
@@ -194,7 +218,6 @@ export  const EliminarToro = () => {
                             OTROS
                         </label>
                         {errores.motivo && <div className="mensaje-error">{errores.motivo}</div>}
-
                     </div>
 
                     <div className="mb-3">
@@ -207,9 +230,7 @@ export  const EliminarToro = () => {
                             onChange={handleComentariosChange}
                         ></textarea>
                     </div>
-
                 </div>
-
             </div>
             <>
                 {/* BOTÓN DE CONFIRMAR ELIMINACIÓN (se vuelve a la lista de toros) */}
@@ -226,8 +247,6 @@ export  const EliminarToro = () => {
             <div className="boton-volver">
                 <NavLink to="/" className="btn btn-info">VOLVER AL MENÚ</NavLink>
             </div>
-
         </>
-
     );
 };
