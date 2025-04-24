@@ -48,6 +48,8 @@ export const App = () => {
                          */}
                          <Route path="/eliminar-animal" element={<EliminarAnimal/>}/>
                          <Route path="/formulario-animal" element={<FormularioAnimal/>}/>
+                         {/* Para permitir que si se recarga la página, se consigan los datos de dicho animal
+                         Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-animal/:id" element={<FormularioAnimal />} />
 
                          {/* ---------- Páginas referentes a INVENTARIO DE VACUNAS Y/O TRATAMIENTOS ----------*/}
@@ -66,10 +68,9 @@ export const App = () => {
                          {/* ---------- Páginas referentes a LISTA DE CORRALES ----------*/}
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
                          <Route path="/formulario-corral" element={<FormularioCorral/>}/>
-                         <Route path="/formulario-corral/:id" element={<FormularioCorral/>}/>
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicho corral
                          Sin tener que navegar a otra página.*/}
-                         <Route path="/formulario-corral/:id" element={<FormularioCorral />} />
+                         <Route path="/formulario-corral/:id" element={<FormularioCorral/>}/>
                          <Route path="/movimiento-de-corral" element={<MovimientoCorral/>}/>
 
 
@@ -84,7 +85,11 @@ export const App = () => {
                          {/* ---------- Páginas referentes a LISTA DE TOROS ----------*/}
                          <Route path="/visualizar-toros" element={<ListaToros/>}/>
                          <Route path="/formulario-toro" element={<FormularioToro/>}/>
+                         {/* Para permitir que si se recarga la página, se consigan los datos de dicho corral
+                         Sin tener que navegar a otra página.*/}
+                         <Route path="/formulario-toro/:id" element={<FormularioToro />} />
                          <Route path="/eliminar-toro" element={<EliminarToro/>}/>
+
 
 
 
