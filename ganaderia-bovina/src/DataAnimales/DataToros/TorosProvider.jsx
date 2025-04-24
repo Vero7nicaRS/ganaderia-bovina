@@ -30,10 +30,10 @@ export const TorosProvider = ({children}) => {
 
 /*
 * ----------------------------------------------------------------------------------------------
-*                    agregarAnimal: AGREGAR (TORO) DESDE BACKEND del TORO (PUT)
+*                    agregarToro: AGREGAR (TORO) DESDE BACKEND del TORO (PUT)
 * ----------------------------------------------------------------------------------------------
 */
-    const agregarAnimal = async (nuevoToro) => {
+    const agregarToro = async (nuevoToro) => {
         try {
             // Se añade el toro en el backend.
             const response = await api.post("/toros/", nuevoToro);
@@ -48,10 +48,10 @@ export const TorosProvider = ({children}) => {
     };
 /*
 * ----------------------------------------------------------------------------------------------
-*                       modificarAnimal: ELIMINACIÓN del TORO (DELETE)
+*                       modificarToro: ELIMINACIÓN del TORO (DELETE)
 * ----------------------------------------------------------------------------------------------
 */
-    const modificarAnimal = async (animalModificado) => {
+    const modificarToro = async (animalModificado) => {
         try {
             // Se actualiza el toro en el backend.
             const response = await api.put(`/toros/${animalModificado.id}/`, animalModificado);
@@ -68,10 +68,10 @@ export const TorosProvider = ({children}) => {
     };
 /*
 * ----------------------------------------------------------------------------------------------
-*                       eliminarAnimal: ELIMINACIÓN del TORO (DELETE)
+*                       eliminarToro: ELIMINACIÓN del TORO (DELETE)
 * ----------------------------------------------------------------------------------------------
 */
-    const eliminarAnimal = async (id) => {
+    const eliminarToro = async (id) => {
         try {
             // Se actualiza el backend: se elimina.
             await api.delete(`/toros/${id}/`);
@@ -145,7 +145,7 @@ export const TorosProvider = ({children}) => {
     // };
 
     return (
-        <TorosContext.Provider value={{ animalesToros, agregarAnimal, modificarAnimal, eliminarAnimal }}>
+        <TorosContext.Provider value={{ animalesToros, agregarToro, modificarToro, eliminarToro }}>
             {children}
         </TorosContext.Provider>
     );
