@@ -37,7 +37,10 @@ export const AnimalesProvider = ({children}) => {
         try {
             // Se crea un nuevo animal en el backend
             const response = await api.post("/animales/", nuevoAnimal);
+
+            // Se actualiza el contexto: se añade un nuevo animal a la lista de vacas/terneros.
             setAnimales(prev => [...prev, response.data]);
+
             // Se obtienen los cambios realizados en los animales desde el backend para mostrarlos en el frontend.
             return response.data; // Se devuelve el animal con toda su información (incluyendo: id y codigo)
         } catch (error) {
@@ -53,9 +56,11 @@ export const AnimalesProvider = ({children}) => {
 */
     const modificarAnimal = async (animalModificado) => {
         try {
-            // Se actualiza el animal en el backend
+            // Se actualiza el animal en el backend.
             const response = await api.put(`/animales/${animalModificado.id}/`, animalModificado);
-             setAnimales(prev =>
+
+            // Se actualiza el animal en el contexto.
+            setAnimales(prev =>
                  prev.map(animal => animal.id === animalModificado.id ? response.data : animal)
              );
 
