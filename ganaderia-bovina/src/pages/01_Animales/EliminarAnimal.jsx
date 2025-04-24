@@ -132,8 +132,7 @@ export const  EliminarAnimal = () => {
                 */
                 eliminarAnimal(animal.id, false);
 
-                {/*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/}
-                //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}`);
+                /*Aparece un mensaje indicando que el animal ha sido eliminado por un determinado motivo*/
                 Swal.fire({
                     icon: 'success',
                     title: 'Animal eliminado',
@@ -164,7 +163,6 @@ export const  EliminarAnimal = () => {
 
                 actualizarAnimalEnContexto(animalActualizado); // Se actualiza el estado del animal en el contexto.
 
-                //alert(`El animal ${animal.id} ha sido eliminado. Motivo: ${motivo}. Comentarios: ${comentarios}`);
                 Swal.fire({
                     icon: 'success',
                     title: 'Animal eliminado',
