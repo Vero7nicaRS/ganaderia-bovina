@@ -97,13 +97,13 @@ export const ListaToros = () => {
                             ) : (
                             animalesTorosFiltrados.map((item) => (
                             <tr key={item.id}>
-                                <td>{item.id}</td>
+                                <td>{item.codigo}</td>
                                 <td>{item.nombre}</td>
 
                                 <td>
                                     {/* BOTÓN VER */}
                                     <NavLink
-                                        to="/formulario-toro"
+                                        to={`/formulario-toro/${item.id}`}
                                         state={{modo: "ver", animalToro: item}} //Se le pasa el ANIMAL (item)
                                         className="btn-ver">
                                         VER
@@ -116,7 +116,7 @@ export const ListaToros = () => {
                                         <>
                                             {/* BOTÓN MODIFICAR */}
                                             <NavLink
-                                                to="/formulario-toro"
+                                                to={`/formulario-toro/${item.id}`}
                                                 state={{modo: "modificar", animalToro: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
                                                 className="btn-modificar"
                                             >
@@ -124,7 +124,6 @@ export const ListaToros = () => {
                                             </NavLink>
 
                                             {/* BOTÓN ELIMINAR */}
-
                                             <NavLink
                                                 to="/eliminar-toro"
                                                 state={{animalToro: item}} //Se le pasa el ANIMAL (item).
