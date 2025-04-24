@@ -77,7 +77,9 @@ export const App = () => {
                          {/* ---------- Páginas referentes a LISTA DE INSEMINACIONES  ----------*/}
                          <Route path="/lista-inseminaciones" element={<ListaInseminaciones/>}/>
                          <Route path="/formulario-inseminacion" element={<FormularioInseminacion/>}/>
-
+                         {/* Para permitir que si se recarga la página, se consigan los datos de dicho corral
+                         Sin tener que navegar a otra página.*/}
+                         <Route path="/formulario-inseminacion/:id" element={<FormularioInseminacion />} />
 
                          <Route path="/simulacion-crias" element={<SimulacionCrias/>}/>
 
