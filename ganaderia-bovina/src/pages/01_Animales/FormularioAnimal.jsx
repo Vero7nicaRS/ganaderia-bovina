@@ -158,7 +158,7 @@ export const FormularioAnimal = () => {
             } else if (esModificar) {
                 console.log("Se ha modificado el animal");
                 // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
-                await modificarAnimal(animalConvertido); // Se modifica el animal existente
+                await modificarAnimal(animalConvertido);
             }
         }catch (error){
             console.error("❌ Error al guardar el animal:", error);
@@ -203,7 +203,7 @@ export const FormularioAnimal = () => {
             }
         }catch(error){
             console.error("❌ Error al guardar el animal:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data); // <-- Añade esto
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
     }
 
