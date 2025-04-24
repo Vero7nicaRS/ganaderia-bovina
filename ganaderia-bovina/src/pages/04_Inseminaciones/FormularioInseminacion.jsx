@@ -1,10 +1,11 @@
-import {NavLink, useLocation, useNavigate} from "react-router-dom";
+import {NavLink, useLocation, useNavigate, useParams} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import "../../styles/FormularioInseminacion.css";
 import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/InseminacionesContext.jsx";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposFormularioInseminacion} from "../../components/ComprobarCamposFormularioInseminacion.jsx";
+import api from "../../api.js";
 export const FormularioInseminacion = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento).
@@ -19,17 +20,19 @@ export const FormularioInseminacion = () => {
     * Por lo que tiene que tener el mismo nombre para referenciarlo correctamente.
     * */
     const { modo, inseminacion: inseminacionInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
-
+    const { id } = useParams();
+    const modoFinal = modo || (id ? "ver" : "agregar")
 
     const estadoInicialInseminacion = {
+        id: null,
         tipo: "",
-        idVaca: "",
-        idToro: "",
         razon: "Celo",
-        tipoSemen: "Sexado",
-        fechaInseminacion: "",
-        horaInseminacion: "",
-        responsable: ""
+        fecha_inseminacion: "",
+        hora_inseminacion: "",
+        es_sexado: false,
+        responsable: "",
+        id_vaca: null,
+        id_toro: null,
     }
     /* Se inicializa la inseminacion con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
@@ -49,6 +52,11 @@ export const FormularioInseminacion = () => {
         }
     }, [inseminacion.tipo]); // Añadir inseminacion.tipo como dependencia
 
+    useEffect(() => {
+        if (inseminacionInicial && animales.length > 0) {
+            setInseminacion(inseminacionInicial);
+        }
+    }, [inseminacionInicial, animales]);
 
     /* Se obtiene las funciones: agregarInseminacion y modificarInseminacion para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza InseminacionesContext
@@ -56,13 +64,28 @@ export const FormularioInseminacion = () => {
     const {agregarInseminacion, modificarInseminacion} = useContext(InseminacionesContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
-    const esVisualizar = modo === "ver";
-    const esAgregar = modo === "agregar";
-    const esModificar = modo === "modificar";
+    const esVisualizar = modoFinal === "ver";
+    const esAgregar = modoFinal === "agregar";
+    const esModificar = modoFinal === "modificar";
 
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
+    useEffect(() => {
+        const fetchInseminacion = async () => {
+            // Si se accedió mediante URL, es decir, no se ha pasado ningún animal en el estado.
+            if (!inseminacionInicial && (esVisualizar || esModificar) && id) {
+                try {
+                    const response = await api.get(`/listainseminaciones/${id}/`);
+                    setInseminacion(response.data);
+                } catch (error) {
+                    console.error("Error al cargar la inseminación:", error);
+                }
+            }
+        };
+        fetchInseminacion(); // Se llama después una única vez. Se ha añadido de nuevo porque no se puede poner async el "useEffect".
+        console.log("Animales actualizados en el contexto:", animales);
+    }, [id, esVisualizar, esModificar]);
     //Manejador para llevar acabo las modificaciones de las inseminaciones (actualizar el estado de la inseminacion)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -89,18 +112,24 @@ export const FormularioInseminacion = () => {
     };
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una inseminacion.
-    const handleAgregar = (e) => {
+    const handleAgregar = async (e) => {
         console.log(inseminacion); // Verifica el estado de la inseminacion antes de validar
 
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
-
-        if(esAgregar){
-            console.log("Se ha añadido la inseminación a la lista de inseminaciones");
-            agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al listado de inseminaciones
-        }else if (esModificar){
-            console.log("Se ha modificado la inseminación de la lista de inseminaciones");
-            modificarInseminacion(inseminacion); // Llamada a la función modificar de InseminacionesContext: Se modifica la inseminacion existente
+        try {
+            if (esAgregar) {
+                console.log("Se ha añadido la inseminación a la lista de inseminaciones");
+                // Se añade el nuevo animal al backend y se muestra la información en el frontend.
+                await agregarInseminacion(inseminacion);
+            } else if (esModificar) {
+                console.log("Se ha modificado la inseminación de la lista de inseminaciones");
+                // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
+                await modificarInseminacion(inseminacion);
+            }
+        } catch (error) {
+            console.error("❌ Error al guardar la inseminación:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
 
         /* Una vez que se haya agregado una nueva inseminacion o se modifique una inseminacion existente,
@@ -109,16 +138,21 @@ export const FormularioInseminacion = () => {
         navigate("/lista-inseminaciones");
     };
 
-    const handleAceptarYSeguir = (e) => {
+    const handleAceptarYSeguir = async (e) => {
         console.log(inseminacion); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
-
-        if(esAgregar){
-            console.log("Se ha añadido la inseminación y se continua añadiendo nuevas inseminaciones");
-            agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al inventario
-            setInseminacion(estadoInicialInseminacion); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+        try{
+            if (esAgregar) {
+                console.log("Se ha añadido la inseminación y se continua añadiendo nuevas inseminaciones");
+                await agregarInseminacion(inseminacion); // Llamada a la función agregar de InseminacionesContext: Se añade la nuevo inseminacion al inventario
+                setInseminacion(estadoInicialInseminacion); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
+            }
+        }catch(error){
+            console.error("❌ Error al guardar la inseminación:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
+
     }
 
     return (
@@ -143,19 +177,17 @@ export const FormularioInseminacion = () => {
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
                 se mostrará el ID de la inseminación dentro de un cuadrado. */}
                 {!esAgregar && (
-
                     <div className="cuadradoID">
                         <span className="identificador">ID</span>
                         <input
                             type="text"
                             name="id"
                             className="cuadro-texto"
-                            value={inseminacion.id || ""}
+                            value={inseminacion.codigo || ""}
                             disabled
                         />
                     </div>
                 )}
-
             </div>
 
             <hr/>
@@ -178,13 +210,14 @@ export const FormularioInseminacion = () => {
                                 <option value="Inseminacion">Inseminación</option>
                             </select>
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Identificador vaca</div>
                             <select
-                                className={`form-select ${errores.idVaca ? "error" : ""}`}
-                                name="idVaca"
+                                className={`form-select ${errores.id_vaca ? "error" : ""}`}
+                                name="id_vaca"
                                 disabled={esVisualizar}
-                                value={inseminacion.idVaca || ""}
+                                value={inseminacion.id_vaca || ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona una vaca</option>
@@ -201,23 +234,23 @@ export const FormularioInseminacion = () => {
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((vaca) => (
                                             <option key={vaca.id} value={vaca.id}>
-                                                {vaca.id}
+                                                {vaca.codigo}
                                             </option>
                                         ))
                                 ) : (
                                     <option>No hay vacas disponibles</option>
                                 )}
                             </select>
-                            {errores.idVaca && <div className="mensaje-error-inseminacion">{errores.idVaca}</div>}
-
+                            {errores.id_vaca && <div className="mensaje-error-inseminacion">{errores.id_vaca}</div>}
                         </div>
+
                         <div className="contenedor-linea">
                             <div className="label">Identificador toro</div>
                             <select
-                                className={`form-select ${errores.idToro ? "error" : ""}`}
-                                name="idToro"
+                                className={`form-select ${errores.id_toro ? "error" : ""}`}
+                                name="id_toro"
                                 disabled={esVisualizar}
-                                value={inseminacion.idToro || ""}
+                                value={inseminacion.id_toro || ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un toro</option>
@@ -234,15 +267,14 @@ export const FormularioInseminacion = () => {
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
-                                                {toro.id}
+                                                {toro.codigo}
                                             </option>
                                         ))
                                 ) : (
                                     <option>No hay toros disponibles</option>
                                 )}
                             </select>
-                            {errores.idToro && <div className="mensaje-error-inseminacion">{errores.idToro}</div>}
-
+                            {errores.id_toro && <div className="mensaje-error-inseminacion">{errores.id_toro}</div>}
                         </div>
 
                         <div className="contenedor-linea">
@@ -265,22 +297,20 @@ export const FormularioInseminacion = () => {
                             <div className="checkbox-container">
                                 <input
                                     type="checkbox"
-                                    id="tipoSemen"
-                                    name="tipoSemen"
+                                    id="es_sexado"
+                                    name="es_sexado"
                                     disabled={esVisualizar} /*Se indica que el campo "Tipo de semen" no se puede modificar cuando se Visualiza.*/
-                                    checked={inseminacion.tipoSemen === "Sexado"} /*Cuando inseminacion.tipoSemen sea "Sexado", el checkbox estará señalado.
-                                                                                Si esta en "No sexado", no estará señalado el checkbox.*/
+                                    checked={inseminacion.es_sexado === true} /*Cuando inseminacion.es_sexado sea "true", el checkbox estará señalado.
+                                                                                Si no está sexado, es decir, está a "false", no estará señalado el checkbox.*/
                                     onChange={(e) => setInseminacion({ /*Cada vez que se seleccione o se inhabilite "Sexado",
-                                                                                                                se actualiza el valor de inseminacion.tipoSemen.*/
+                                                                                                                se actualiza el valor de inseminacion.es_sexado.*/
                                         ...inseminacion,
-                                        tipoSemen: e.target.checked ? "Sexado" : "No sexado"
+                                        es_sexado: e.target.checked ? "Sexado" : "No sexado"
                                     })}
                                 />
-                                <label htmlFor="tipoSemen" className="checkbox-label">Es sexado</label>
+                                <label htmlFor="es_sexado" className="checkbox-label">Es sexado</label>
                             </div>
                         </div>
-
-
                     </div>
 
                     <div className="contenedor-derecha">
@@ -288,28 +318,28 @@ export const FormularioInseminacion = () => {
                             <div className="label">Fecha de inseminación</div>
                             <input
                                 type="date"
-                                className={`cuadro-texto ${errores.fechaInseminacion ? "error" : ""}`}
-                                name="fechaInseminacion"
+                                className={`cuadro-texto ${errores.fecha_inseminacion ? "error" : ""}`}
+                                name="fecha_inseminacion"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
-                                value={inseminacion.fechaInseminacion || ""}
+                                value={inseminacion.fecha_inseminacion || ""}
                                 onChange={handleChange}
                             />
-                            {errores.fechaInseminacion &&
-                                <div className="mensaje-error-inseminacion">{errores.fechaInseminacion}</div>}
+                            {errores.fecha_inseminacion &&
+                                <div className="mensaje-error-inseminacion">{errores.fecha_inseminacion}</div>}
                         </div>
 
                         <div className="contenedor-linea">
                             <div className="label">Hora de inseminación</div>
                             <input
                                 type="time"
-                                className={`cuadro-texto ${errores.horaInseminacion ? "error" : ""}`}
-                                name="horaInseminacion"
+                                className={`cuadro-texto ${errores.hora_inseminacion ? "error" : ""}`}
+                                name="hora_inseminacion"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de inseminación" no se puede modificar cuando se Visualiza.
-                                value={inseminacion.horaInseminacion || ""}
+                                value={inseminacion.hora_inseminacion || ""}
                                 onChange={handleChange}
                             />
-                            {errores.horaInseminacion &&
-                                <div className="mensaje-error-inseminacion">{errores.horaInseminacion}</div>}
+                            {errores.hora_inseminacion &&
+                                <div className="mensaje-error-inseminacion">{errores.hora_inseminacion}</div>}
                         </div>
 
                         <div className="contenedor-linea">
@@ -324,9 +354,7 @@ export const FormularioInseminacion = () => {
                             />
                             {errores.responsable &&
                                 <div className="mensaje-error-inseminacion">{errores.responsable}</div>}
-
                         </div>
-
 
                     </div>
                 </div>
@@ -355,21 +383,16 @@ export const FormularioInseminacion = () => {
                                         ACEPTAR Y SEGUIR AÑADIENDO
                                     </button>
                                 )}
-
                             </>
 
                             {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
                             {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
                             <NavLink to="/lista-inseminaciones" className="btn btn-info">CANCELAR</NavLink>
-
                         </div>
-
-
                     )}
 
                     {esVisualizar && (
-
                         <div className="boton-espacio">
                             <NavLink to="/lista-inseminaciones" className="btn btn-info">VOLVER AL LISTADO DE INSEMINACIONES</NavLink>
                         </div>
