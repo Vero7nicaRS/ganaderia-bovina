@@ -327,10 +327,15 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.padre ? "error" : ""}`}
                                 name="padre"
                                 disabled={esVisualizar}
-                                value={animal.padre || ""}
+                                //value={animal.padre || ""}
+                                value={animal.padre !== null ? animal.padre : "eliminado"}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un toro</option>
+                                {/* Mostrar mensaje si la vaca ya no existe (eliminada por ERROR, id_vaca === null) */}
+                                {esVisualizar && animal.padre === null && (
+                                    <option value="eliminado">No existente</option>
+                                )}
                                 {animalesToros && animalesToros.length > 0 ? (
                                     animalesToros
                                         /*Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
@@ -340,8 +345,6 @@ export const FormularioAnimal = () => {
                                             && animalToro.estado.toUpperCase() !== "Muerte".toUpperCase()
                                             && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
                                         )
-                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
-                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
                                                 {toro.codigo} {/*Se pone código en vez de id. Para ver "T-x" en vez "5" */}
@@ -350,6 +353,24 @@ export const FormularioAnimal = () => {
                                 ) : (
                                     <option>No hay toros disponibles</option>
                                 )}
+
+                                {/* A la hora de visualizar, si el toro ha sido eliminada por "muerte" u "otros".
+                                Aparecerá su nombre junto a su estado (Ej: T-3 (Otros) )
+                                Se muestra el toro seleccionada a pesar de que esté eliminada: */}
+                                {esVisualizar &&
+                                    animalesToros
+                                        .filter(
+                                            (animalToro) =>
+                                                animalToro.tipo.toUpperCase() === "TORO" &&
+                                                (animalToro.estado.toUpperCase() === "MUERTE" ||
+                                                    animalToro.estado.toUpperCase() === "OTROS") &&
+                                                animalToro.id === animal.padre
+                                        )
+                                        .map((toro) => (
+                                            <option key={toro.id} value={toro.id}>
+                                                {toro.codigo} ({toro.estado})
+                                            </option>
+                                        ))}
                             </select>
                             {errores.padre && <div className="mensaje-error">{errores.padre}</div>}
                         </div>
@@ -360,29 +381,59 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.madre ? "error" : ""}`}
                                 name="madre"
                                 disabled={esVisualizar}
-                                value={animal.madre || ""}
+                                //value={animal.madre || ""}
+                                value={animal.madre !== null ? animal.madre : "eliminada"}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona una vaca</option>
+
+                                {/* Mostrar mensaje si la vaca ya no existe (eliminada por ERROR, id_vaca === null) */}
+                                {esVisualizar && animal.madre === null && (
+                                    <option value="eliminada">No existente</option>
+                                )}
+
+                                {/* A la hora de agregar una inseminación, en el desplegable se van a
+                                Se van a mostrar las vacas que están vivas.
+                                Por tanto:
+                                  - Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
+                                  - La vaca no debe tener el estado "muerte" ni "vendida".
+
+                                Se muestran las vacas activas: */}
                                 {animales && animales.length > 0 ? (
                                     animales
-                                        /*Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
-                                        Además, la vaca no debe estar muerta ni vendida, por lo tanto se añade a la
-                                        condición del filtro*/
-                                        .filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()
-                                            && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
-                                            && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
+                                        .filter(
+                                            (vaca) =>
+                                                vaca.tipo.toUpperCase() === "VACA" &&
+                                                vaca.estado.toUpperCase() !== "MUERTE" &&
+                                                vaca.estado.toUpperCase() !== "VENDIDA"
                                         )
-                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
-                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((vaca) => (
                                             <option key={vaca.id} value={vaca.id}>
-                                                {vaca.codigo} {/*Se pone código en vez de id. Para ver "V-x" en vez "5" */}
+                                                {vaca.codigo}
                                             </option>
                                         ))
                                 ) : (
                                     <option>No hay vacas disponibles</option>
                                 )}
+
+                                {/* A la hora de visualizar, si la vaca ha sido eliminada por "muerte" o "vendida".
+                                Aparecerá su nombre junto a su estado (Ej: V-3 (Muerte) )
+                                Se muestra la vaca seleccionada a pesar de que esté eliminada: */}
+                                {esVisualizar &&
+                                    animales
+                                        .filter(
+                                            (vaca) =>
+                                                vaca.tipo.toUpperCase() === "VACA" &&
+                                                (vaca.estado.toUpperCase() === "MUERTE" ||
+                                                    vaca.estado.toUpperCase() === "VENDIDA") &&
+                                                vaca.id === animal.madre
+                                        )
+                                        .map((vaca) => (
+                                            <option key={vaca.id} value={vaca.id}>
+                                                {vaca.codigo} ({vaca.estado})
+                                            </option>
+                                        ))}
+
                             </select>
                             {errores.madre && <div className="mensaje-error">{errores.madre}</div>}
                         </div>
@@ -411,12 +462,7 @@ export const FormularioAnimal = () => {
                                 {esVisualizar && animal.corral === null && (
                                     <option value="Ninguno">Ninguno</option>
                                 )}
-                                {/*{animal.corral && (*/}
-                                {/*    !corrales.some((c) => c.codigo === animal.corral) */}
-                                {/*                                || animal.corral === "Ninguno"*/}
-                                {/*) && (*/}
-                                {/*    <option value={animal.corral}>{animal.corral}</option>*/}
-                                {/*)}*/}
+
                                 {/* Aparece un listado de los nombres de los corrales existentes.*/}
                                 {corrales.length > 0 ? (
                                     corrales.map((corral) => (
