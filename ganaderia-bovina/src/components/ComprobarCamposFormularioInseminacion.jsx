@@ -10,22 +10,22 @@ export const ComprobarCamposFormularioInseminacion = (datosInseminacion) => {
     const erroresTemp = {};
 
     // Validaciones comunes para todas las inseminaciones
-   if (!datosInseminacion.fechaInseminacion?.trim()) {
+   if (!datosInseminacion.fecha_inseminacion?.trim()) {
         // erroresTemp.fechaInseminacion = "El campo fechaInseminacion es obligatorio";
-        erroresTemp.fechaInseminacion = "Campo obligatorio";
+        erroresTemp.fecha_inseminacion = "Campo obligatorio";
     }
-    if (!datosInseminacion.idToro?.trim()) {
+    if (!datosInseminacion.id_toro?.trim()) {
         // erroresTemp.idToro = "El campo idToro es obligatorio";
-        erroresTemp.idToro = "Campo obligatorio";
+        erroresTemp.id_toro = "Campo obligatorio";
     }
 
-    if (!datosInseminacion.idVaca?.trim()) {
+    if (!datosInseminacion.id_vaca?.trim()) {
         // erroresTemp.idVaca = "El campo idVaca es obligatorio";
-        erroresTemp.idVaca = "Campo obligatorio";
+        erroresTemp.id_vaca = "Campo obligatorio";
     }
-   if (!datosInseminacion.horaInseminacion?.trim()) {
+   if (!datosInseminacion.hora_inseminacion?.trim()) {
         // erroresTemp.horaInseminacion = "El campo horaInseminacion es obligatorio";
-        erroresTemp.horaInseminacion = "Campo obligatorio";
+        erroresTemp.hora_inseminacion = "Campo obligatorio";
     }
    if (!datosInseminacion.responsable?.trim()) {
         // erroresTemp.responsable = "El campo responsable es obligatorio";
