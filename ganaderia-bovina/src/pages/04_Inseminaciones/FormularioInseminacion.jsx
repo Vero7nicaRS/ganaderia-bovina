@@ -25,7 +25,7 @@ export const FormularioInseminacion = () => {
 
     const estadoInicialInseminacion = {
         id: null,
-        tipo: "",
+        tipo: "Inseminacion",
         razon: "Celo",
         fecha_inseminacion: "",
         hora_inseminacion: "",
@@ -43,20 +43,6 @@ export const FormularioInseminacion = () => {
     * con "AnimalesContext" y TorosContext* */
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
-
-    // Si "tipo" se encuentra vacio, se establece "tipo: inseminación" correctamente.
-    // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
-    useEffect(() => {
-        if (!inseminacion.tipo) {
-            setInseminacion((prevInseminacion) => ({ ...prevInseminacion, tipo: "Inseminación" }));
-        }
-    }, [inseminacion.tipo]); // Añadir inseminacion.tipo como dependencia
-
-    useEffect(() => {
-        if (inseminacionInicial && animales.length > 0) {
-            setInseminacion(inseminacionInicial);
-        }
-    }, [inseminacionInicial, animales]);
 
     /* Se obtiene las funciones: agregarInseminacion y modificarInseminacion para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza InseminacionesContext
@@ -84,8 +70,16 @@ export const FormularioInseminacion = () => {
             }
         };
         fetchInseminacion(); // Se llama después una única vez. Se ha añadido de nuevo porque no se puede poner async el "useEffect".
-        console.log("Animales actualizados en el contexto:", animales);
     }, [id, esVisualizar, esModificar]);
+
+    // Si "tipo" se encuentra vacio, se establece "tipo: inseminación" correctamente.
+    // useEffect: Se ejecuta una única vez al montar el componente para asegurar que el "tipo" tiene un valor adecuado.
+    useEffect(() => {
+        if (!inseminacion.tipo) {
+            setInseminacion((prevInseminacion) => ({ ...prevInseminacion, tipo: "Inseminación" }));
+        }
+    }, [inseminacion.tipo]); // Añadir inseminacion.tipo como dependencia
+
     //Manejador para llevar acabo las modificaciones de las inseminaciones (actualizar el estado de la inseminacion)
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -217,21 +211,31 @@ export const FormularioInseminacion = () => {
                                 className={`form-select ${errores.id_vaca ? "error" : ""}`}
                                 name="id_vaca"
                                 disabled={esVisualizar}
-                                value={inseminacion.id_vaca || ""}
+                                // value={inseminacion.id_vaca || ""}
+                                value={inseminacion.id_vaca !== null ? inseminacion.id_vaca : "eliminada"}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona una vaca</option>
+
+                                {/* Mostrar mensaje si la vaca ya no existe (eliminada por ERROR, id_vaca === null) */}
+                                {esVisualizar && inseminacion.id_vaca === null && (
+                                    <option value="eliminada">No existente</option>
+                                )}
+                                {/* A la hora de agregar una inseminación, en el desplegable se van a
+                                Se van a mostrar las vacas que están vivas.
+                                Por tanto:
+                                  - Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
+                                  - La vaca no debe tener el estado "muerte" ni "vendida".
+
+                                Se muestran las vacas activas: */}
                                 {animales && animales.length > 0 ? (
                                     animales
-                                        /*Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
-                                        Además, la vaca no debe estar muerta ni vendida, por lo tanto se añade a la
-                                        condición del filtro*/
-                                        .filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()
-                                            && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
-                                            && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
+                                        .filter(
+                                            (animal) =>
+                                                animal.tipo.toUpperCase() === "VACA" &&
+                                                animal.estado.toUpperCase() !== "MUERTE" &&
+                                                animal.estado.toUpperCase() !== "VENDIDA"
                                         )
-                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
-                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((vaca) => (
                                             <option key={vaca.id} value={vaca.id}>
                                                 {vaca.codigo}
@@ -240,8 +244,28 @@ export const FormularioInseminacion = () => {
                                 ) : (
                                     <option>No hay vacas disponibles</option>
                                 )}
+
+                                {/* A la hora de visualizar, si la vaca ha sido eliminada por "muerte" o "vendida".
+                                Aparecerá su nombre junto a su estado (Ej: V-3 (Muerte) )
+                                Se muestra la vaca seleccionada a pesar de que esté eliminada: */}
+                                {esVisualizar &&
+                                    animales
+                                        .filter(
+                                            (animal) =>
+                                                animal.tipo.toUpperCase() === "VACA" &&
+                                                (animal.estado.toUpperCase() === "MUERTE" ||
+                                                    animal.estado.toUpperCase() === "VENDIDA") &&
+                                                animal.id === inseminacion.id_vaca
+                                        )
+                                        .map((vaca) => (
+                                            <option key={vaca.id} value={vaca.id}>
+                                                {vaca.codigo} ({vaca.estado})
+                                            </option>
+                                        ))}
                             </select>
-                            {errores.id_vaca && <div className="mensaje-error-inseminacion">{errores.id_vaca}</div>}
+                            {errores.id_vaca && (
+                                <div className="mensaje-error-inseminacion">{errores.id_vaca}</div>
+                            )}
                         </div>
 
                         <div className="contenedor-linea">
@@ -250,10 +274,15 @@ export const FormularioInseminacion = () => {
                                 className={`form-select ${errores.id_toro ? "error" : ""}`}
                                 name="id_toro"
                                 disabled={esVisualizar}
-                                value={inseminacion.id_toro || ""}
+                                //value={inseminacion.id_toro || ""}
+                                value={inseminacion.id_toro !== null ? inseminacion.id_toro : "eliminado"}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona un toro</option>
+                                {/* Mostrar mensaje si la vaca ya no existe (eliminado por ERROR, id_toro === null) */}
+                                {esVisualizar && inseminacion.id_toro === null && (
+                                    <option value="eliminado">No existente</option>
+                                )}
                                 {animalesToros && animalesToros.length > 0 ? (
                                     animalesToros
                                         /*Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
@@ -273,6 +302,24 @@ export const FormularioInseminacion = () => {
                                 ) : (
                                     <option>No hay toros disponibles</option>
                                 )}
+
+                                {/* A la hora de visualizar, si el toro ha sido eliminada por "muerte" u "otros".
+                                Aparecerá su nombre junto a su estado (Ej: T-3 (Otros) )
+                                Se muestra el toro seleccionada a pesar de que esté eliminada: */}
+                                {esVisualizar &&
+                                    animalesToros
+                                        .filter(
+                                            (animalToro) =>
+                                                animalToro.tipo.toUpperCase() === "TORO" &&
+                                                (animalToro.estado.toUpperCase() === "MUERTE" ||
+                                                    animalToro.estado.toUpperCase() === "OTROS") &&
+                                                animalToro.id === inseminacion.id_toro
+                                        )
+                                        .map((toro) => (
+                                            <option key={toro.id} value={toro.id}>
+                                                {toro.codigo} ({toro.estado})
+                                            </option>
+                                        ))}
                             </select>
                             {errores.id_toro && <div className="mensaje-error-inseminacion">{errores.id_toro}</div>}
                         </div>
@@ -305,7 +352,7 @@ export const FormularioInseminacion = () => {
                                     onChange={(e) => setInseminacion({ /*Cada vez que se seleccione o se inhabilite "Sexado",
                                                                                                                 se actualiza el valor de inseminacion.es_sexado.*/
                                         ...inseminacion,
-                                        es_sexado: e.target.checked ? "Sexado" : "No sexado"
+                                        es_sexado: e.target.checked ? true : false
                                     })}
                                 />
                                 <label htmlFor="es_sexado" className="checkbox-label">Es sexado</label>
