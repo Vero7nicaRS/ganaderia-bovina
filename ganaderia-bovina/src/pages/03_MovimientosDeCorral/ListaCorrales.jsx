@@ -17,11 +17,11 @@ export const ListaCorrales = () => {
     /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
         return corrales.filter((item) => {
-            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
                 busquedaID === ""
-                || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase());
 
             return coincideBusqueda;
         });
