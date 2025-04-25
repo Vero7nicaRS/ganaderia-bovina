@@ -3,6 +3,8 @@ import {useContext, useMemo, useState} from "react";
 import Swal from "sweetalert2";
 import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/InseminacionesContext.jsx";
 import "../../styles/ListaInseminaciones.css"
+import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
+import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 export const ListaInseminaciones = () => {
 
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListaInseminaciones.
@@ -11,17 +13,29 @@ export const ListaInseminaciones = () => {
     const {inseminaciones} = useContext(InseminacionesContext);
     const [fechaSeleccionada, setFechaSeleccionada] = useState("Sin filtro"); //Busqueda por FECHA en la lista de inseminaciones.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID (vaca/toro) en la lista de inseminaciones.
+    const {animales} = useContext(AnimalesContext);
+    const {animalesToros} = useContext(TorosContext);
 
-
-    /* Se filtra la lista de inseminaciones por el ID de la vaca o toro y por la fecha de inseminación */
-    /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
+    /* Se filtra la lista de inseminaciones por el ID de la vaca o toro y por la fecha de inseminación
+       UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
         return inseminaciones.filter((item) => {
             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
+
+            // Se busca los animales por su "id" para así obtener el objeto y coger su "código".
+            const vaca = animales.find((v) => v.id === item.id_vaca);
+            const toro = animalesToros.find((t) => t.id === item.id_toro);
+            const codigoVaca = vaca ? vaca.codigo : "";
+            const codigoToro = toro ? toro.codigo : "";
+
             const coincideBusqueda =
-                busquedaID === "" || item.id_vaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
-                                  || item.id_toro.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                // busquedaID === "" || item.id_vaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
+                //                   || item.id_toro.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === "" ||
+                                codigoVaca.toUpperCase().includes(busquedaID.toUpperCase()) ||
+                                codigoToro.toUpperCase().includes(busquedaID.toUpperCase());
+
             const coincideFecha =
                 fechaSeleccionada === "Sin filtro" || item.fecha_inseminacion === fechaSeleccionada;
             return coincideBusqueda && coincideFecha;
@@ -40,9 +54,9 @@ export const ListaInseminaciones = () => {
 
     const {eliminarInseminacion} = useContext(InseminacionesContext);
     // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
-    const manejarEliminar = (id, fecha, hora) => {
+    const manejarEliminar = (id,codigo, fecha, hora) => {
         Swal.fire({
-            title: `¿Desea eliminar la inseminación  ${id} con fecha ${fecha} y hora ${hora} seleccionada?`,
+            title: `¿Desea eliminar la inseminación  ${codigo} con fecha ${fecha} y hora ${hora} seleccionada?`,
             text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -127,49 +141,67 @@ export const ListaInseminaciones = () => {
                                         No hay inseminaciones existentes
                                     </td>
                                 </tr>
-                            ) : (
-                            datosFiltrados.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.id}</td>
-                                <td>{item.fecha_inseminacion}</td>
-                                <td>{item.hora_inseminacion}</td>
-                                <td>{item.id_vaca}</td>
-                                <td>{item.id_toro}</td>
+                            ):(
+                                datosFiltrados.map((item) => {
+                                    /* Se obtinee el "código" de los animales. Para ello, buscamos el id del animal
+                                     y obtenemos su objeto.
+                                     Dentro de la columna indicamos:
+                                      - Si no es "null", muestre el código del animal.
+                                      - Si es "null", muestre "No existente".
+                                    */
+                                    const vaca = animales.find((a) => a.id === item.id_vaca);
+                                    const toro = animalesToros.find((t) => t.id === item.id_toro);
 
-                                <td>
-                                    {/* BOTÓN VER */}
-                                    <NavLink
-                                        to={`/formulario-inseminacion/${item.id}`}
-                                        state={{modo: "ver", inseminacion: item}} //Se le pasa la vacuna/tratamiento (item)
-                                        className="btn-ver">
-                                        VER
-                                    </NavLink>
+                                    return (
+                                        <tr key={item.id}>
+                                            <td>{item.id}</td>
+                                            <td>{item.fecha_inseminacion}</td>
+                                            <td>{item.hora_inseminacion}</td>
+                                            <td>{vaca ? vaca.codigo : "No existente"}</td>
+                                            <td>{toro ? toro.codigo : "No existente"}</td>
+                                            {/*<td>{item.id_vaca}</td>*/}
+                                            {/*<td>{item.id_toro}</td>*/}
 
-                                    {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
+                                            <td>
+                                                {/* BOTÓN VER */}
+                                                <NavLink
+                                                    to={`/formulario-inseminacion/${item.id}`}
+                                                    state={{
+                                                        modo: "ver",
+                                                        inseminacion: item
+                                                    }} //Se le pasa la vacuna/tratamiento (item)
+                                                    className="btn-ver">
+                                                    VER
+                                                </NavLink>
 
-                                    <>
-                                        {/* BOTÓN MODIFICAR */}
-                                        <NavLink
-                                            to={`/formulario-inseminacion/${item.id}`}
-                                            state={{modo: "modificar", inseminacion: item}} //Se le pasa el MODO (modificar) y la inseminación (item)
-                                            className="btn-modificar"
-                                        >
-                                            MODIFICAR
-                                        </NavLink>
-                                        {/* BOTÓN ELIMINAR */}
-                                        <button
-                                            className="btn-eliminar"
-                                            onClick={ () => manejarEliminar(item.id, item.fechaInseminacion, item.horaInseminacion)}
-                                        >
-                                            ELIMINAR
-                                        </button>
-
-                                    </>
-
-                                </td>
-                            </tr>
-                        ))
-                            )}
+                                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
+                                                <>
+                                                    {/* BOTÓN MODIFICAR */}
+                                                    <NavLink
+                                                        to={`/formulario-inseminacion/${item.id}`}
+                                                        state={{
+                                                            modo: "modificar",
+                                                            inseminacion: item
+                                                        }} //Se le pasa el MODO (modificar) y la inseminación (item)
+                                                        className="btn-modificar"
+                                                    >
+                                                        MODIFICAR
+                                                    </NavLink>
+                                                    {/* BOTÓN ELIMINAR */}
+                                                    <button
+                                                        className="btn-eliminar"
+                                                        onClick={() => manejarEliminar(item.id, item.codigo,
+                                                            item.fecha_inseminacion, item.hora_inseminacion)}
+                                                    >
+                                                        ELIMINAR
+                                                    </button>
+                                                </>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            )
+                        }
                         </tbody>
                     </table>
                 </div>
