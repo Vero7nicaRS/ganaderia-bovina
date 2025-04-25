@@ -30,7 +30,7 @@ export const TorosProvider = ({children}) => {
 
 /*
 * ----------------------------------------------------------------------------------------------
-*                    agregarToro: AGREGAR (TORO) DESDE BACKEND del TORO (PUT)
+*                    agregarToro: AGREGAR (TORO) DESDE BACKEND del TORO (POST)
 * ----------------------------------------------------------------------------------------------
 */
     const agregarToro = async (nuevoToro) => {
@@ -48,7 +48,7 @@ export const TorosProvider = ({children}) => {
     };
 /*
 * ----------------------------------------------------------------------------------------------
-*                       modificarToro: ELIMINACIÓN del TORO (DELETE)
+*                       modificarToro: MODIFICACIÓN del TORO (PUT)
 * ----------------------------------------------------------------------------------------------
 */
     const modificarToro = async (animalModificado) => {
