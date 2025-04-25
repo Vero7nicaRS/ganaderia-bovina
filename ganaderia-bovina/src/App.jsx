@@ -55,6 +55,10 @@ export const App = () => {
                          {/* ---------- Páginas referentes a INVENTARIO DE VACUNAS Y/O TRATAMIENTOS ----------*/}
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
                          <Route path="/formulario-vt" element={<FormularioVT/>}/>
+                         {/* Para permitir que si se recarga la página, se consigan los datos de dicha vacuna/tratamiento.
+                         Sin tener que navegar a otra página.*/}
+                         <Route path="/formulario-vt/:id" element={<FormularioVT/>}/>
+
                          <Route path="/agregar-tipo-vt" element={<FormularioVT/>}/>
                          <Route path="/insertar-vt-animal" element={<InsertarVTAnimal/>}/>
 
@@ -62,7 +66,10 @@ export const App = () => {
                          {/* ---------- Páginas referentes a LISTADO DE VACUNAS Y/O TRATAMIENTOS EN ANIMALES ----------*/}
                          <Route path="/listado-vt-animal" element={<ListadoVT_Animales/>}/>
                          <Route path="/formulario-vt-animal" element={<FormularioVT_Animales/>}/>
-
+                         {/* Para permitir que si se recarga la página, se consigan los datos de
+                         la vacuna/tratamiento suministrada al animal.
+                         Sin tener que navegar a otra página.*/}
+                         <Route path="/formulario-vt-animal/:id" element={<FormularioVT_Animales/>}/>
 
 
                          {/* ---------- Páginas referentes a LISTA DE CORRALES ----------*/}
