@@ -25,10 +25,10 @@ export const InventarioVT = () => {
     /* Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
         return vt.filter((item) => {
-            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
-                busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase());
             const coincideTipo =
                 tipoSeleccionado === "Sin filtro" || item.tipo.toUpperCase() === tipoSeleccionado.toUpperCase();
             return coincideBusqueda && coincideTipo;
@@ -47,19 +47,11 @@ export const InventarioVT = () => {
 
     const {eliminarVT} = useContext(VTContext);
     /* ----------------------- MANEJADOR FORMULARIOVTCONTEXT: ELIMINAR -----------------------*/
-    // Manejadores de eliminar una vacuna o tratamiento
-    // const manejarEliminar = (id) => {
-    //
-    //     if (window.confirm("¿Estás seguro de eliminar este tratamiento/vacuna?")) {
-    //         eliminarVT(id); // Llamada a la función eliminar de AnimalesContext: Se elimina el animal existente (vaca/ternero)
-    //         console.log("Se ha eliminado el tratamiento/vacuna");
-    //     }
-    // };
 
     // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
-    const manejarEliminar = (id, tipo, nombre) => {
+    const manejarEliminar = (id, codigo, tipo, nombre) => {
         Swal.fire({
-            title: `¿Desea eliminar  ${tipo === "Vacuna" ? "la vacuna" : "el tratamiento"} ${id} ${nombre} seleccionada?`,
+            title: `¿Desea eliminar  ${tipo === "Vacuna" ? "la vacuna" : "el tratamiento"} ${codigo} ${nombre} seleccionada?`,
             text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -150,14 +142,14 @@ export const InventarioVT = () => {
                             ) : (
                             datosFiltrados.map((item) => (
                             <tr key={item.id}>
-                                <td>{item.id}</td>
+                                <td>{item.codigo}</td>
                                 <td>{item.tipo}</td>
                                 <td>{item.nombre}</td>
 
                                 <td>
                                     {/* BOTÓN VER */}
                                     <NavLink
-                                        to="/formulario-vt"
+                                        to={`/formulario-vt/${item.id}`}
                                         state={{modo: "ver", vt: item}} //Se le pasa la vacuna/tratamiento (item)
                                         className="btn-ver">
                                         VER
@@ -168,7 +160,7 @@ export const InventarioVT = () => {
                                     <>
                                         {/* BOTÓN MODIFICAR */}
                                         <NavLink
-                                            to="/formulario-vt"
+                                            to={`/formulario-vt/${item.id}`}
                                             state={{
                                                 modo: "modificar",
                                                 vt: item
@@ -180,7 +172,8 @@ export const InventarioVT = () => {
                                         {/* BOTÓN ELIMINAR */}
                                         <button
                                             className="btn-eliminar"
-                                             onClick={ () => manejarEliminar(item.id, item.tipo, item.nombre)}
+                                             onClick={ () => manejarEliminar(item.id, item.codigo,
+                                                                                   item.tipo, item.nombre)}
                                         >
                                             ELIMINAR
                                         </button>
