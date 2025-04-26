@@ -46,7 +46,7 @@ export const VtProvider = ({children}) => {
     };
     /*
     * ----------------------------------------------------------------------------------------------
-    *                       modificarToro: ELIMINACIÓN del TORO (DELETE)
+    *                       modificarToro: ELIMINACIÓN del VT (DELETE)
     * ----------------------------------------------------------------------------------------------
     */
     const modificarVT = async (vtModificado) => {
