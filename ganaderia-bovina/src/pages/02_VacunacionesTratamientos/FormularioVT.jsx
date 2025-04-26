@@ -206,8 +206,8 @@ export const FormularioVT= () => {
                                 type="text"
                                 className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
                                 name="nombre"
-                                disabled={esVisualizar || esModificar}
-                                //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza ni Modifica
+                                disabled={esVisualizar}
+                                //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza
                                 value={vtForm.nombre || ""}
                                 onChange={handleChange}
                             />
