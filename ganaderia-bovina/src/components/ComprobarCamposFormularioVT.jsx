@@ -68,14 +68,14 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
         }
     // Validaciones para agregar una vacuna/tratamiento al animal.
     }else if(tipo === "VTanimal"){
-        if (!datosVT.idAnimal?.trim()) {
+        if (!datosVT.id_animal?.trim()) {
             // erroresTemp.idAnimal = "El campo idAnimal es obligatorio";
-            erroresTemp.idAnimal = "Campo obligatorio";
+            erroresTemp.id_animal = "Campo obligatorio";
         }
 
-        if (!datosVT.nombre?.trim()){
+        if (!datosVT.nombre_vt?.trim()){
             // erroresTemp.nombre = "El campo fechaInicio es obligatorio";
-            erroresTemp.nombre = "Campo obligatorio";
+            erroresTemp.nombre_vt = "Campo obligatorio";
         }
 
         if (!datosVT.dosis?.trim()){
@@ -83,13 +83,13 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
             erroresTemp.dosis = "Campo obligatorio";
         }
 
-        if (!datosVT.fechaInicio?.trim()) {
+        if (!datosVT.fecha_inicio?.trim()) {
             // erroresTemp.fechaInicio = "El campo fechaInicio es obligatorio";
-            erroresTemp.fechaInicio = "Campo obligatorio";
+            erroresTemp.fecha_inicio = "Campo obligatorio";
         }
-        if (!datosVT.fechaFinalizacion?.trim()) {
+        if (!datosVT.fecha_finalizacion?.trim()) {
             // erroresTemp.fechaFinalizacion = "El campo fechaFinalizacion es obligatorio";
-            erroresTemp.fechaFinalizacion = "Campo obligatorio";
+            erroresTemp.fecha_finalizacion = "Campo obligatorio";
         }
         if (!datosVT.responsable?.trim()) {
             // erroresTemp.responsable = "El campo responsable es obligatorio";
@@ -100,13 +100,13 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
         Se comprueba que la fecha de finalización de la vacuna/tratamiento sea POSTERIOR a la fecha
         de inicio. Si no es así, se muestra un mensaje de error.
         */
-        if (datosVT.fechaInicio && datosVT.fechaFinalizacion) {
-            const fechaInicio = new Date(datosVT.fechaInicio);
-            const fechaFinalizacion = new Date(datosVT.fechaFinalizacion);
+        if (datosVT.fecha_inicio && datosVT.fecha_finalizacion) {
+            const fechaInicio = new Date(datosVT.fecha_inicio);
+            const fechaFinalizacion = new Date(datosVT.fecha_finalizacion);
 
             // Fecha finalización ANTERIOR a fecha inicio, se muestra mensaje de error.
             if (fechaFinalizacion < fechaInicio) {
-                erroresTemp.fechaFinalizacion = "Debe ser posterior o igual a la fecha de inicio.";
+                erroresTemp.fecha_finalizacion = "Debe ser posterior o igual a la fecha de inicio.";
             }
         }
 
