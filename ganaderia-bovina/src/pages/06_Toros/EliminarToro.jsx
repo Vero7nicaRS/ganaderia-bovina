@@ -110,7 +110,8 @@ export  const EliminarToro = () => {
             Swal.fire({
                 icon: 'success',
                 title: 'Toro eliminado',
-                html: `<strong>${animalToro.id}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
+                html: `<strong>${animalToro.id}</strong> ha sido eliminado
+                       <br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
                 confirmButtonText: 'Aceptar'
             });
 
@@ -134,7 +135,7 @@ export  const EliminarToro = () => {
                 y dado unos comentarios */
             Swal.fire({
                 icon: 'success',
-                title: 'Animal eliminado',
+                title: 'Toro eliminado',
                 html: `<strong>${animalToro.codigo}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
                        </strong>${comentarios ?
                     `<br>Comentarios: ${comentarios}` : ""}`,
