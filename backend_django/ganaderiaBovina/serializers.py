@@ -131,16 +131,24 @@ class AnimalSerializer(serializers.ModelSerializer):
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
-
-        #if Animal.objects.filter(codigo=value).exists():
-        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
-
+        # OBSERVACIÓN:
+        # El campo 'codigo' tiene un UniqueValidator, controlando si el código existe en la creación o modificación
+        # del objeto.
+        # En este caso, el código NO se puede modificar una vez creado. Por tanto, no hace falta hacer
+        # ".exclude(id=self.instance.id)."
+        # Sin embargo, si en el futuro se permite cambiar el código, se tendría que incluir esa validación de
+        # manera manual en el "validate_codigo".
+        # -----------------------  NO USAR ACTUALMENTE EL CÓDIGO DE ABAJO: --------------------------
         # Si el código existe en el sistema, se lanza un mensaje de error.
         # También, si se modifica el animal se excluye ese "id" de la lista para que no haya conflicto en el filtrado.
-        if Animal.objects.filter(codigo=value).exclude(id=self.instance.id).exists():
-            raise serializers.ValidationError(
-                f"El código '{value}' ya existe en el sistema."
-            )
+
+        # No funciona aquí, porque unique se ejecuta antes que el validate_codigo
+        # Si el código existe en el sistema, se lanza un mensaje de error.
+        # if Animal.objects.filter(codigo=value).exclude(id=self.instance.id).exists():
+        #    raise serializers.ValidationError(
+        #        f"El código '{value}' ya existe en el sistema."
+        #    )
+
         return value
 
     # validate_<campo>: Validación para el campo "padre".
@@ -292,11 +300,6 @@ class ToroSerializer(serializers.ModelSerializer):
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
 
-        # No funciona aquí, porque unique se ejecuta antes que el validate_codigo
-        # Si el código existe en el sistema, se lanza un mensaje de error.
-        #if Toro.objects.filter(codigo=value).exists():
-        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
-
         return value
 
 
@@ -345,18 +348,6 @@ class CorralSerializer(serializers.ModelSerializer):
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
-
-        # Si el código existe en el sistema, se lanza un mensaje de error.
-        #if Corral.objects.filter(codigo=value).exists():
-        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
-
-        # Si el código existe en el sistema, se lanza un mensaje de error.
-        # También, si se modifica el corral se excluye ese "id" de la lista para que no haya conflicto en el filtrado.
-        if Corral.objects.filter(codigo=value).exclude(id=self.instance.id).exists():
-            raise serializers.ValidationError(
-                f"El código '{value}' ya existe en el sistema."
-            )
-        return value
 
         return value
 
@@ -420,10 +411,6 @@ class InventarioVTSerializer(serializers.ModelSerializer):
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
-
-        # Si el código existe en el sistema, se lanza un mensaje de error.
-        #if Toro.objects.filter(codigo=value).exists():
-        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
@@ -489,10 +476,6 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
-
-        # Si el código existe en el sistema, se lanza un mensaje de error.
-        #if VTAnimales.objects.filter(codigo=value).exists():
-        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
@@ -616,10 +599,6 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
         # Si el código no tiene el formato adecuado, se lanza un mensaje de error.
         if not re.match(patron, value):
             raise serializers.ValidationError(f"El código debe tener el formato '{prefijo}-número' (Ej: {prefijo}-1).")
-
-        # Si el código existe en el sistema, se lanza un mensaje de error.
-        #if ListaInseminaciones.objects.filter(codigo=value).exists():
-        #    raise serializers.ValidationError(f"ERROR: El código '{value}' existe.")
 
         return value
 
