@@ -537,8 +537,8 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
             # Si es "INACTIVA", se muestra un error.
             if inventario.estado != "Activa":
                 raise serializers.ValidationError(
-                    {"estado": f"{'El' if tipo == 'tratamiento' else 'La'} "
-                               f"{tipo.lower()} suministrad{'o' if inventario.tipo == 'tratamiento' else 'a'}"
+                    {"estado": f"{'El' if tipo.lower() == 'tratamiento' else 'La'} "
+                               f"{tipo.lower()} suministrad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'}"
                                f" tiene el estado 'Inactivo' y por tanto, no se puede usar."}
                 )
         #if not inventario:
