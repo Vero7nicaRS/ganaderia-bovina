@@ -13,13 +13,16 @@ import "../../../styles/ListaVTAnimales.css";
 import {useContext, useState} from "react";
 import {VTListadoContext} from "../../../DataAnimales/DataVacunasTratamientos/DataListadoVTAnimales/VTListadoContext.jsx"
 import { useMemo } from "react";
-import Swal from 'sweetalert2'; // Se importa SweetAlert2 para llevar a cabo el mensaje de confirmación de eliminación.
+import Swal from 'sweetalert2';
+import {AnimalesContext} from "../../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx"; // Se importa SweetAlert2 para llevar a cabo el mensaje de confirmación de eliminación.
 
 export const ListadoVT_Animales = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListadoVT_Animales.
       Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTListadoContext.
       */
     const {vt_animal} = useContext(VTListadoContext);
+    const {animales} = useContext(AnimalesContext);
+
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de vacunas/tratamientos.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de vacunas y/o tratamientos.
     const [fechaSeleccionada, setFechaSeleccionada] = useState("Sin filtro"); //Busqueda por FECHA en la lista de inseminaciones.
@@ -27,10 +30,10 @@ export const ListadoVT_Animales = () => {
     /* Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
     const datosFiltrados = useMemo(() => {
         return vt_animal.filter((item) => {
-            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
+            /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
              se convierten a mayúsculas (toUpperCase)*/
             const coincideBusqueda =
-                busquedaID === "" || item.idAnimal.toString().toUpperCase().includes(busquedaID.toUpperCase())
+                busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase())
             const coincideFecha =
                 fechaSeleccionada === "Sin filtro" || item.fechaInseminacion === fechaSeleccionada;
             const coincideTipo =
@@ -162,53 +165,58 @@ export const ListadoVT_Animales = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                datosFiltrados.map((item) => (
-                                    <tr key={item.id}>
-                                        <td>{item.id}</td>
-                                        <td>{item.fechaInicio}</td>
-                                        <td>{item.tipo}</td>
-                                        <td>{item.nombre}</td>
-                                        <td>{item.idAnimal}</td>
+                                datosFiltrados.map((item) => {
+                                    const vaca = animales.find((a) => a.id === item.id_animal);
 
-                                        <td>
-                                            {/* BOTÓN VER */}
-                                            <NavLink
-                                                to="/formulario-vt-animal"
-                                                state={{
-                                                    modo: "ver",
-                                                    vt_animal: item
-                                                }} //Se le pasa la vacuna/tratamiento (item)
-                                                className="btn-ver">
-                                                VER
-                                            </NavLink>
+                                    return (
+                                        <tr key={item.id}>
+                                            <td>{item.codigo}</td>
+                                            <td>{item.fecha_inicio}</td>
+                                            <td>{item.tipo}</td>
+                                            <td>{item.nombre_vt}</td>
+                                            {/*<td>{item.id_animal}</td>*/}
+                                            <td>{vaca ? vaca.codigo : "No existente"}</td>
 
-                                            {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
-
-                                            <>
-                                                {/* BOTÓN MODIFICAR */}
+                                            <td>
+                                                {/* BOTÓN VER */}
                                                 <NavLink
-                                                    to="/formulario-vt-animal"
+                                                    to={`/formulario-vt-animal/${item.id}`}
                                                     state={{
-                                                        modo: "modificar",
+                                                        modo: "ver",
                                                         vt_animal: item
-                                                    }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                                    className="btn-modificar"
-                                                >
-                                                    MODIFICAR
+                                                    }} //Se le pasa la vacuna/tratamiento (item)
+                                                    className="btn-ver">
+                                                    VER
                                                 </NavLink>
-                                                {/* BOTÓN ELIMINAR */}
-                                                <button
-                                                    className="btn-eliminar"
-                                                    onClick={() => manejarEliminar(item.id, item.tipo, item.nombre)}
-                                                >
-                                                    ELIMINAR
-                                                </button>
 
-                                            </>
+                                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
 
-                                        </td>
-                                    </tr>
-                                ))
+                                                <>
+                                                    {/* BOTÓN MODIFICAR */}
+                                                    <NavLink
+                                                        to={`/formulario-vt-animal/${item.id}`}
+                                                        state={{
+                                                            modo: "modificar",
+                                                            vt_animal: item
+                                                        }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                                        className="btn-modificar"
+                                                    >
+                                                        MODIFICAR
+                                                    </NavLink>
+                                                    {/* BOTÓN ELIMINAR */}
+                                                    <button
+                                                        className="btn-eliminar"
+                                                        onClick={() => manejarEliminar(item.id, item.tipo, item.nombre)}
+                                                    >
+                                                        ELIMINAR
+                                                    </button>
+
+                                                </>
+
+                                            </td>
+                                        </tr>
+                                    )
+                                })
                             )}
                         </tbody>
                     </table>
