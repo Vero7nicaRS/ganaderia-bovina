@@ -121,7 +121,7 @@ export  const EliminarToro = () => {
                  - Estado: "Muerte" o "Otros".
                  - Comentario: se añade un comentario en caso de que haya introducido información el usuario.
              */
-            /*Se actualiza el ESTADO del animal a "Muerta" o "Vendida" y el corral a "Ninguno".
+            /*Se actualiza el ESTADO del animal a "Muerte" u "Otros".
             Además, se añade un comentario en caso de que haya introducido información el usuario*/
             const animalToroActualizado = {
                 ...animalToro,
