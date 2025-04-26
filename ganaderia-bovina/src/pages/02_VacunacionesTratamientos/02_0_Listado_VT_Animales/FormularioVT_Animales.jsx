@@ -23,13 +23,13 @@ export const FormularioVT_Animales= () => {
 
 
     const estadoInicialVTAnimal = {
-        id: "",
+        id: null,
         tipo: "Tratamiento",
-        nombre: "",
+        nombre_vt: "",
         dosis: "",
         ruta: "Intravenosa",
-        fechaInicio: "",
-        fechaFinalizacion: "",
+        fecha_inicio: "",
+        fecha_finalizacion: "",
         responsable: ""
     }
     /* Se inicializa el tratamiento/vacuna con los datos del state.
@@ -101,46 +101,49 @@ export const FormularioVT_Animales= () => {
     /* ----------------------- MANEJADOR VTListadoContext: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR ----------------------- */
 
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una vacuna/tratamiento.
-    const handleAgregar = (e) => {
+    const handleAgregar = async (e) => {
         console.log(vt_animal); // Verifica el estado de la vacuna/tratamiento antes de validar
 
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
+        try {
+            if (esAgregar) {
 
-        if(esAgregar){
+                //Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
+                // en el inventario.
+                const indexVT = vt.findIndex((item) => item.nombre === vt_animal.nombre_vt);
 
-            //Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
-            // en el inventario.
-            const indexVT = vt.findIndex((item) => item.nombre === vt_animal.nombre);
+                if (indexVT !== -1) {
+                    console.log("ESTOY AQUI")
+                    const cantidadDisponibleInventario = vt[indexVT].unidades; //Cantidad del inventario.
+                    const cantidadUsada = parseInt(vt_animal.dosis, 10);
 
-            if(indexVT !==-1){
-                console.log("ESTOY AQUI")
-                const cantidadDisponibleInventario = vt[indexVT].unidades; //Cantidad del inventario.
-                const cantidadUsada = parseInt(vt_animal.dosis, 10);
+                    if (cantidadUsada > cantidadDisponibleInventario) {
+                        console.error("Error: No hay suficientes unidades en el inventario.");
+                        return; // Se detine la ejecución al no tener suficientes unidades
+                    }
 
-                if( cantidadUsada > cantidadDisponibleInventario){
-                    console.error("Error: No hay suficientes unidades en el inventario.");
-                    return; // Se detine la ejecución al no tener suficientes unidades
+                    const cantidadRestante = cantidadDisponibleInventario - cantidadUsada;
+                    //Se crea una copia del inventario con la cantidad actualizada.
+                    const vtActualizado = {
+                        ...vt[indexVT],
+                        unidades: cantidadRestante
+                    };
+
+                    // Se llama a modificarVT para actualizar el contexto
+                    await modificarVT(vtActualizado);
                 }
 
-                const cantidadRestante = cantidadDisponibleInventario-cantidadUsada;
-                //Se crea una copia del inventario con la cantidad actualizada.
-                const vtActualizado = {
-                    ...vt[indexVT],
-                    unidades: cantidadRestante
-                };
+                console.log("Se ha añadido la vacuna/tratamiento del inventario");
+                await agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
 
-                // Se llama a modificarVT para actualizar el contexto
-                modificarVT(vtActualizado);
+            } else if (esModificar) {
+                console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
+                await modificarVT_Animal(vt_animal); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
             }
-
-            console.log("Se ha añadido la vacuna/tratamiento del inventario");
-            agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
-
-
-        }else if (esModificar){
-            console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
-            modificarVT_Animal(vt_animal); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
+        } catch (error) {
+            console.error("❌ Error al guardar la vacuna/tratamiento suministrada:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
 
         /* Una vez que se haya agregado una nueva vacuna/tratamiento o se modifique un tratamiento/vacuna existente,
@@ -151,40 +154,43 @@ export const FormularioVT_Animales= () => {
 
     //Para llevar acabo las acciones de AGREGAR Y SEGUIR AÑADIENDO una vacuna/tratamiento.
     //Le permite al usuario añadir un tratamiento/vacuna y continuar con el formulario vacio para añadir nuevos tratamientos/vacunas.
-    const handleAceptarYSeguir = (e) => {
+    const handleAceptarYSeguir = async (e) => {
         console.log(vt_animal); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
-        if(esAgregar){
-              //Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
-            // en el inventario.
-            const indexVT = vt.findIndex((item) => item.nombre === vt_animal.nombre);
+        try {
+            if (esAgregar) {
+                //Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
+                // en el inventario.
+                const indexVT = vt.findIndex((item) => item.nombre === vt_animal.nombre_vt);
 
-            if(indexVT !==-1){
-                const cantidadDisponibleInventario = vt[indexVT].unidades; //Cantidad del inventario.
-                const cantidadUsada = parseInt(vt_animal.dosis, 10);
+                if (indexVT !== -1) {
+                    const cantidadDisponibleInventario = vt[indexVT].unidades; //Cantidad del inventario.
+                    const cantidadUsada = parseInt(vt_animal.dosis, 10);
 
-                if( cantidadUsada > cantidadDisponibleInventario){
-                    console.error("Error: No hay suficientes unidades en el inventario.");
-                    return; // Se detine la ejecución al no tener suficientes unidades
+                    if (cantidadUsada > cantidadDisponibleInventario) {
+                        console.error("Error: No hay suficientes unidades en el inventario.");
+                        return; // Se detine la ejecución al no tener suficientes unidades
+                    }
+
+                    const cantidadRestante = cantidadDisponibleInventario - cantidadUsada;
+                    //Se crea una copia del inventario con la cantidad actualizada.
+                    const vtActualizado = {
+                        ...vt[indexVT],
+                        unidades: cantidadRestante
+                    };
+                    // Se llama a modificarVT para actualizar el contexto
+                    await modificarVT(vtActualizado);
                 }
-
-                const cantidadRestante = cantidadDisponibleInventario-cantidadUsada;
-                //Se crea una copia del inventario con la cantidad actualizada.
-                const vtActualizado = {
-                    ...vt[indexVT],
-                    unidades: cantidadRestante
-                };
-                // Se llama a modificarVT para actualizar el contexto
-                modificarVT(vtActualizado);
+                console.log("Se ha añadido la vacuna/tratamiento al animal y se continua añadiendo nuevas vacunas/tratamientos a los animales");
+                await agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
+                setVT_Animal(estadoInicialVTAnimal); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
             }
-            console.log("Se ha añadido la vacuna/tratamiento al animal y se continua añadiendo nuevas vacunas/tratamientos a los animales");
-            agregarVT_Animal(vt_animal); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
-            setVT_Animal(estadoInicialVTAnimal); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
-
+        } catch (error) {
+            console.error("❌ Error al guardar la vacuna/tratamiento suministrada:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data);
         }
-
     }
 
     /* ----------------------- FIN MANEJADOR VTListadoContext: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR  -----------------------*/
@@ -218,14 +224,11 @@ export const FormularioVT_Animales= () => {
                             type="text"
                             name="id"
                             className="cuadro-texto"
-                            value={vt_animal.id || ""}
+                            value={vt_animal.codigo || ""}
                             disabled
                         />
-
-
                     </div>
                 )}
-
             </div>
 
             <hr/>
@@ -293,7 +296,7 @@ export const FormularioVT_Animales= () => {
                                     Ej: Bovisan: cantidad 6 (INVENTARIO)
                                         Nombre: Bosivan.
                                         Dosis: Desplegable del 1-6.*/
-                                    setVT_Animal((prev) => ({...prev, nombre: "", dosis: "1"}))
+                                    setVT_Animal((prev) => ({...prev, nombre_vt: "", dosis: "1"}))
                                 }}
                             >
                                 <option value="Tratamiento">Tratamiento</option>
@@ -303,10 +306,10 @@ export const FormularioVT_Animales= () => {
                         <div className="contenedor-linea">
                             <div className="label">Nombre</div>
                             <select
-                                className={`form-select ${errores.nombre ? "error" : ""}`}
-                                name="nombre"
+                                className={`form-select ${errores.nombre_vt ? "error" : ""}`}
+                                name="nombre_vt"
                                 disabled={esVisualizar}
-                                value={vt_animal.nombre || ""}
+                                value={vt_animal.nombre_vt || ""}
                                 onChange={(e) => {
                                     handleChange(e);
                                     /* Se actualizan el campo "Dosis" al modificar el campo "Nombre".*/
@@ -354,7 +357,7 @@ export const FormularioVT_Animales= () => {
                                 ) : (
 
                                     (() => {
-                                        const objetoVT = vt.find(vt_del_animal => vt_del_animal.nombre === vt_animal.nombre);
+                                        const objetoVT = vt.find(vt_del_animal => vt_del_animal.nombre === vt_animal.nombre_vt);
                                         const cantidadDisponible = objetoVT ? objetoVT.unidades : 0;
 
                                        //Se muestran todas las opciones de dosis que hay para ese tratamiento o vacuna.
@@ -399,27 +402,27 @@ export const FormularioVT_Animales= () => {
                             <div className="label">Fecha de inicio</div>
                             <input
                                 type="date"
-                                className={`cuadro-texto ${errores.fechaInicio ? "error" : ""}`}
-                                name="fechaInicio"
+                                className={`cuadro-texto ${errores.fecha_inicio ? "error" : ""}`}
+                                name="fecha_inicio"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
-                                value={vt_animal.fechaInicio || ""}
+                                value={vt_animal.fecha_inicio || ""}
                                 onChange={handleChange}
                             />
-                            {errores.fechaInicio &&
-                                <div className="mensaje-error">{errores.fechaInicio}</div>}
+                            {errores.fecha_inicio &&
+                                <div className="mensaje-error">{errores.fecha_inicio}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Fecha de finalización</div>
                             <input
                                 type="date"
-                                className={`cuadro-texto ${errores.fechaFinalizacion ? "error" : ""}`}
-                                name="fechaFinalizacion"
+                                className={`cuadro-texto ${errores.fecha_finalizacion ? "error" : ""}`}
+                                name="fecha_finalizacion"
                                 disabled={esVisualizar} //Se indica que el campo "Fecha de nacimiento" no se puede modificar cuando se Visualiza.
-                                value={vt_animal.fechaFinalizacion || ""}
+                                value={vt_animal.fecha_finalizacion || ""}
                                 onChange={handleChange}
                             />
-                            {errores.fechaFinalizacion &&
-                                <div className="mensaje-error">{errores.fechaFinalizacion}</div>}
+                            {errores.fecha_finalizacion &&
+                                <div className="mensaje-error">{errores.fecha_finalizacion}</div>}
                         </div>
                         <div className="contenedor-linea">
                             <div className="label">Responsable</div>
