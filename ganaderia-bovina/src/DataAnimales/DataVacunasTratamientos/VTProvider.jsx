@@ -9,12 +9,11 @@
 * */
 
 import PropTypes from "prop-types";
-import {vtMock} from "./VTMock.jsx";
 import {VTContext} from "./VTContext.jsx";
 import {useEffect, useState} from "react";
 import api from "../../api.js";
 export const VtProvider = ({children}) => {
-    const [vt, setVT] = useState(vtMock);
+    const [vt, setVT] = useState([]);
     // Se cargan los datos de las vacunas/tratamientos del inventario que están en el backend.
     useEffect(() => {
         api.get("/inventariovt/")
