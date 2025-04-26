@@ -83,67 +83,79 @@ export  const EliminarToro = () => {
         * */
 
         console.log("🧩 ID del toro que se va a eliminar:", animalToro.id);
-        /* 1. Se elimina el toro del backend pasándole el motivo y comentario en la petición.
+
+        try{
+            /* 1. Se elimina el toro del backend pasándole el motivo y comentario en la petición.
             Y el backend se encarga de:
                 - Motivo ERROR: elimina al toro completamente del sistema (base de datos).
                 - Motivo VENDIDA o MUERTE: NO elimina al toro del sistema, sino que se actualizan sus datos
                 (campos estado [con el motivo]).
-        */
-        await api.delete(`/toros/${animalToro.id}/eliminar/`, {
-            params: {
-                motivo,
-                comentario: comentarios || undefined
-            }
-        });
+            */
+            await api.delete(`/toros/${animalToro.id}/eliminar/`, {
+                params: {
+                    motivo,
+                    comentario: comentarios || undefined
+                }
+            });
 
-        /* 2. Una vez que el toro ha sido tratado en el backend, ahora hay que ver qué hacer en el frontend.
+            /* 2. Una vez que el toro ha sido tratado en el backend, ahora hay que ver qué hacer en el frontend.
                    - Motivo ERROR: se elimina del contexto.
                    - Motivo VENDIDA o MUERTE: se mantiene en el contexto y aparece con los campos actualizados.
             */
-        if (motivo === "Error") {
-            /* 2.1 Se elimina SOLAMENTE al toro del contexto porque ya ha sido eliminado antes del backend.
-                  Por ello se le pasa el "id" y "false", y "false" significa que no tiene que volver a hacer la petición al backend.
-                */
-            eliminarToro(animalToro.id,false); // Se elimina directamente el animal (toro) del contexto
+            if (motivo === "Error") {
+                /* 2.1 Se elimina SOLAMENTE al toro del contexto porque ya ha sido eliminado antes del backend.
+                      Por ello se le pasa el "id" y "false", y "false" significa que no tiene que volver a hacer la petición al backend.
+                    */
+                eliminarToro(animalToro.id,false); // Se elimina directamente el animal (toro) del contexto
 
-            /*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo*/
-            Swal.fire({
-                icon: 'success',
-                title: 'Toro eliminado',
-                html: `<strong>${animalToro.id}</strong> ha sido eliminado
+                /*Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo*/
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Toro eliminado',
+                    html: `<strong>${animalToro.id}</strong> ha sido eliminado
                        <br>Motivo: <strong>${motivo}</strong>${comentarios ? `<br>Comentarios: ${comentarios}` : ""}`,
-                confirmButtonText: 'Aceptar'
-            });
+                    confirmButtonText: 'Aceptar'
+                });
 
-        } else { //Motivo === MUERTA o VENDIDA
-            /* 2.2 Se actualizan los datos del animal al animal del contexto porque
-             ya ha sido eliminado antes del backend. no volver a contactar con el backend, solo contexto
-             Actualización del animal:
-                 - Estado: "Muerte" o "Otros".
-                 - Comentario: se añade un comentario en caso de que haya introducido información el usuario.
-             */
-            /*Se actualiza el ESTADO del animal a "Muerte" u "Otros".
-            Además, se añade un comentario en caso de que haya introducido información el usuario*/
-            const animalToroActualizado = {
-                ...animalToro,
-                estado: motivo,
-                comentario: comentarios
-            };
-            actualizarToroEnContexto(animalToroActualizado); // Se actualiza el estado del animal en el contexto.
+            } else { //Motivo === MUERTA o VENDIDA
+                /* 2.2 Se actualizan los datos del animal al animal del contexto porque
+                 ya ha sido eliminado antes del backend. no volver a contactar con el backend, solo contexto
+                 Actualización del animal:
+                     - Estado: "Muerte" o "Otros".
+                     - Comentario: se añade un comentario en caso de que haya introducido información el usuario.
+                 */
+                /*Se actualiza el ESTADO del animal a "Muerte" u "Otros".
+                Además, se añade un comentario en caso de que haya introducido información el usuario*/
+                const animalToroActualizado = {
+                    ...animalToro,
+                    estado: motivo,
+                    comentario: comentarios
+                };
+                actualizarToroEnContexto(animalToroActualizado); // Se actualiza el estado del animal en el contexto.
 
-            /* Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
-                y dado unos comentarios */
-            Swal.fire({
-                icon: 'success',
-                title: 'Toro eliminado',
-                html: `<strong>${animalToro.codigo}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
+                /* Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
+                    y dado unos comentarios */
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Toro eliminado',
+                    html: `<strong>${animalToro.codigo}</strong> ha sido eliminado.<br>Motivo: <strong>${motivo}</strong> 
                        </strong>${comentarios ?
-                    `<br>Comentarios: ${comentarios}` : ""}`,
-                confirmButtonText: 'Aceptar'
+                        `<br>Comentarios: ${comentarios}` : ""}`,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+
+            navigate("/visualizar-toros"); // Redirige a la página que contiene la lista de toros.
+
+        }catch(error){
+            console.error("❌ Error al eliminar el toro:", error.response?.data || error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo eliminar el toro. Revisa los datos o intenta más tarde.'
             });
         }
 
-        navigate("/visualizar-toros"); // Redirige a la página que contiene la lista de toros.
     };
     /* ----------------------- FIN MANEJADOR TOROSCONTEXT: ELIMINAR -----------------------*/
 
