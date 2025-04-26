@@ -22,6 +22,7 @@ import {FormularioVT_Animales} from "./pages/02_VacunacionesTratamientos/02_0_Li
 import {ArbolGenealogico} from "./pages/07_ArbolGenealogico/ArbolGenealogico.jsx";
 import {FormularioCorral} from "./pages/03_MovimientosDeCorral/FormularioCorral.jsx";
 import {MovimientoCorral} from "./pages/03_MovimientosDeCorral/MovimientoCorral.jsx"
+import {EliminarVT} from "./pages/02_VacunacionesTratamientos/EliminarVT.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
@@ -54,6 +55,7 @@ export const App = () => {
 
                          {/* ---------- Páginas referentes a INVENTARIO DE VACUNAS Y/O TRATAMIENTOS ----------*/}
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
+                         <Route path="/eliminar-inventario-vt" element={<EliminarVT/>}/>
                          <Route path="/formulario-vt" element={<FormularioVT/>}/>
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicha vacuna/tratamiento.
                          Sin tener que navegar a otra página.*/}
