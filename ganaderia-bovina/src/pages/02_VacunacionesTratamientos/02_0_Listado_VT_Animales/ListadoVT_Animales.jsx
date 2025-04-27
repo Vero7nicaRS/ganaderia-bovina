@@ -60,9 +60,10 @@ export const ListadoVT_Animales = () => {
     const {eliminarVT_Animal} = useContext(VTListadoContext);
 
     // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
-    const manejarEliminar = (id, tipo, nombre) => {
+    const manejarEliminar = (id, codigo, tipo, nombre) => {
         Swal.fire({
-            title: `¿Desea eliminar  ${tipo === "Vacuna" ? "la vacuna" : "el tratamiento"} ${id} ${nombre} seleccionada?`,
+            title: `¿Desea eliminar  ${tipo.toLowerCase() === "vacuna" ? "la vacuna" : "el tratamiento"} 
+                    ${codigo} ${nombre} seleccionada?`,
             text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -70,13 +71,17 @@ export const ListadoVT_Animales = () => {
             cancelButtonText: 'CANCELAR',
             reverseButtons: true // Cambia el orden de los botones
         }).then((result) => {
+
             if (result.isConfirmed) {
+                // Se elimina la vacuna/tratamiento del backend y del contexto.
                 eliminarVT_Animal(id);
                 Swal.fire(
                     'Eliminado!',
-                    `${tipo === "Vacuna" ? "La vacuna" : "El tratamiento"} ha sido eliminad${tipo === "Vacuna" ? "a" : "o"}.`,
+                    `${tipo.toLowerCase() === "vacuna" ? "La vacuna" : "El tratamiento"} 
+                            ha sido eliminad${tipo === "Vacuna" ? "a" : "o"}.`,
                     'success'
                 );
+                console.log("Se ha eliminado  ",tipo," - ", codigo)
             }
         });
     };
@@ -206,7 +211,8 @@ export const ListadoVT_Animales = () => {
                                                     {/* BOTÓN ELIMINAR */}
                                                     <button
                                                         className="btn-eliminar"
-                                                        onClick={() => manejarEliminar(item.id, item.tipo, item.nombre)}
+                                                        onClick={() => manejarEliminar(item.id, item.codigo,
+                                                                                            item.tipo, item.nombre_vt)}
                                                     >
                                                         ELIMINAR
                                                     </button>
