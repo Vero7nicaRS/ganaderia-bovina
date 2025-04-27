@@ -224,7 +224,7 @@ def test_vtanimales_valores_fuera_de_rango():
     # Se comprueba que no se puedan suministrar más dosis de las que tiene el inventario, es decir,
     # de la que tiene esa vacuna o tratamiento.
     assert responseMax.data["dosis"][0] == (f"No hay suficientes unidades en el inventario. "
-                                            f"Disponibles: {inventario.unidades}")
+                                            f"Disponibles: {inventario.unidades}.")
 
 @pytest.mark.django_db
 def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
@@ -257,7 +257,7 @@ def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
         "ruta": "Oral",
         "fecha_inicio": "2025-04-10", # posterior a la fecha de finalización
         "fecha_finalizacion": "2025-04-05",  # anterior a la fecha de inicio
-        "responsable": "Veterinario X",
+        "responsable": "Veterinario Luis",
         "inventario_vt": inventario.id,
         "id_animal": animal.id,
         "dosis": 2
@@ -267,6 +267,106 @@ def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
     assert response.status_code == 400
     assert "fecha_finalizacion" in response.data
     assert response.data["fecha_finalizacion"][0] == "La fecha de finalización debe ser posterior a la fecha de inicio."
+
+
+# Test para comprobar que al suministrar una vacuna/tratamiento se restan correctamente las unidades en el inventario.
+@pytest.mark.django_db
+@pytest.mark.django_db
+def test_vtanimales_resta_unidades_inventario():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        codigo="VT-22",  # CÓDIGO ÚNICO para evitar choques
+        tipo="Vacuna",
+        nombre="Vacuna Unidades Test",
+        unidades=10,
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Unidades Test",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=150000,
+        produccion_leche=25.0,
+        calidad_patas=Decimal("6.5"),
+        calidad_ubres=Decimal("7.0"),
+        grasa=4.0,
+        proteinas=3.5,
+        corral=Corral.objects.create(nombre="Corral Unidades Test")
+    )
+
+    datos = {
+        "tipo": "Vacuna",
+        "ruta": "Intramuscular",
+        "fecha_inicio": "2025-04-01",
+        "fecha_finalizacion": "2025-04-05",
+        "responsable": "Veterinario Antonio",
+        "dosis": 4,
+        "id_animal": animal.id,
+        "inventario_vt": inventario.id,
+    }
+
+    response = client.post("/api/vtanimales/", datos, format="json")
+    assert response.status_code == 201
+
+    inventario.refresh_from_db()
+    assert inventario.unidades == 6  # 10 - 4
+
+
+@pytest.mark.django_db
+def test_vtanimales_no_unidades_negativas():
+    client = APIClient()
+
+    # Crear un inventario con 3 unidades disponibles
+    inventario = InventarioVT.objects.create(
+        codigo="VT-101",
+        tipo="Vacuna",
+        nombre="Vacuna Prueba 1",
+        unidades=3,  # Solo 3 unidades
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    # Crear un animal para suministrar la vacuna
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Prueba 1",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20.0,
+        calidad_patas=Decimal("7.00"),
+        calidad_ubres=Decimal("7.00"),
+        grasa=4.0,
+        proteinas=3.5,
+        corral=Corral.objects.create(nombre="Corral 1")
+    )
+
+    # Intentar suministrar 5 dosis (más de las que hay)
+    datos = {
+        "tipo": "Vacuna",
+        "ruta": "Intravenosa",
+        "fecha_inicio": "2025-03-10",
+        "fecha_finalizacion": "2025-03-15",
+        "responsable": "Veterinario 1",
+        "dosis": 5,  # Intentamos usar más dosis de las que hay
+        "id_animal": animal.id,
+        "inventario_vt": inventario.id,
+    }
+
+    response = client.post("/api/vtanimales/", datos, format="json")
+
+    # Se debe rechazar la operación
+    assert response.status_code == 400
+    assert "dosis" in response.data
+    assert response.data["dosis"][0] == "No hay suficientes unidades en el inventario. Disponibles: 3."
+
+    # Verificar que las unidades en el inventario NO han cambiado
+    inventario.refresh_from_db()
+    assert inventario.unidades == 3
 
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
