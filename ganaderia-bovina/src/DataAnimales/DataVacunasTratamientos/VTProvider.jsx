@@ -94,6 +94,16 @@ export const VtProvider = ({children}) => {
             )
         );
     };
+
+    // Se carga el inventario de vacunas y tratamientos correctamente
+    const obtenerInventarioVT = async () => {
+        try {
+            const response = await api.get('/inventariovt/');
+            setVT(response.data);
+        } catch (error) {
+            console.error("Error al cargar el listado de vacunas/tratamientos del inventario:", error);
+        }
+    };
     // const agregarVT = (nuevoVT) => {
     //
     //     if (!nuevoVT.nombre) {
@@ -143,7 +153,8 @@ export const VtProvider = ({children}) => {
     // };
 
     return (
-        <VTContext.Provider value={{ vt, agregarVT, modificarVT, eliminarVT, actualizarVTEnContexto }}>
+        <VTContext.Provider value={{ vt, agregarVT, modificarVT, eliminarVT,
+                                     actualizarVTEnContexto, obtenerInventarioVT }}>
             {children}
         </VTContext.Provider>
     );
