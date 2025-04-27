@@ -545,6 +545,23 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
         #     raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
         return data
 
+    def create(self, validated_data):
+        inventario = validated_data.get('inventario_vt') # Se obtiene la vacuna/tratamiento del inventario.
+        dosis = validated_data.get('dosis') # Se obtiene la dosis que se quiere suministrar.
+
+        # Se resta la cantidad de dosis que se ha utilizado al inventario de vacunas/tratamientos
+        if inventario and dosis:
+        # Si al restar unidades que tiene el inventario con las dosis suministradas da como resultado un valor negativo,
+        # se muestra un mensaje de error.
+            if inventario.unidades - dosis < 0:
+                raise serializers.ValidationError(
+                    {"dosis": f"No hay suficientes unidades disponibles en el inventario. Disponibles: {inventario.unidades}."}
+                )
+                inventario.unidades -= dosis
+                inventario.save()
+
+            # Se crea el registro de VTAnimales como normalmente
+        return super().create(validated_data)
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Serializer de LISTAINSEMINACIONES (Inventario de inseminaciones)
