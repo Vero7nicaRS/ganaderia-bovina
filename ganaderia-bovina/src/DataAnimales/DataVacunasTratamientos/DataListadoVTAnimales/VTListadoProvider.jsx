@@ -74,12 +74,10 @@ export const VTListadoProvider = ({children}) => {
     *                       eliminarVT_Animal: ELIMINACIÓN del VTAnimal (DELETE)
     * ----------------------------------------------------------------------------------------------
     */
-    const eliminarVT_Animal = async (id, desdeBackend) => {
+    const eliminarVT_Animal = async (id) => {
         try {
-            if (desdeBackend) {
-                // Se borra del backend.
+            // Se borra del backend.
                 await api.delete(`/vtanimales/${id}/`);
-            }
             // Se actualiza el contexto: desaparece la vacuna/tratamiento del listado de vacunas/tratamientos suministrados.
             setVT_Animal(prev =>
                 prev.filter(vactracsuministrada => vactracsuministrada.id !== id));
