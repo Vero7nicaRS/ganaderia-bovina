@@ -48,7 +48,7 @@ export const FormularioVT_Animales= () => {
     /* Para que haya un desplegable con el listado de vacunas y tratamientos disponibles, es necesario
     * acceder al listado de los mismos. Para ello, se obtiene dicha información con
     * con "VTContext" */
-    const {vt, modificarVT} = useContext(VTContext); //Lista de vacunas/tratamientos y la función de modificarVT.
+    const {vt, obtenerInventarioVT} = useContext(VTContext); //Lista de vacunas/tratamientos y la función de modificarVT.
 
     /* Se obtiene las funciones: agregarVT_Animal y modificarVT_Animal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTListadoContext
@@ -163,20 +163,20 @@ export const FormularioVT_Animales= () => {
                             return; // Se detine la ejecución al no tener suficientes unidades
                         }
 
-                        const cantidadRestante = cantidadDisponibleInventario - cantidadUsada;
-                        //Se crea una copia del inventario con la cantidad actualizada.
-                        const vtActualizado = {
-                            ...vt[indexVT],
-                            unidades: cantidadRestante
-                        };
-
-                        // Se llama a modificarVT para actualizar el contexto
-                        await modificarVT(vtActualizado);
+                        // const cantidadRestante = cantidadDisponibleInventario - cantidadUsada;
+                        // //Se crea una copia del inventario con la cantidad actualizada.
+                        // const vtActualizado = {
+                        //     ...vt[indexVT],
+                        //     unidades: cantidadRestante
+                        // };
+                        //
+                        // // Se llama a modificarVT para actualizar el contexto
+                        // await modificarVT(vtActualizado);
                     }
 
                     console.log("Se ha añadido la vacuna/tratamiento del inventario");
                     await agregarVT_Animal(vt_suministrada); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
-
+                    await obtenerInventarioVT(); // Se actualiza en el contexto (listado de vacunas/tratamientos suministrados)
                 } else if (esModificar) {
                     console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
                     await modificarVT_Animal(vt_suministrada); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
@@ -241,17 +241,20 @@ export const FormularioVT_Animales= () => {
                             return; // Se detine la ejecución al no tener suficientes unidades
                         }
 
-                        const cantidadRestante = cantidadDisponibleInventario - cantidadUsada;
-                        //Se crea una copia del inventario con la cantidad actualizada.
-                        const vtActualizado = {
-                            ...vt[indexVT],
-                            unidades: cantidadRestante
-                        };
-                        // Se llama a modificarVT para actualizar el contexto
-                        await modificarVT(vtActualizado);
+                        // const cantidadRestante = cantidadDisponibleInventario - cantidadUsada;
+                        // //Se crea una copia del inventario con la cantidad actualizada.
+                        // const vtActualizado = {
+                        //     ...vt[indexVT],
+                        //     unidades: cantidadRestante
+                        // };
+                        // // Se llama a modificarVT para actualizar el contexto
+                        // await modificarVT(vtActualizado);
                     }
                     console.log("Se ha añadido la vacuna/tratamiento al animal y se continua añadiendo nuevas vacunas/tratamientos a los animales");
-                    await agregarVT_Animal(vt_suministrada); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
+
+                    // Se añade la nueva vacuna/tratamiento suministrada al backend y se muestra la información en el frontend.
+                    await agregarVT_Animal(vt_suministrada);
+                    await obtenerInventarioVT(); // Se actualiza en el contexto (listado de vacunas/tratamientos suministrados)
                     setVT_Animal(estadoInicialVTAnimal); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
                 }
             } else {
@@ -435,130 +438,6 @@ export const FormularioVT_Animales= () => {
                                 <option value="Vacuna">Vacuna</option>
                             </select>
                         </div>
-                        {/*<div className="contenedor-linea">*/}
-                        {/*    <div className="label">Nombre</div>*/}
-                        {/*    /!*<select*!/*/}
-                        {/*    /!*    className={`form-select ${errores.nombre_vt ? "error" : ""}`}*!/*/}
-                        {/*    /!*    name="nombre_vt"*!/*/}
-                        {/*    /!*    disabled={esVisualizar}*!/*/}
-                        {/*    /!*    //value={vt_animal.nombre_vt || ""}*!/*/}
-                        {/*    /!*    value={vt_animal.nombre_vt !== null ? vt_animal.nombre_vt : "eliminada"}*!/*/}
-                        {/*    /!*    onChange={(e) => {*!/*/}
-                        {/*    /!*        handleChange(e);*!/*/}
-                        {/*    /!*        /* Se actualizan el campo "Dosis" al modificar el campo "Nombre".*!/*/}
-                        {/*    /!*        setVT_Animal((prev) => ({...prev, dosis: ""}));*!/*/}
-                        {/*    /!*    }}*!/*/}
-                        {/*    /!*>*!/*/}
-                        {/*    /!*    <option value="">Selecciona</option>*!/*/}
-
-                        {/*    /!*    {esVisualizar && vt_animal.nombre_vt === null && (*!/*/}
-                        {/*    /!*        <option value="eliminada">No existente</option>*!/*/}
-                        {/*    /!*    )}*!/*/}
-
-                        {/*    /!*    {vt && vt.length > 0 ? (*!/*/}
-                        {/*    /!*        vt*!/*/}
-                        {/*    /!*            /*Se filtra por el tipo "Tratamiento" o "Vacuna" ya que el inventario*!/*/}
-                        {/*    /!*            contiene esos dos elementos, y nos quedamos con el "nombre" de dicha vacuna o*!/*/}
-                        {/*    /!*            tratamiento.*!/*/}
-                        {/*    /!*            También, se lleva a cabo el filtrado por la cantidad que haya de ese tratamiento*!/*/}
-                        {/*    /!*            o vacuna, por tanto solo se muestran los que tengan una cantidad superior a 0*!/*/}
-                        {/*    /!*            (>=1)*!/*/}
-                        {/*    /!*            .filter((vt_del_animal) =>*!/*/}
-                        {/*    /!*                vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase()*!/*/}
-                        {/*    /!*                && vt_del_animal.unidades > 0*!/*/}
-                        {/*    /!*            )*!/*/}
-                        {/*    /!*            .map((vt_del_animal) => (*!/*/}
-                        {/*    /!*                <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>*!/*/}
-                        {/*    /!*                    {vt_del_animal.nombre}*!/*/}
-                        {/*    /!*                </option>*!/*/}
-                        {/*    /!*            ))*!/*/}
-                        {/*    /!*    ) : (*!/*/}
-                        {/*    /!*        <option disabled>No hay disponibles</option>*!/*/}
-                        {/*    /!*    )}*!/*/}
-
-                        {/*    /!*    {esVisualizar &&*!/*/}
-                        {/*    /!*        vt*!/*/}
-                        {/*    /!*            /*Se filtra por el tipo "Tratamiento" o "Vacuna" ya que el inventario*!/*/}
-                        {/*    /!*            contiene esos dos elementos, y nos quedamos con el "nombre" de dicha vacuna o*!/*/}
-                        {/*    /!*            tratamiento.*!/*/}
-                        {/*    /!*            También, se lleva a cabo el filtrado por la cantidad que haya de ese tratamiento*!/*/}
-                        {/*    /!*            o vacuna, por tanto solo se muestran los que tengan una cantidad superior a 0*!/*/}
-                        {/*    /!*            (>=1)*!/*/}
-                        {/*    /!*            .filter((vt_del_animal) =>*!/*/}
-                        {/*    /!*                vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase()*!/*/}
-                        {/*    /!*                && vt_del_animal.unidades > 0*!/*/}
-                        {/*    /!*                && vt_del_animal.id === vt_animal.id_animal*!/*/}
-                        {/*    /!*            )*!/*/}
-                        {/*    /!*            .map((vt_del_animal) => (*!/*/}
-                        {/*    /!*                <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>*!/*/}
-                        {/*    /!*                    {vt_del_animal.nombre}*!/*/}
-                        {/*    /!*                </option>*!/*/}
-                        {/*    /!*            ))*!/*/}
-                        {/*    /!*    }*!/*/}
-                        {/*    /!*</select>*!/*/}
-
-                        {/*    <select*/}
-                        {/*        className={`form-select ${errores.nombre_vt ? "error" : ""}`}*/}
-                        {/*        name="nombre_vt"*/}
-                        {/*        disabled={esVisualizar}*/}
-                        {/*        value={vt_animal.nombre_vt !== null ? vt_animal.nombre_vt : "eliminada"}*/}
-                        {/*        onChange={(e) => {*/}
-                        {/*            handleChange(e);*/}
-                        {/*            setVT_Animal((prev) => ({...prev, dosis: ""}));*/}
-                        {/*        }}*/}
-                        {/*    >*/}
-                        {/*        <option value="">Selecciona</option>*/}
-
-                        {/*        {(esVisualizar || esModificar) ? (*/}
-                        {/*            <>*/}
-                        {/*                /!* Mostrar el nombre del tratamiento/vacuna aunque no haya unidades *!/*/}
-                        {/*                {vt_animal.nombre_vt && (*/}
-                        {/*                    <option value={vt_animal.nombre_vt}>*/}
-                        {/*                        {vt_animal.nombre_vt}*/}
-                        {/*                    </option>*/}
-                        {/*                )}*/}
-                        {/*                /!* Vacunas/tratamientos que tienen unidades > 0 *!/*/}
-                        {/*                {vt && vt.length > 0 ? (*/}
-                        {/*                    vt*/}
-                        {/*                        .filter(vt_del_animal =>*/}
-                        {/*                            vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase() &&*/}
-                        {/*                            vt_del_animal.unidades > 0 &&*/}
-                        {/*                            vt_del_animal.nombre !== vt_animal.nombre_vt*/}
-                        {/*                        )*/}
-                        {/*                        .map((vt_del_animal) => (*/}
-                        {/*                            <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>*/}
-                        {/*                                {vt_del_animal.nombre}*/}
-                        {/*                            </option>*/}
-                        {/*                        ))*/}
-                        {/*                ) : (*/}
-                        {/*                    <option disabled>No hay disponibles</option>*/}
-                        {/*                )}*/}
-                        {/*            </>*/}
-                        {/*        ) : (*/}
-                        {/*            // Solo para modo Agregar*/}
-                        {/*            <>*/}
-                        {/*                {vt && vt.length > 0 ? (*/}
-                        {/*                    vt*/}
-                        {/*                        .filter(vt_del_animal =>*/}
-                        {/*                            vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase() &&*/}
-                        {/*                            vt_del_animal.unidades > 0*/}
-                        {/*                        )*/}
-                        {/*                        .map((vt_del_animal) => (*/}
-                        {/*                            <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>*/}
-                        {/*                                {vt_del_animal.nombre}*/}
-                        {/*                            </option>*/}
-                        {/*                        ))*/}
-                        {/*                ) : (*/}
-                        {/*                    <>*/}
-                        {/*                        <option disabled>No hay disponibles</option>*/}
-                        {/*                    </>*/}
-                        {/*                )}*/}
-                        {/*            </>*/}
-                        {/*        )}*/}
-                        {/*    </select>*/}
-
-                        {/*    {errores.nombre_vt && <div className="mensaje-error">{errores.nombre_vt}</div>}*/}
-                        {/*</div>*/}
 
                         {/*<div className="contenedor-linea">*/}
                         {/*    <div className="label">Dosis</div>*/}
@@ -593,7 +472,6 @@ export const FormularioVT_Animales= () => {
                         {/*    {errores.dosis && <div className="mensaje-error">{errores.dosis}</div>}*/}
                         {/*</div>*/}
 
-
                         <div className="contenedor-linea">
                             <div className="label">Nombre</div>
                             <select
@@ -610,16 +488,39 @@ export const FormularioVT_Animales= () => {
 
                                 {(esVisualizar || esModificar) ? (
                                     <>
+                                        {/* Si había un tratamiento/vacuna asignado al animal
+                                            (es decir, el animal tenía indicado un tratamiento/vacuna), se muestra
+                                            aunque ya no exista en el inventario o esté con el estado "inactivo".
+                                            En estos dos últimos casos saldra "(No existente)" o "Nombre (Estado)".
+                                        */}
                                         {vt_animal.nombre_vt && (
                                             <option value={vt_animal.nombre_vt}>
-                                                {vt_animal.nombre_vt}
+                                                {/* Buscamos si existe aún en el inventario */}
+                                                {(() => {
+                                                    const inventarioEncontrado = vt.find(
+                                                        (vt_del_animal) => vt_del_animal.nombre === vt_animal.nombre_vt
+                                                    );
+                                                    if (!inventarioEncontrado) {
+                                                        // No está en el inventario
+                                                        return "No existente";
+                                                    } else if (inventarioEncontrado.estado.toUpperCase() !== "ACTIVA") {
+                                                        // Está INACTIVA
+                                                        return `${vt_animal.nombre_vt} (${inventarioEncontrado.estado})`;
+                                                    } else {
+                                                        return vt_animal.nombre_vt;  // Todo OK
+                                                    }
+                                                })()}
                                             </option>
                                         )}
-                                        {/* Mostrar también los que tienen unidades disponibles, pero SIN duplicar */}
+                                        {/* Se muestran todas las vacunas/tratamientos que tienen
+                                            unidades disponibles (>=1), el estado "ACTIVA" y sin repetir
+                                            esa vacuna/tratamiento, en caso de que esté asignada al animal.
+                                        */}
                                         {vt && vt.length > 0 ? (
                                             vt
                                                 .filter(vt_del_animal =>
                                                     vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase() &&
+                                                    vt_del_animal.estado.toUpperCase() === "ACTIVA" &&
                                                     vt_del_animal.unidades > 0 &&
                                                     vt_del_animal.nombre !== vt_animal.nombre_vt
                                                 )
@@ -633,11 +534,17 @@ export const FormularioVT_Animales= () => {
                                         )}
                                     </>
                                 ) : (
+                                    // Modo AGREGAR
                                     <>
+                                        {/* Se muestran todas las vacunas/tratamientos que tienen
+                                            unidades disponibles (>=1), el estado "ACTIVA" y sin repetir
+                                            esa vacuna/tratamiento, en caso de que esté asignada al animal.
+                                            Modo Agregar: solo mostramos las que están ACTIVAS y con unidades */}
                                         {vt && vt.length > 0 ? (
                                             vt
                                                 .filter(vt_del_animal =>
                                                     vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase() &&
+                                                    vt_del_animal.estado.toUpperCase() === "ACTIVA" &&
                                                     vt_del_animal.unidades > 0
                                                 )
                                                 .map((vt_del_animal) => (
@@ -653,6 +560,85 @@ export const FormularioVT_Animales= () => {
                             </select>
                             {errores.nombre_vt && <div className="mensaje-error">{errores.nombre_vt}</div>}
                         </div>
+
+                        {/*<div className="contenedor-linea">*/}
+                        {/*    <div className="label">Nombre</div>*/}
+                        {/*    <select*/}
+                        {/*        className={`form-select ${errores.nombre_vt ? "error" : ""}`}*/}
+                        {/*        name="nombre_vt"*/}
+                        {/*        disabled={esVisualizar}*/}
+                        {/*        value={vt_animal.nombre_vt !== null ? vt_animal.nombre_vt : "eliminada"}*/}
+                        {/*        onChange={(e) => {*/}
+                        {/*            handleChange(e);*/}
+                        {/*            setVT_Animal((prev) => ({...prev, dosis: ""}));*/}
+                        {/*        }}*/}
+                        {/*    >*/}
+                        {/*        <option value="">Selecciona</option>*/}
+
+                        {/*        {(esVisualizar || esModificar) ? (*/}
+                        {/*            // Modo VISUALIZAR y MODIFICAR*/}
+                        {/*            <>*/}
+                        {/*                /!* Si había un tratamiento/vacuna asignado al animal*/}
+                        {/*                (es decir, el animal tenía indicado un tratamiento/vacuna), se muestra*/}
+                        {/*                aunque ya no exista en el inventario o esté con el estado "inactivo".*/}
+                        {/*                *!/*/}
+                        {/*                {vt_animal.nombre_vt && (*/}
+                        {/*                    <option value={vt_animal.nombre_vt}>*/}
+                        {/*                        {vt_animal.nombre_vt}*/}
+                        {/*                    </option>*/}
+                        {/*                )}*/}
+                        {/*                /!* Se muestran todas las vacunas/tratamientos que tienen*/}
+                        {/*                unidades disponibles (>=1), el estado "ACTIVA" y sin repetir*/}
+                        {/*                esa vacuna/tratamiento, en caso de que esté asignada al animal.*/}
+                        {/*                *!/*/}
+                        {/*                {vt && vt.length > 0 ? (*/}
+                        {/*                    vt*/}
+                        {/*                        .filter(vt_del_animal =>*/}
+                        {/*                            vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase() &&*/}
+                        {/*                            vt_del_animal.estado.toUpperCase() === "ACTIVA" &&*/}
+                        {/*                            vt_del_animal.unidades > 0 &&*/}
+                        {/*                            vt_del_animal.nombre !== vt_animal.nombre_vt*/}
+                        {/*                        )*/}
+                        {/*                        .map((vt_del_animal) => (*/}
+                        {/*                            <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>*/}
+                        {/*                                {vt_del_animal.nombre}*/}
+                        {/*                                /!* Se muestra el nombre de las vacunas/tratamientos que*/}
+                        {/*                                 cumplieron el filtro.*!/*/}
+                        {/*                            </option>*/}
+                        {/*                        ))*/}
+                        {/*                ) : (*/}
+                        {/*                    <option disabled>No hay disponibles</option>*/}
+                        {/*                )}*/}
+                        {/*            </>*/}
+                        {/*        ) : (*/}
+                        {/*            // Modo AGREGAR*/}
+                        {/*            <>*/}
+                        {/*                /!* Se muestran todas las vacunas/tratamientos que tienen*/}
+                        {/*                unidades disponibles (>=1), el estado "ACTIVA" y sin repetir*/}
+                        {/*                esa vacuna/tratamiento, en caso de que esté asignada al animal.*/}
+                        {/*                *!/*/}
+                        {/*                {vt && vt.length > 0 ? (*/}
+                        {/*                    vt*/}
+                        {/*                        .filter(vt_del_animal =>*/}
+                        {/*                            vt_del_animal.tipo.toUpperCase() === vt_animal.tipo.toUpperCase() &&*/}
+                        {/*                            vt_del_animal.unidades > 0 &&*/}
+                        {/*                            vt_del_animal.estado.toUpperCase() === "ACTIVA"*/}
+                        {/*                        )*/}
+                        {/*                        .map((vt_del_animal) => (*/}
+                        {/*                            <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>*/}
+                        {/*                                {vt_del_animal.nombre}*/}
+                        {/*                                /!* Se muestra el nombre de las vacunas/tratamientos que*/}
+                        {/*                                 cumplieron el filtro.*!/*/}
+                        {/*                            </option>*/}
+                        {/*                        ))*/}
+                        {/*                ) : (*/}
+                        {/*                    <option disabled>No hay disponibles</option>*/}
+                        {/*                )}*/}
+                        {/*            </>*/}
+                        {/*        )}*/}
+                        {/*    </select>*/}
+                        {/*    {errores.nombre_vt && <div className="mensaje-error">{errores.nombre_vt}</div>}*/}
+                        {/*</div>*/}
 
                         <div className="contenedor-linea">
                             <div className="label">Dosis</div>
@@ -681,7 +667,8 @@ export const FormularioVT_Animales= () => {
                                         if (cantidadDisponible > 0) {
                                             return (
                                                 <>
-                                                    {Array.from({length: cantidadDisponible}, (_, i) => i + 1).map((numDosis) => (
+                                                    {Array.from({length: cantidadDisponible},
+                                                        (_, i) => i + 1).map((numDosis) => (
                                                         <option key={numDosis} value={numDosis}>
                                                             {numDosis}
                                                         </option>
@@ -692,7 +679,8 @@ export const FormularioVT_Animales= () => {
                                             return <option disabled>No hay dosis disponibles</option>;
                                         }
                                     })()
-                                )}
+                                )
+                                }
                             </select>
                             {errores.dosis && <div className="mensaje-error">{errores.dosis}</div>}
                         </div>
