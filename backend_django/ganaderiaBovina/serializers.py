@@ -519,7 +519,7 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                    # f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}"
                     # El error se asocia al campo "dosis" y arriba no se asociaba (cambiado para los test)
-                    {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}"}
+                    {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."}
                 )
             # Se comprueba que no se suministre 0 dosis.
             # Si la dosis es 0, se muestra un error.
@@ -555,7 +555,7 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
         # se muestra un mensaje de error.
             if inventario.unidades - dosis < 0:
                 raise serializers.ValidationError(
-                    {"dosis": f"No hay suficientes unidades disponibles en el inventario. Disponibles: {inventario.unidades}."}
+                    {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."}
                 )
                 inventario.unidades -= dosis
                 inventario.save()
