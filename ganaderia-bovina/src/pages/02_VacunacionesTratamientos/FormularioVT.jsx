@@ -260,7 +260,11 @@ export const FormularioVT= () => {
                                 onChange={handleChange}
                             >
                                 <option value="Activa">Activa</option>
-                                <option value="Inactiva">Inactiva</option>
+                                {/*<option value="Inactiva">Inactiva</option>*/}
+                                {/* Opción oculta pero mostrada si ya estaba asignada */}
+                                {["Inactiva"].includes(vtForm.estado) && (
+                                    <option value={vtForm.estado}>{vtForm.estado}</option>
+                                )}
                             </select>
                         </div>
 
