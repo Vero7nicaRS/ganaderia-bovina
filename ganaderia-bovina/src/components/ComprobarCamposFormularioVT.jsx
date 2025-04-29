@@ -79,15 +79,6 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
         if (!datosVT.id_animal) {
             erroresTemp.id_animal = "Campo obligatorio";
         }
-        // if (!datosVT.dosis?.trim()){
-        //     // erroresTemp.dosis = "El campo fechaInicio es obligatorio";
-        //     erroresTemp.dosis = "Campo obligatorio";
-        // }
-
-        if (datosVT.dosis === "" || datosVT.dosis === null || Number(datosVT.dosis) < 0) {
-            erroresTemp.dosis = "Campo obligatorio";
-        }
-
         if (!datosVT.fecha_inicio?.trim()) {
             // erroresTemp.fechaInicio = "El campo fechaInicio es obligatorio";
             erroresTemp.fecha_inicio = "Campo obligatorio";
