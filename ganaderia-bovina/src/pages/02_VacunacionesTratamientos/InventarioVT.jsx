@@ -158,36 +158,37 @@ export const InventarioVT = () => {
 
                                     {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
 
-                                    <>
-                                        {/* BOTÓN MODIFICAR */}
-                                        <NavLink
-                                            to={`/formulario-vt/${item.id}`}
-                                            state={{
-                                                modo: "modificar",
-                                                vt: item
-                                            }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                            className="btn-modificar"
-                                        >
-                                            MODIFICAR
-                                        </NavLink>
-                                        {/* BOTÓN ELIMINAR */}
-                                        {/*<button*/}
-                                        {/*    className="btn-eliminar"*/}
-                                        {/*     onClick={ () => manejarEliminar(item.id, item.codigo,*/}
-                                        {/*                                           item.tipo, item.nombre)}*/}
-                                        {/*>*/}
-                                        {/*    ELIMINAR*/}
-                                        {/*</button>*/}
-                                        <NavLink
-                                            to="/eliminar-inventario-vt"
-                                            state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
-                                            className="btn-eliminar"
+                                    {item.estado !== "Inactiva" && (
+                                        <>
+                                            {/* BOTÓN MODIFICAR */}
+                                            <NavLink
+                                                to={`/formulario-vt/${item.id}`}
+                                                state={{
+                                                    modo: "modificar",
+                                                    vt: item
+                                                }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                                className="btn-modificar"
+                                            >
+                                                MODIFICAR
+                                            </NavLink>
+                                            {/* BOTÓN ELIMINAR */}
+                                            {/*<button*/}
+                                            {/*    className="btn-eliminar"*/}
+                                            {/*     onClick={ () => manejarEliminar(item.id, item.codigo,*/}
+                                            {/*                                           item.tipo, item.nombre)}*/}
+                                            {/*>*/}
+                                            {/*    ELIMINAR*/}
+                                            {/*</button>*/}
+                                            <NavLink
+                                                to="/eliminar-inventario-vt"
+                                                state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
+                                                className="btn-eliminar"
 
-                                        >
-                                            ELIMINAR
-                                        </NavLink>
-                                    </>
-
+                                            >
+                                                ELIMINAR
+                                            </NavLink>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                             ))
