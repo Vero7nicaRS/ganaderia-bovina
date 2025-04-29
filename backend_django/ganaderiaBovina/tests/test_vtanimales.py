@@ -685,19 +685,19 @@ def test_filtrado_vtanimales_por_rango_fecha_inicio():
         proteinas=3.5,
         corral=Corral.objects.create(nombre="Corral 1")
     )
-    # No cumple con el filtro (>=2024-03-20).
+    # No cumple con el filtro (>= 2024-03-20, es decir, antes de 2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-100",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-05-20",
+        fecha_inicio="2024-03-10",
         fecha_finalizacion="2024-02-23",
         responsable="Pepe",
         id_animal=animal,
         inventario_vt=inventario
     )
 
-    # Sí cumple con el filtro (>=2024-03-20).
+    # Sí cumple con el filtro (>= 2024-03-20, es decir, antes de 2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-200",
         tipo="Vacuna",
@@ -709,19 +709,19 @@ def test_filtrado_vtanimales_por_rango_fecha_inicio():
         inventario_vt=inventario
     )
 
-    # No cumple con el filtro  (>=2024-03-20).
+    # No cumple con el filtro (>= 2024-03-20, es decir, antes de 2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-300",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-12-24",
+        fecha_inicio="2024-01-15",
         fecha_finalizacion="2024-01-02",
         responsable="Pepe",
         id_animal=animal,
         inventario_vt=inventario
     )
 
-    # Sí cumple con el filtro  (>=2024-03-20).
+    # Sí cumple con el filtro (>= 2024-03-20, es decir, antes de 2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-400",
         tipo="Vacuna",
@@ -733,9 +733,11 @@ def test_filtrado_vtanimales_por_rango_fecha_inicio():
         inventario_vt=inventario
     )
 
-    fechaInicio = "fecha_inicio"
-    #response = client.get("/api/vtanimales/?fecha_inicio__gte=2024-03-20")
-    response = client.get(f"/api/vtanimales/?{fechaInicio}__gte=2024-03-20")
+    #fechaInicio = "fecha_inicio"
+
+    # Se buscan fechas que sean posteriores al día "2024-04-20".
+    response = client.get("/api/vtanimales/?fecha_inicio__gte=2024-03-20")
+    #response = client.get(f"/api/vtanimales/?{fechaInicio}__gte=2024-03-20")
     assert response.status_code == 200
     assert len(response.data) == 2 # Se espera que haya dos vacunas/tratamientos válidas.
 
