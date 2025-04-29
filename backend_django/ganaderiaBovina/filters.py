@@ -165,7 +165,7 @@ class VTAnimalesFilter(django_filters.FilterSet):
         model =  VTAnimales
         fields = {
             'id_animal':['exact'],
-            'dosis': ['exact','gte','lte'], # Puede ser valor exacto o un rango (gte [>=] o lte[<=]).
+            #'dosis': ['exact','gte','lte'], # Puede ser valor exacto o un rango (gte [>=] o lte[<=]).
             'fecha_inicio':['exact','gte','lte'], # Puede ser valor exacto o un rango (gte [>=] o lte[<=]).
             'fecha_finalizacion':['exact','gte','lte'] # Puede ser valor exacto o un rango (gte [>=] o lte[<=]).
         }
