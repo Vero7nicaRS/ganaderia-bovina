@@ -455,14 +455,15 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                     'required': 'El responsable es obligatorio.',
                     'blank': 'El responsable no puede estar vacío.'
                 }
-            },
-            'dosis': {
-                'error_messages': {
-                    'required': 'La dosis es obligatorio.',
-                    'invalid': 'Se debe introducir un número entero válido.',
-                    'null': "El número de unidades no puede ser nulo."
-                }
             }
+            #,
+            #'dosis': {
+            #    'error_messages': {
+            #        'required': 'La dosis es obligatorio.',
+            #        'invalid': 'Se debe introducir un número entero válido.',
+            #        'null': "El número de unidades no puede ser nulo."
+            #    }
+            #}
         }
 
     # validate_<campo>: Validación para el campo "codigo".
@@ -494,6 +495,9 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
 
     # Hacemos las validaciones relacionadas con el tipo (vacuna/tratamiento) y el nombre escogido
     def validate(self, data):
+        animal = data.get("id_animal")
+        fecha = data.get("fecha_inicio")
+
         inventario = data.get('inventario_vt')
         tipo = data.get('tipo')  # Tipo del inventario.
         dosis = data.get('dosis')
@@ -504,6 +508,7 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 "fecha_finalizacion": "La fecha de finalización debe ser posterior a la fecha de inicio."
             })
+
         if inventario:
             # Se comprueba que que el tipo seleccionado en VTAnimales coincida con el del InventarioVT
             # Si no coincide la vacuna/tratamiento con el tipo escogido, muestra un error.
@@ -515,24 +520,30 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                 )
             # Se comprueba que la dosis no supere las unidades disponibles del inventario
             # Si la dosis que se desea suministrar es mayor que la del inventario, se muestra un error.
-            if dosis and dosis > inventario.unidades:
-                raise serializers.ValidationError(
+            #if dosis and dosis > inventario.unidades:
+            #    raise serializers.ValidationError(
                    # f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}"
                     # El error se asocia al campo "dosis" y arriba no se asociaba (cambiado para los test)
-                    {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."}
-                )
+            #        {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."}
+            #    )
+
+
+            # Verificación 1: Unidades disponibles
+            if inventario and inventario.unidades < 1:
+                raise serializers.ValidationError({
+                    "inventario_vt": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."
+                })
+
+
             # Se comprueba que no se suministre 0 dosis.
             # Si la dosis es 0, se muestra un error.
-            if dosis == 0:
-                raise serializers.ValidationError(
+            #if dosis == 0:
+            #    raise serializers.ValidationError(
                     #f"La dosis suministrada debe ser mayor a 0."
                      # El error se asocia al campo "dosis" y arriba no se asociaba (cambiado para los test)
-                    {"dosis": "La dosis suministrada debe ser mayor a 0."}
-                )
-            #if inventario.unidades == 0:
-            #    raise serializers.ValidationError(
-            #        f". No hay suficientes dosis en el inventario KK. Disponibles: {inventario.unidades}"
+            #        {"dosis": "La dosis suministrada debe ser mayor a 0."}
             #    )
+
             # Se comprueba que se seleccione una vacuna o tratamiento que esté ACTIVA y NO INACTIVA.
             # Si es "INACTIVA", se muestra un error.
             if inventario.estado != "Activa":
@@ -541,24 +552,53 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                                f"{tipo.lower()} suministrad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'}"
                                f" tiene el estado 'Inactivo' y por tanto, no se puede usar."}
                 )
+
+        # Verificación 2: No repetir vacuna/tratamiento en el mismo año
+        if animal and inventario and fecha:
+            mismo_anio = VTAnimales.objects.filter(
+                id_animal=animal,
+                inventario_vt=inventario,
+                fecha_inicio__year=fecha.year
+            )
+            if self.instance:
+                mismo_anio = mismo_anio.exclude(pk=self.instance.pk)
+
+            if mismo_anio.exists():
+                raise serializers.ValidationError({
+                    "inventario_vt": "Este tratamiento o vacuna ya fue suministrado a este animal en el mismo año."
+                })
+
+
         #if not inventario:
         #     raise serializers.ValidationError("Se debe eleccionar una vacuna o tratamiento del inventario.")
         return data
 
     def create(self, validated_data):
-        inventario = validated_data.get('inventario_vt') # Se obtiene la vacuna/tratamiento del inventario.
-        dosis = validated_data.get('dosis') # Se obtiene la dosis que se quiere suministrar.
+        #inventario = validated_data.get('inventario_vt') # Se obtiene la vacuna/tratamiento del inventario.
+        #dosis = validated_data.get('dosis') # Se obtiene la dosis que se quiere suministrar.
 
         # Se resta la cantidad de dosis que se ha utilizado al inventario de vacunas/tratamientos
-        if inventario and dosis:
+        #if inventario and dosis:
         # Si al restar unidades que tiene el inventario con las dosis suministradas da como resultado un valor negativo,
         # se muestra un mensaje de error.
-            if inventario.unidades - dosis < 0:
-                raise serializers.ValidationError(
-                    {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."}
-                )
-                inventario.unidades -= dosis
-                inventario.save()
+        #    if inventario.unidades - dosis < 0:
+        #        raise serializers.ValidationError(
+        #            {"dosis": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."}
+        #        )
+        #        inventario.unidades -= dosis
+        #        inventario.save()
+
+        inventario = validated_data.get('inventario_vt')
+
+        # Se descuenta 1 unidad automáticamente
+        if inventario:
+            if inventario.unidades < 1:
+                raise serializers.ValidationError({
+                    "inventario_vt": f"No hay suficientes unidades disponibles del "
+                                     f"{inventario.tipo.lower()} '{inventario.nombre}'."
+                })
+            inventario.unidades -= 1
+            inventario.save()
 
             # Se crea el registro de VTAnimales como normalmente
         return super().create(validated_data)
