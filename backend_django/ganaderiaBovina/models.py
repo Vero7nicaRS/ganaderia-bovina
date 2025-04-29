@@ -332,7 +332,7 @@ class VTAnimales(models.Model):
 
 
     # Dosis indica lo que se le va a suministrar al animal
-    dosis = models.IntegerField()
+    # dosis = models.IntegerField()
 
     # "Save" me permite personalizar la lógica antes de que se almacene la información en la base de datos.
     # *args y **kwargs permite que se envien cualquier tipo de parámetros y palabras.
@@ -343,13 +343,13 @@ class VTAnimales(models.Model):
     def save(self, *args, **kwargs):
 
         # Se comprueba que hay un InventarioVT asociado.
-        if self.inventario_vt is not None:
-            # Se realizan las asociaciones de tipo, nombre y dosis.
+        #if self.inventario_vt is not None:
+            # Se realizan las asociaciones de tipo y nombre.
             # Se indica el nombre de esa vacuna/tratamiento seleccionado para guardarlo.
 
-            # Se actualiza el número de unidades del inventario, restándole la dosis suministrada.
-            self.inventario_vt.unidades -= self.dosis
-            self.inventario_vt.save()
+            # Se actualiza el número de unidades del inventario, restándole la dosis suministrada que siempre es 1.
+        #    self.inventario_vt.unidades -= 1
+        #    self.inventario_vt.save()
 
         if not self.codigo:
             self.codigo = generar_codigo_vtanimales()
