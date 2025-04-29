@@ -49,7 +49,6 @@ def test_crear_vtanimales_valido():
         "fecha_inicio": "2025-03-10",
         "fecha_finalizacion": "2025-03-15",
         "responsable": "Pepe",
-        "dosis": 5,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -103,7 +102,6 @@ def test_vtanimales_campos_requeridos_vacios():
         "fecha_inicio": "",
         "fecha_finalizacion": "",
         "responsable": "",
-        "dosis": None,
         "id_animal": None,
         "inventario_vt": None,
     }
@@ -116,7 +114,6 @@ def test_vtanimales_campos_requeridos_vacios():
     assert response.data["fecha_inicio"][0] == "La fecha de inicio no es válida. El formato es AAAA-MM-DD"
     assert response.data["fecha_finalizacion"][0] == "La fecha de finalización no es válida. El formato es AAAA-MM-DD"
     assert response.data["responsable"][0] == "El responsable no puede estar vacío."
-    assert response.data["dosis"][0] == "El número de unidades no puede ser nulo."
     assert response.data["id_animal"][0] == "Se debe seleccionar un identificador de animal válido."
     assert response.data["inventario_vt"][0] == "Se debe seleccionar una vacuna o tratamiento del inventario."
 
@@ -152,7 +149,6 @@ def test_vtanimales_campos_por_defecto():
         "fecha_inicio": "2024-03-21",
         "fecha_finalizacion": "2024-03-23",
         "responsable": "Pepe",
-        "dosis": 3,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -162,19 +158,21 @@ def test_vtanimales_campos_por_defecto():
     assert response.data["tipo"] == "Tratamiento"
     assert response.data["ruta"] == "Intravenosa"
 
-# Test para comprobar los valores fuera de rango
+# Test para comprobar que no se puede crear una vacuna/tratamiento suministrado
+# si esa vacuna/tratamiento en el inventario no tiene ninguna unidad, es decir, 0.
 @pytest.mark.django_db
-def test_vtanimales_valores_fuera_de_rango():
+def test_vtanimales_no_se_permite_si_no_hay_unidades_disponibles():
     client = APIClient()
 
     inventario = InventarioVT.objects.create(
-        codigo = "VT-100",
-        tipo = "Vacuna",
-        nombre = "Vacuna Prueba 1",
-        unidades = 7,
-        cantidad = "Sobre",
-        estado = "Activa"
+        codigo="VT-100",
+        tipo="Vacuna",
+        nombre="Vacuna Prueba Sin Unidades",
+        unidades=0,  # Sin unidades
+        cantidad="Dosis",
+        estado="Activa"
     )
+
     animal = Animal.objects.create(
         tipo="Vaca",
         estado="Vacía",
@@ -186,45 +184,26 @@ def test_vtanimales_valores_fuera_de_rango():
         calidad_ubres=Decimal("7.00"),
         grasa=4.0,
         proteinas=3.5,
-        padre=None,
-        madre=None,
         corral=Corral.objects.create(nombre="Corral 1")
     )
-    # Los datos tienen se sobresalen del rango mínimo.
-    datosMin = {
-        "fecha_inicio": "2024-03-21",
-        "fecha_finalizacion": "2024-03-23",
-        "responsable": "Pepe",
-        "dosis": 0,
+
+    datos = {
+        "tipo": "Vacuna",
+        "ruta": "Intramuscular",
+        "fecha_inicio": "2025-04-01",
+        "fecha_finalizacion": "2025-04-05",
+        "responsable": "Veterinario Antonio",
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
 
-    # Los datos tienen se sobresalen del rango máximo.
-    datosMax = {
-        "fecha_inicio": "2024-03-21",
-        "fecha_finalizacion": "2024-03-23",
-        "responsable": "Pepe",
-        "dosis": 10,
-        "id_animal": animal.id,
-        "inventario_vt": inventario.id,
-    }
+    response = client.post("/api/vtanimales/", datos, format="json")
+    assert response.status_code == 400
+    assert "inventario_vt" in response.data
+    assert response.data["inventario_vt"][0] == (
+        f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."
+    )
 
-    responseMin = client.post("/api/vtanimales/", datosMin, format="json")
-    responseMax = client.post("/api/vtanimales/", datosMax, format="json")
-
-    assert responseMin.status_code == 400
-    assert responseMax.status_code == 400
-
-    # Mensajes de error personalizados esperados en el serializer
-    # MÍNIMO
-    assert responseMin.data["dosis"][0] == "La dosis suministrada debe ser mayor a 0."
-
-    # MÁXIMO
-    # Se comprueba que no se puedan suministrar más dosis de las que tiene el inventario, es decir,
-    # de la que tiene esa vacuna o tratamiento.
-    assert responseMax.data["dosis"][0] == (f"No hay suficientes unidades en el inventario. "
-                                            f"Disponibles: {inventario.unidades}.")
 
 @pytest.mark.django_db
 def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
@@ -234,7 +213,7 @@ def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
         nombre="Vacuna Prueba 1",
         tipo="Vacuna",
         unidades=10,
-        cantidad="Dosis",
+        cantidad="Sobre",
         estado="Activa"
     )
 
@@ -259,8 +238,7 @@ def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
         "fecha_finalizacion": "2025-04-05",  # anterior a la fecha de inicio
         "responsable": "Veterinario Luis",
         "inventario_vt": inventario.id,
-        "id_animal": animal.id,
-        "dosis": 2
+        "id_animal": animal.id
     }
 
     response = client.post("/api/vtanimales/", datos, format="json")
@@ -271,7 +249,6 @@ def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
 
 # Test para comprobar que al suministrar una vacuna/tratamiento se restan correctamente las unidades en el inventario.
 @pytest.mark.django_db
-@pytest.mark.django_db
 def test_vtanimales_resta_unidades_inventario():
     client = APIClient()
 
@@ -280,7 +257,7 @@ def test_vtanimales_resta_unidades_inventario():
         tipo="Vacuna",
         nombre="Vacuna Unidades Test",
         unidades=10,
-        cantidad="Dosis",
+        cantidad="Sobre",
         estado="Activa"
     )
 
@@ -304,7 +281,6 @@ def test_vtanimales_resta_unidades_inventario():
         "fecha_inicio": "2025-04-01",
         "fecha_finalizacion": "2025-04-05",
         "responsable": "Veterinario Antonio",
-        "dosis": 4,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -313,11 +289,11 @@ def test_vtanimales_resta_unidades_inventario():
     assert response.status_code == 201
 
     inventario.refresh_from_db()
-    assert inventario.unidades == 6  # 10 - 4
+    assert inventario.unidades == 9  # 10 - 1
 
 
 @pytest.mark.django_db
-def test_vtanimales_no_unidades_negativas():
+def test_vtanimales_no_unidades_negativas(): ############################################################
     client = APIClient()
 
     # Crear un inventario con 3 unidades disponibles
@@ -325,8 +301,8 @@ def test_vtanimales_no_unidades_negativas():
         codigo="VT-101",
         tipo="Vacuna",
         nombre="Vacuna Prueba 1",
-        unidades=3,  # Solo 3 unidades
-        cantidad="Dosis",
+        unidades=0,  # Solo 3 unidades
+        cantidad="Sobre",
         estado="Activa"
     )
 
@@ -345,14 +321,14 @@ def test_vtanimales_no_unidades_negativas():
         corral=Corral.objects.create(nombre="Corral 1")
     )
 
-    # Intentar suministrar 5 dosis (más de las que hay)
+    # Intentar suministrar 1 dosis (más de las que hay)
     datos = {
         "tipo": "Vacuna",
         "ruta": "Intravenosa",
         "fecha_inicio": "2025-03-10",
         "fecha_finalizacion": "2025-03-15",
         "responsable": "Veterinario 1",
-        "dosis": 5,  # Intentamos usar más dosis de las que hay
+         # Intentamos usar más dosis de las que hay
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -361,12 +337,13 @@ def test_vtanimales_no_unidades_negativas():
 
     # Se debe rechazar la operación
     assert response.status_code == 400
-    assert "dosis" in response.data
-    assert response.data["dosis"][0] == "No hay suficientes unidades en el inventario. Disponibles: 3."
+    assert "inventario_vt" in response.data
+    assert response.data["inventario_vt"][0] == (f"No hay suficientes unidades en el inventario. "
+                                                 f"Disponibles: {inventario.unidades}.")
 
     # Verificar que las unidades en el inventario NO han cambiado
     inventario.refresh_from_db()
-    assert inventario.unidades == 3
+    assert inventario.unidades == 0
 
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
@@ -401,7 +378,6 @@ def test_codigo_duplicado_vtanimales():
         fecha_inicio="2024-03-21",
         fecha_finalizacion="2024-03-23",
         responsable= "Pepe",
-        dosis = 2,
         id_animal = animal,
         inventario_vt = inventario
     )
@@ -411,7 +387,6 @@ def test_codigo_duplicado_vtanimales():
         "fecha_inicio": "2024-03-21",
         "fecha_finalizacion": "2024-03-23",
         "responsable": "Pepe",
-        "dosis": 1,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -457,7 +432,6 @@ def test_crear_vtanimales_codigo_formato_incorrecto():
         "fecha_inicio": "2024-03-21",
         "fecha_finalizacion": "2024-03-23",
         "responsable": "Pepe",
-        "dosis": 1,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -503,7 +477,6 @@ def test_codigo_vtanimales_generado_automaticamente():
         "fecha_inicio": "2024-03-21",
         "fecha_finalizacion": "2024-03-23",
         "responsable": "Pepe",
-        "dosis": 1,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -553,7 +526,6 @@ def test_vtanimales_inventario_inactivo_no_permitido():
         "fecha_inicio": "2024-03-21",
         "fecha_finalizacion": "2024-03-23",
         "responsable": "Pepe",
-        "dosis": 1,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -606,7 +578,6 @@ def test_vtanimales_tipo_no_coincide_con_inventario():
         "fecha_inicio": "2024-03-21",
         "fecha_finalizacion": "2024-03-23",
         "responsable": "Pepe",
-        "dosis": 1,
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
     }
@@ -655,7 +626,6 @@ def test_codigo_vtanimales_eliminacion_correcta():
         fecha_inicio="2024-03-21",
         fecha_finalizacion="2024-03-23",
         responsable="Pepe",
-        dosis=1,
         id_animal=animal,
         inventario_vt=inventario
     )
@@ -688,9 +658,9 @@ def test_eliminar_vtanimales_no_existente():
 #                                       Test de VTANIMALES: FILTRADO
 # --------------------------------------------------------------------------------------------------------------
 
-# Test para filtrar por las dosis de las vacunas/tratamientos suministrados.
+# Test para filtrar por la fecha de inicio de las vacunas/tratamientos suministrados.
 @pytest.mark.django_db
-def test_filtrado_vtanimales_por_rango_dosis():
+def test_filtrado_vtanimales_por_rango_fecha_inicio():
     client = APIClient()
 
     inventario = InventarioVT.objects.create(
@@ -715,59 +685,57 @@ def test_filtrado_vtanimales_por_rango_dosis():
         proteinas=3.5,
         corral=Corral.objects.create(nombre="Corral 1")
     )
-    # No cumple con el filtro (>=6).
+    # No cumple con el filtro (>=2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-100",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-03-21",
-        fecha_finalizacion="2024-03-23",
+        fecha_inicio="2024-05-20",
+        fecha_finalizacion="2024-02-23",
         responsable="Pepe",
-        dosis=1,
         id_animal=animal,
         inventario_vt=inventario
     )
 
-    # Sí cumple con el filtro (>=6).
+    # Sí cumple con el filtro (>=2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-200",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-03-21",
-        fecha_finalizacion="2024-03-23",
+        fecha_inicio="2024-03-20",
+        fecha_finalizacion="2024-03-25",
         responsable="Pepe",
-        dosis=7,
         id_animal=animal,
         inventario_vt=inventario
     )
 
-    # No cumple con el filtro (>=6).
+    # No cumple con el filtro  (>=2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-300",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-03-21",
-        fecha_finalizacion="2024-03-23",
+        fecha_inicio="2024-12-24",
+        fecha_finalizacion="2024-01-02",
         responsable="Pepe",
-        dosis=5,
         id_animal=animal,
         inventario_vt=inventario
     )
 
-    # Sí cumple con el filtro (>=6).
+    # Sí cumple con el filtro  (>=2024-03-20).
     VTAnimales.objects.create(
         codigo="VTA-400",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-03-21",
-        fecha_finalizacion="2024-03-23",
+        fecha_inicio="2024-07-13",
+        fecha_finalizacion="2024-07-16",
         responsable="Pepe",
-        dosis=6,
         id_animal=animal,
         inventario_vt=inventario
     )
 
-    response = client.get("/api/vtanimales/?dosis__gte=6")
+    fechaInicio = "fecha_inicio"
+    #response = client.get("/api/vtanimales/?fecha_inicio__gte=2024-03-20")
+    response = client.get(f"/api/vtanimales/?{fechaInicio}__gte=2024-03-20")
     assert response.status_code == 200
     assert len(response.data) == 2 # Se espera que haya dos vacunas/tratamientos válidas.
 
@@ -821,7 +789,6 @@ def test_filtrado_combinado_vtanimales_por_tipo_y_ruta():
         fecha_inicio="2024-03-21",
         fecha_finalizacion="2024-03-23",
         responsable="Pepe",
-        dosis=1,
         id_animal=animal,
         inventario_vt=inventario
     )
@@ -834,7 +801,6 @@ def test_filtrado_combinado_vtanimales_por_tipo_y_ruta():
         fecha_inicio="2024-03-21",
         fecha_finalizacion="2024-03-23",
         responsable="Pepe",
-        dosis=1,
         id_animal=animal,
         inventario_vt=inventario
     )
@@ -847,7 +813,6 @@ def test_filtrado_combinado_vtanimales_por_tipo_y_ruta():
         fecha_inicio="2024-03-21",
         fecha_finalizacion="2024-03-23",
         responsable="Pepe",
-        dosis=1,
         id_animal=animal,
         inventario_vt=inventario2
     )
