@@ -131,7 +131,7 @@ export const FormularioVT_Animales= () => {
            */
 
             //const vtinventario = vt.filter(sol => sol.nombre === vt_animal.nombre_vt);
-            const vtinventario = vt.find(sol => sol.nombre === vt_animal.nombre_vt)
+            const vtinventario = vt.find(obj_vactra => obj_vactra.nombre === vt_animal.nombre_vt)
             // console.log("Objeto vacuna/tratamiento buscado: ", vtinventario);
             // console.log("ID vacuna/tratamiento buscado: ", vtinventario[0].id);
 
