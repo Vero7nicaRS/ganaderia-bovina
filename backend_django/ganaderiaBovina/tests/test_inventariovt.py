@@ -104,7 +104,7 @@ def test_inventariovt_valores_fuera_de_rango():
 
     # Mensajes de error personalizados esperados en el serializer
     # MÍNIMO
-    assert responseMin.data["unidades"][0] == "El valor mínimo permitido es 1."
+    assert responseMin.data["unidades"][0] == "El valor mínimo permitido es 0."
 
     # MÁXIMO
     assert responseMax.data["unidades"][0] == "El valor máximo permitido es 30."
