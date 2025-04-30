@@ -188,7 +188,6 @@ export const FormularioToro = () => {
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
                 se mostrará el ID del animal (toro) dentro de un cuadrado. */}
                 {!esAgregar && (
-
                     <div className="cuadradoID">
                         <span className="identificador">ID</span>
                         <input
@@ -198,8 +197,6 @@ export const FormularioToro = () => {
                             value={animalToro.codigo || ""}
                             disabled
                         />
-
-
                     </div>
                 )}
 
@@ -248,8 +245,12 @@ export const FormularioToro = () => {
                                 type="text"
                                 className={`cuadro-texto ${errores.cantidad_semen ? "error" : ""}`}
                                 name="cantidad_semen"
-                                disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
-                                value={animalToro.cantidad_semen || ""}
+                                disabled={esVisualizar}
+                                /*Se indica que el campo "cantidad_semen" no se puede modificar cuando se Visualiza.
+                                * Se visualiza el valor 0.*/
+                                value={animalToro.cantidad_semen !== null
+                                        && animalToro.cantidad_semen !== undefined ? animalToro.cantidad_semen : ""}
+
                                 onChange={handleChange}
                             />
                             {errores.cantidad_semen && <div className="mensaje-error">{errores.cantidad_semen}</div>}
