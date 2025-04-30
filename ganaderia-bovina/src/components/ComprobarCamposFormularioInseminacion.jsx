@@ -13,16 +13,14 @@ export const ComprobarCamposFormularioInseminacion = (datosInseminacion) => {
    if (!datosInseminacion.fecha_inseminacion?.trim()) {
         // erroresTemp.fechaInseminacion = "El campo fechaInseminacion es obligatorio";
         erroresTemp.fecha_inseminacion = "Campo obligatorio";
-    }
-    if (!datosInseminacion.id_toro?.trim()) {
-        // erroresTemp.idToro = "El campo idToro es obligatorio";
+   }
+   if (datosInseminacion.id_toro === null || datosInseminacion.id_toro === "") {
         erroresTemp.id_toro = "Campo obligatorio";
-    }
+   }
 
-    if (!datosInseminacion.id_vaca?.trim()) {
-        // erroresTemp.idVaca = "El campo idVaca es obligatorio";
+   if (datosInseminacion.id_vaca === null || datosInseminacion.id_vaca === "") {
         erroresTemp.id_vaca = "Campo obligatorio";
-    }
+   }
    if (!datosInseminacion.hora_inseminacion?.trim()) {
         // erroresTemp.horaInseminacion = "El campo horaInseminacion es obligatorio";
         erroresTemp.hora_inseminacion = "Campo obligatorio";
@@ -30,7 +28,7 @@ export const ComprobarCamposFormularioInseminacion = (datosInseminacion) => {
    if (!datosInseminacion.responsable?.trim()) {
         // erroresTemp.responsable = "El campo responsable es obligatorio";
         erroresTemp.responsable = "Campo obligatorio";
-    }
+   }
 
     return erroresTemp; // Devuelve los errores encontrados
 };
