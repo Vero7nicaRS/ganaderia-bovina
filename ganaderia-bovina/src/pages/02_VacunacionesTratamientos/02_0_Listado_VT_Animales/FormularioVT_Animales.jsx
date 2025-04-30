@@ -165,21 +165,29 @@ export const FormularioVT_Animales= () => {
                         -> Inventario de Vacuna "X" tenía 9 y pasa a tener 10.
                     */
                     console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
-                    const vt_anterior = vt.find((item) => item.id === vt_animal.inventario_vt); // ID anterior
-                    const vt_nuevo = vtinventario; // ID nuevo (seleccionado)
+                    console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
 
-                    // Se suma 1 al inventario que estaba anteriormente (origen)
-                    await modificarVT({
-                        ...vt_anterior,
-                        unidades: vt_anterior.unidades + 1 // +1 en el inventario de origen.
-                    });
+                    const vt_anterior_id = vt_animal.inventario_vt;
+                    const vt_nuevo_id = vtinventario.id;
 
-                    // Se resta 1 al nuevo inventario (destino)
-                    await modificarVT({
-                        ...vt_nuevo,
-                        unidades: vt_nuevo.unidades - 1 // -1 en el inventario de destino.
-                    });
+                    /* Si la vacuna/tratamiento ha sido cambiado, se modifica el inventario del antigua
+                       y nueva vacuna/tratamiento */
+                    if (vt_anterior_id !== vt_nuevo_id) {
+                        const vt_anterior = vt.find((item) => item.id === vt_anterior_id);
+                        const vt_nuevo = vtinventario;
 
+                        // Se suma 1 al inventario que estaba anteriormente (origen)
+                        await modificarVT({
+                            ...vt_anterior,
+                            unidades: vt_anterior.unidades + 1 // +1 en el inventario de origen.
+                        });
+
+                        // Se resta 1 al nuevo inventario (destino)
+                        await modificarVT({
+                            ...vt_nuevo,
+                            unidades: vt_nuevo.unidades - 1 // -1 en el inventario de destino.
+                        });
+                    }
                     await modificarVT_Animal(vt_suministrada); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
                     await obtenerInventarioVT(); // Se actualiza el listado del inventario de vacunas/tratamientos.
                 }
