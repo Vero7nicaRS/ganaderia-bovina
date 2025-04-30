@@ -267,9 +267,9 @@ class InventarioVT(models.Model):
     tipo = models.CharField(max_length=15, choices=TIPOS_CHOICES, default='Tratamiento')
     nombre = models.CharField(max_length=100)
 
-    # Unidades del tratamiento/vacuna (Rango comprendido entre 1 y 30)
+    # Unidades del tratamiento/vacuna (Rango comprendido entre 0 y 30)
     unidades = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(30)]
+        validators=[MinValueValidator(0), MaxValueValidator(30)]
     )
     cantidad = models.CharField(max_length=15, choices=CANTIDAD_CHOICES, default='Sobre')
 
