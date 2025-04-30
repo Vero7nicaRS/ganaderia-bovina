@@ -7,7 +7,6 @@ import {Footer} from "./components/Footer.jsx"
 import {ListaAnimales} from "./pages/01_Animales/ListaAnimales.jsx";
 import {InventarioVT} from "./pages/02_VacunacionesTratamientos/InventarioVT.jsx";
 import {FormularioVT} from "./pages/02_VacunacionesTratamientos/FormularioVT.jsx";
-import {InsertarVTAnimal} from "./pages/02_VacunacionesTratamientos/InsertarVTAnimal.jsx";
 import {ListaCorrales} from "./pages/03_MovimientosDeCorral/ListaCorrales.jsx";
 import {ListaInseminaciones} from "./pages/04_Inseminaciones/ListaInseminaciones.jsx";
 import {SimulacionCrias} from "./pages/05_SimulacionCrias/SimulacionCrias.jsx";
@@ -60,10 +59,7 @@ export const App = () => {
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicha vacuna/tratamiento.
                          Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-vt/:id" element={<FormularioVT/>}/>
-
                          <Route path="/agregar-tipo-vt" element={<FormularioVT/>}/>
-                         <Route path="/insertar-vt-animal" element={<InsertarVTAnimal/>}/>
-
 
                          {/* ---------- Páginas referentes a LISTADO DE VACUNAS Y/O TRATAMIENTOS EN ANIMALES ----------*/}
                          <Route path="/listado-vt-animal" element={<ListadoVT_Animales/>}/>
