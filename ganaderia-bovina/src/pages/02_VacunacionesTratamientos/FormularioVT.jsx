@@ -220,8 +220,9 @@ export const FormularioVT= () => {
                                 className={`form-select ${errores.unidades ? "error" : ""}`}
                                 name="unidades"
                                 disabled={esVisualizar}
-                                /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.*/
-                                value={vtForm.unidades}
+                                /*Se indica que el campo "Unidades" no se puede modificar cuando se Visualiza.
+                                * Se visualiza el valor 0.*/
+                                value={vtForm.unidades !== null && vtForm.unidades !== undefined ? vtForm.unidades : ""}
                                 onChange={handleChange}
                             >
                                 <option value="">Selecciona la dosis</option>
