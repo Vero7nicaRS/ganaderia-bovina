@@ -393,7 +393,7 @@ class InventarioVTSerializer(serializers.ModelSerializer):
                 'error_messages': {
                     'required': 'El número de unidades es obligatorio.',
                     'invalid': 'Se debe introducir un número entero válido.',
-                    'min_value': "El valor mínimo permitido es 1.",
+                    'min_value': "El valor mínimo permitido es 0.",
                     'max_value': "El valor máximo permitido es 30.",
                     'null': "El número de unidades no puede ser nulo."
                 }
