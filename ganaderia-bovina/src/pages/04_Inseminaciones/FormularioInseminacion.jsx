@@ -125,6 +125,7 @@ export const FormularioInseminacion = () => {
             } else if (esModificar) {
                 /* Si modifico el "id" del toro y lo cambio por otro toro.
                  Hay que hacer "sumas" y "restas" de la cantidad de semen del toro,
+                 Hay que hacer "sumas" y "restas" de la cantidad de semen del toro,
                  ya que el toro (origen) pasará a tener +1 en su cantidad de semen, dado que no ha sido suministrada.
                  Y el nuevo toro (destino) pasará a tener -1 en su cantidad de semen.
                  Ej:
@@ -162,8 +163,9 @@ export const FormularioInseminacion = () => {
                 console.log("Se ha modificado la inseminación de la lista de inseminaciones");
                 // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
                 await modificarInseminacion(inseminacion);
-                await obtenerListadoToros(); // Se actualiza el listado del inventario de vacunas/tratamientos.
             }
+            await obtenerListadoToros(); // Se actualiza el listado del inventario de vacunas/tratamientos.
+
         } catch (error) {
             console.error("❌ Error al guardar la inseminación:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
@@ -328,18 +330,22 @@ export const FormularioInseminacion = () => {
                                 )}
                                 {animalesToros && animalesToros.length > 0 ? (
                                     animalesToros
-                                        /*Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
-                                        Además, el toro no debe estar con el estado "muerto" ni "otros", por lo tanto se añade a la
-                                        condición del filtro*/
+                                        /* Condiciones del filtrado:
+                                        - Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
+                                        - El toro no debe estar con el estado "muerto" ni "otros",
+                                        - Solo se pueden seleccionar toros que tengan 1 o más (>=1) de cantidad de semen.
+                                        - Se mostrarán los toros que estén "inseminando" a una vaca a pesar de que
+                                          tenga 0 de cantidad se mene.*/
                                         .filter((animalToro) => animalToro.tipo.toUpperCase() === "Toro".toUpperCase()
                                             && animalToro.estado.toUpperCase() !== "Muerte".toUpperCase()
                                             && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
+                                            && (animalToro.cantidad_semen > 0 || animalToro.id === parseInt(inseminacion.id_toro))
                                         )
                                         //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
-                                                {toro.codigo}
+                                                {toro.codigo} ({toro.cantidad_semen})
                                             </option>
                                         ))
                                 ) : (
