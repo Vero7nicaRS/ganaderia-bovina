@@ -370,7 +370,7 @@ export const FormularioVT_Animales= () => {
                                                         // Está INACTIVA
                                                         return `${vt_animal.nombre_vt} (${inventarioEncontrado.estado})`;
                                                     } else {
-                                                        return vt_animal.nombre_vt;  // Todo OK
+                                                        return `${vt_animal.nombre_vt} (${inventarioEncontrado.unidades})`;
                                                     }
                                                 })()}
                                             </option>
@@ -389,7 +389,7 @@ export const FormularioVT_Animales= () => {
                                                 )
                                                 .map((vt_del_animal) => (
                                                     <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>
-                                                        {vt_del_animal.nombre}
+                                                        {vt_del_animal.nombre} ({vt_del_animal.unidades})
                                                     </option>
                                                 ))
                                         ) : (
@@ -412,7 +412,7 @@ export const FormularioVT_Animales= () => {
                                                 )
                                                 .map((vt_del_animal) => (
                                                     <option key={vt_del_animal.nombre} value={vt_del_animal.nombre}>
-                                                        {vt_del_animal.nombre}
+                                                        {vt_del_animal.nombre} ({vt_del_animal.unidades})
                                                     </option>
                                                 ))
                                         ) : (
