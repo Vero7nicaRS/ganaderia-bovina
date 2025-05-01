@@ -425,6 +425,191 @@ def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
         f"{inventario_sin_unidades.nombre}'."
     )
 
+
+# Test para comprobar que si se modifica el campo de nombre de una vacuna/tratamiento,
+# se actualizan las unidades del inventario de origen y destino correctamente.
+@pytest.mark.django_db
+def test_modificar_vtanimales_actualiza_unidades_entre_inventarios():
+    client = APIClient()
+
+    # El inventario de origen tiene 5 unidades.
+    inventario_origen = InventarioVT.objects.create(
+        codigo="VT-100",
+        tipo="Vacuna",
+        nombre="Vacuna Origen",
+        unidades=5, # 5 unidades.
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    # El inventario de destino tiene 3 unidades
+    inventario_nuevo = InventarioVT.objects.create(
+        codigo="VT-20O",
+        tipo="Vacuna",
+        nombre="Vacuna Destino",
+        unidades=3, # 3 unidades.
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    # Animal que se le va a suministrar la vacuna/tratamiento
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Prueba",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=110000,
+        produccion_leche=20.0,
+        calidad_patas=Decimal("7.0"),
+        calidad_ubres=Decimal("7.0"),
+        grasa=4.0,
+        proteinas=3.5,
+        corral=Corral.objects.create(nombre="Corral Test")
+    )
+
+    # Hay una vacuna suministrada a una vaca con la vacuna VT-100 (origen)
+    vt = VTAnimales.objects.create(
+        codigo="VTA-100",
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2024-04-01",
+        fecha_finalizacion="2024-04-05",
+        responsable="Veterinario Prueba",
+        id_animal=animal,
+        inventario_vt=inventario_origen # Vacuna de origen.
+    )
+
+    # Se quiere modificar esa vacuna suministrada por otra vacuna VT-200 (destino)
+    datos_modificados = {
+        "tipo": "Vacuna",
+        "ruta": "Oral",
+        "fecha_inicio": "2024-04-01",
+        "fecha_finalizacion": "2024-04-05",
+        "responsable": "Veterinario Prueba",
+        "id_animal": animal.id,
+        "inventario_vt": inventario_nuevo.id # Vacuna de destino.
+    }
+
+    # Se modifica la vacuna de origen por la de destino.
+    response = client.put(f"/api/vtanimales/{vt.id}/", datos_modificados, format="json")
+    assert response.status_code == 200
+
+    inventario_origen.refresh_from_db()
+    inventario_nuevo.refresh_from_db()
+
+    # Se tienen que actualizar los inventarios, sumándole 1 a la vacuna de origen.
+    # Y restándole 1 a la vacuna de destino.
+    assert inventario_origen.unidades == 6  # Se suma una unidad (5+1 = 6)
+    assert inventario_nuevo.unidades == 2   # Se resta una unidad (3-1 = 2)
+
+# Test para comprobar que no haya un mismo tratamiento/vacuna para un animal en el mismo año.
+@pytest.mark.django_db
+def test_vtanimales_no_permitir_repetir_vactrac_mismo_anio():
+    client = APIClient()
+
+    # Hay una vacuna en el inventario que será la primera que se le suministre al animal.
+    inventario = InventarioVT.objects.create(
+        codigo="VT-100",
+        tipo="Vacuna",
+        nombre="Vacuna Prueba",
+        unidades=5,
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Prueba Año",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=110000,
+        produccion_leche=20.0,
+        calidad_patas=Decimal("7.0"),
+        calidad_ubres=Decimal("7.0"),
+        grasa=4.0,
+        proteinas=3.5,
+        corral=Corral.objects.create(nombre="Corral Año")
+    )
+
+    # El animal tiene la vacuna VT-100 como suministrada en 2024
+    VTAnimales.objects.create(
+        codigo="VTA-200",
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2024-04-01", # Se le suministra la vacuna el 2024-04-01
+        fecha_finalizacion="2024-04-05",
+        responsable="Veterinaro Prueba",
+        id_animal=animal,
+        inventario_vt=inventario # Se le ha suministrado la vacuna VT-100
+    )
+
+    # Se intenta suministrar al animal la misma vacuna en el mismo año 2024
+    datos = {
+        "tipo": "Vacuna",
+        "ruta": "Oral",
+        "fecha_inicio": "2024-05-01",  # Mismo año
+        "fecha_finalizacion": "2024-05-05",
+        "responsable": "Vet",
+        "id_animal": animal.id,
+        "inventario_vt": inventario.id # Vacuna VT-100
+    }
+
+    response = client.post("/api/vtanimales/", datos, format="json")
+    assert response.status_code == 400
+    assert "inventario_vt" in response.data
+    mensaje_error = (
+        f"Est{'e tratamiento' if inventario.tipo.lower() == 'tratamiento' else 'a vacuna'} "
+        f"ya fue suministrad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'} "
+        f"a {animal.codigo} en el mismo año."
+    )
+    assert response.data["inventario_vt"] == [mensaje_error]
+
+# Test para comprobar que aparece "nombre_vt" cuando se hace una petición GET
+# Ya que no lo registramos en el modelo pero sí lo tenemos añadido cuando hacemos la petición
+@pytest.mark.django_db
+def test_vtanimales_nombrevt_aparece_en_get():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        codigo="VT-100",
+        tipo="Vacuna",
+        nombre="Vacuna Prueba",
+        unidades=5,
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Prueba",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=110000,
+        produccion_leche=20.0,
+        calidad_patas=Decimal("7.0"),
+        calidad_ubres=Decimal("7.0"),
+        grasa=4.0,
+        proteinas=3.5,
+        corral=Corral.objects.create(nombre="Corral Vista")
+    )
+
+    vt = VTAnimales.objects.create(
+        codigo="VTA-100",
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2024-04-01",
+        fecha_finalizacion="2024-04-05",
+        responsable="Vet",
+        id_animal=animal,
+        inventario_vt=inventario
+    )
+
+    response = client.get(f"/api/vtanimales/{vt.id}/")
+    assert response.status_code == 200
+    assert "nombre_vt" in response.data
+    assert response.data["nombre_vt"] == "Vacuna Prueba"
+
+
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_vtanimales():
