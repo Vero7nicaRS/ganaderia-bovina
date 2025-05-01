@@ -108,69 +108,24 @@ export const FormularioInseminacion = () => {
     //Para llevar acabo las acciones de AGREGAR y MODIFICAR una inseminacion.
     const handleAgregar = async (e) => {
         console.log(inseminacion); // Verifica el estado de la inseminacion antes de validar
-
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
         try {
-
-            /* Hay que obtener el identificador del "toro", ya que se guarda en el backend.
-            Buscamos en la lista de toros, el toro que tiene el mismo "id" que en la inseminación.
-            Una vez que se haya encontrado el objeto, obtenemos su "id" para pasárselo al backend.
-            */
             if (esAgregar) {
                 console.log("Se ha añadido la inseminación a la lista de inseminaciones");
-                // Se añade el nuevo animal al backend y se muestra la información en el frontend.
+                // Se añade la nueva inseminación al backend y se muestra la información en el frontend.
                 await agregarInseminacion(inseminacion);
 
             } else if (esModificar) {
-                /* Si modifico el "id" del toro y lo cambio por otro toro.
-                 Hay que hacer "sumas" y "restas" de la cantidad de semen del toro,
-                 Hay que hacer "sumas" y "restas" de la cantidad de semen del toro,
-                 ya que el toro (origen) pasará a tener +1 en su cantidad de semen, dado que no ha sido suministrada.
-                 Y el nuevo toro (destino) pasará a tener -1 en su cantidad de semen.
-                 Ej:
-                  -> Cantidad semen del toro "T-12": 10.
-                  Se usa el toro "T-12" en V-35.
-                  -> Cantidad semen del toro "T-12": 9.
-                  Se modifica el toro "T-12" por el toro "T-14" en V-35.
-                  -> Cantidad semen del toro "T-14" tenía 5 y pasa a tener 4.
-                  -> Cantidad semen del toro "T-12" tenía 9 y pasa a tener 10.
-                */
-                const idAnterior = inseminacionInicial.id_toro;
-                const idNuevo = inseminacion.id_toro;
-
-                // Si el toro ha cambiado, se modifica las cantidades del semen del toro antiguo y del toro nuevo.
-                if (idAnterior !== idNuevo) {
-                    const toroAnterior = animalesToros.find((t) => t.id === parseInt(idAnterior));
-                    const toroNuevo = animalesToros.find((t) => t.id === parseInt(idNuevo));
-
-                    if (!toroNuevo || toroNuevo.cantidad_semen < 1) {
-                        alert("❌ El toro seleccionado no tiene dosis de semen disponibles.");
-                        return;
-                    }
-
-                    await modificarToro({
-                        ...toroAnterior,
-                        cantidad_semen: toroAnterior.cantidad_semen + 1
-                    });
-
-                    await modificarToro({
-                        ...toroNuevo,
-                        cantidad_semen: toroNuevo.cantidad_semen - 1
-                    });
-                }
-
                 console.log("Se ha modificado la inseminación de la lista de inseminaciones");
                 // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
                 await modificarInseminacion(inseminacion);
             }
             await obtenerListadoToros(); // Se actualiza el listado del inventario de vacunas/tratamientos.
-
         } catch (error) {
             console.error("❌ Error al guardar la inseminación:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
-
         /* Una vez que se haya agregado una nueva inseminacion o se modifique una inseminacion existente,
          el usuario es redirigido a la página de "lista-inseminaciones".
          */
@@ -191,12 +146,10 @@ export const FormularioInseminacion = () => {
             console.error("❌ Error al guardar la inseminación:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
-
     }
 
     return (
         <>
-
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
                 - VISUALIZAR VACUNA/TRATAMIENTO.
                 - AGREGAR VACUNA/TRATAMIENTO.
@@ -451,10 +404,8 @@ export const FormularioInseminacion = () => {
                             {errores.responsable &&
                                 <div className="mensaje-error-inseminacion">{errores.responsable}</div>}
                         </div>
-
                     </div>
                 </div>
-
 
                 <>
                     {/* Si es una acción de AGREGAR o MODIFICAR: Aparecen los siguientes botones:
