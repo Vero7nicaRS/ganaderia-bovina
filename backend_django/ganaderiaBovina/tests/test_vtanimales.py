@@ -158,52 +158,6 @@ def test_vtanimales_campos_por_defecto():
     assert response.data["tipo"] == "Tratamiento"
     assert response.data["ruta"] == "Intravenosa"
 
-# Test para comprobar que no se puede crear una vacuna/tratamiento suministrado
-# si esa vacuna/tratamiento en el inventario no tiene ninguna unidad, es decir, 0.
-@pytest.mark.django_db
-def test_vtanimales_no_se_permite_si_no_hay_unidades_disponibles():
-    client = APIClient()
-
-    inventario = InventarioVT.objects.create(
-        codigo="VT-100",
-        tipo="Vacuna",
-        nombre="Vacuna Prueba Sin Unidades",
-        unidades=0,  # Sin unidades
-        cantidad="Dosis",
-        estado="Activa"
-    )
-
-    animal = Animal.objects.create(
-        tipo="Vaca",
-        estado="Vacía",
-        nombre="Vaca Prueba 1",
-        fecha_nacimiento="2024-01-01",
-        celulas_somaticas=100000,
-        produccion_leche=20.0,
-        calidad_patas=Decimal("7.00"),
-        calidad_ubres=Decimal("7.00"),
-        grasa=4.0,
-        proteinas=3.5,
-        corral=Corral.objects.create(nombre="Corral 1")
-    )
-
-    datos = {
-        "tipo": "Vacuna",
-        "ruta": "Intramuscular",
-        "fecha_inicio": "2025-04-01",
-        "fecha_finalizacion": "2025-04-05",
-        "responsable": "Veterinario Antonio",
-        "id_animal": animal.id,
-        "inventario_vt": inventario.id,
-    }
-
-    response = client.post("/api/vtanimales/", datos, format="json")
-    assert response.status_code == 400
-    assert "inventario_vt" in response.data
-    assert response.data["inventario_vt"][0] == (
-        f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."
-    )
-
 
 @pytest.mark.django_db
 def test_vtanimales_fecha_finalizacion_antes_de_fecha_inicio():
@@ -292,16 +246,18 @@ def test_vtanimales_resta_unidades_inventario():
     assert inventario.unidades == 9  # 10 - 1
 
 
+# Test para comprobar que no se puede crear una vacuna/tratamiento suministrado
+# si esa vacuna/tratamiento en el inventario no tiene ninguna unidad, es decir, 0.
 @pytest.mark.django_db
-def test_vtanimales_no_unidades_negativas(): ############################################################
+def test_vtanimales_no_unidades_negativas():
     client = APIClient()
 
-    # Crear un inventario con 3 unidades disponibles
+    # Crear un inventario con 0 unidades disponibles
     inventario = InventarioVT.objects.create(
         codigo="VT-101",
         tipo="Vacuna",
         nombre="Vacuna Prueba 1",
-        unidades=0,  # Solo 3 unidades
+        unidades=0,  # 0 unidades.
         cantidad="Sobre",
         estado="Activa"
     )
@@ -327,7 +283,7 @@ def test_vtanimales_no_unidades_negativas(): ###################################
         "ruta": "Intravenosa",
         "fecha_inicio": "2025-03-10",
         "fecha_finalizacion": "2025-03-15",
-        "responsable": "Veterinario 1",
+        "responsable": "Veterinario Prueba",
          # Intentamos usar más dosis de las que hay
         "id_animal": animal.id,
         "inventario_vt": inventario.id,
@@ -338,12 +294,137 @@ def test_vtanimales_no_unidades_negativas(): ###################################
     # Se debe rechazar la operación
     assert response.status_code == 400
     assert "inventario_vt" in response.data
-    assert response.data["inventario_vt"][0] == (f"No hay suficientes unidades en el inventario. "
-                                                 f"Disponibles: {inventario.unidades}.")
-
+    assert response.data["inventario_vt"] == (
+        f"No hay suficientes unidades disponibles de {inventario.tipo.lower()} '"
+        f"{inventario.nombre}'."
+    )
     # Verificar que las unidades en el inventario NO han cambiado
     inventario.refresh_from_db()
     assert inventario.unidades == 0
+
+# Test para comprobar que al modificar una vacuna/tratamiento suministrado a un animal
+# que tiene 0 unidades actualmente, si cambiamos cualquier otro dato se puede modificar.
+# Ya que no debe afectar que la vacuna/tratamiento suministrado tenga 0 unidades.
+@pytest.mark.django_db
+def test_modificar_vtanimales_sin_cambiar_inventario_con_unidades_0():
+    client = APIClient()
+
+    inventario = InventarioVT.objects.create(
+        codigo="VT-200",
+        tipo="Vacuna",
+        nombre="Vacuna Existente",
+        unidades=0,  # 0 unidades.
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Prueba",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=120000,
+        produccion_leche=19.5,
+        calidad_patas=Decimal("7.5"),
+        calidad_ubres=Decimal("7.5"),
+        grasa=4.0,
+        proteinas=3.6,
+        corral=Corral.objects.create(nombre="Corral Test")
+    )
+
+    vt_registro = VTAnimales.objects.create(
+        codigo="VTA-999",
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2024-04-01",
+        fecha_finalizacion="2024-04-05",
+        responsable="Veterinario Prueba",
+        id_animal=animal,
+        inventario_vt=inventario
+    )
+
+    # Se modifca la ruta de la vacuna/tratamiento suministrado, sin cambiar esa vacuna.
+    datos_modificados = {
+        "tipo": "Vacuna",
+        "ruta": "Intramuscular",  # Se cambia la ruta de "Oral" a "Intramuscular".
+        "fecha_inicio": "2024-04-01",
+        "fecha_finalizacion": "2024-04-05",
+        "responsable": "Veterinario Prueba",
+        "id_animal": animal.id,
+        "inventario_vt": inventario.id
+    }
+
+    response = client.put(f"/api/vtanimales/{vt_registro.id}/", datos_modificados, format="json")
+    assert response.status_code == 200
+    assert response.data["ruta"] == "Intramuscular"
+
+# Test para comprobar que no se puede modificar una vacuna a otra que no tenga unidades.
+@pytest.mark.django_db
+def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
+    client = APIClient()
+
+    inventario_con_unidades = InventarioVT.objects.create(
+        codigo="VT-OK",
+        tipo="Vacuna",
+        nombre="Vacuna Origen",
+        unidades=5, # 5 unidades.
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    inventario_sin_unidades = InventarioVT.objects.create(
+        codigo="VT-EMPTY",
+        tipo="Vacuna",
+        nombre="Vacuna Destino",
+        unidades=0, # 0 unidades.
+        cantidad="Dosis",
+        estado="Activa"
+    )
+
+    animal = Animal.objects.create(
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Vaca Prueba",
+        fecha_nacimiento="2023-01-01",
+        celulas_somaticas=120000,
+        produccion_leche=19.5,
+        calidad_patas=Decimal("7.5"),
+        calidad_ubres=Decimal("7.5"),
+        grasa=4.0,
+        proteinas=3.6,
+        corral=Corral.objects.create(nombre="Corral Test")
+    )
+
+    vt_registro = VTAnimales.objects.create(
+        codigo="VTA-100",
+        tipo="Vacuna",
+        ruta="Oral",
+        fecha_inicio="2024-04-01",
+        fecha_finalizacion="2024-04-05",
+        responsable="Veterinario Prueba",
+        id_animal=animal,
+        inventario_vt=inventario_con_unidades
+    )
+
+    # Se intenca cambiar la vacuna a otra vacuna que no tenga unidades en su inventario.
+    datos_modificados = {
+        "tipo": "Vacuna",
+        "ruta": "Oral",
+        "fecha_inicio": "2024-04-01",
+        "fecha_finalizacion": "2024-04-05",
+        "responsable": "Veterinario Prueba",
+        "id_animal": animal.id,
+        "inventario_vt": inventario_sin_unidades.id
+    }
+
+    # Se modifica la vacuna a otra que no tenga unidades, teniendo que mostrar un mensaje de error.
+    response = client.put(f"/api/vtanimales/{vt_registro.id}/", datos_modificados, format="json")
+    assert response.status_code == 400
+    assert "inventario_vt" in response.data
+    assert response.data["inventario_vt"] == (
+        f"No hay suficientes unidades disponibles de {inventario_sin_unidades.tipo.lower()} '"
+        f"{inventario_sin_unidades.nombre}'."
+    )
 
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
