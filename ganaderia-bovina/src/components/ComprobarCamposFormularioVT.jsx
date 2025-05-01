@@ -106,6 +106,28 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
             }
         }
 
+        /*
+        Se comprueba que no se suministre la misma vacuna al mismo animal
+        más de 1 vez en el mismo año
+        */
+        if (datosVT.id_animal && datosVT.fecha_inicio && datosVT.nombre_vt) {
+            const anioNuevo = new Date(datosVT.fecha_inicio).getFullYear();
+            const nombreVT = datosVT.nombre_vt.toUpperCase();
+            console.log("nombreVT: ",nombreVT)
+            const mismaVTmismoAnyo = listadoVT.some(vt =>
+                vt.id_animal === datosVT.id_animal &&
+                vt.nombre?.toUpperCase?.() === nombreVT &&
+                new Date(vt.fecha_inicio).getFullYear() === anioNuevo &&
+                vt.id !== datosVT.id  /* Evita que si estamos modificando una vacuna/tratamiento con una fecha,
+                nos salte el error de que ya se está usando esa fecha.
+                Solo queremos que ocurra si estamos creando o modificando otra.*/
+            );
+
+            if (mismaVTmismoAnyo) {
+                erroresTemp.fecha_inicio = `Ya se suministró ${datosVT.tipo === "Vacuna" ? "esta vacuna" 
+                                            : "este tratamiento"} a este animal en ${anioNuevo}.`;
+            }
+        }
     }
     return erroresTemp; // Devuelve los errores encontrados
 };
