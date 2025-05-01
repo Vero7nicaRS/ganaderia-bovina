@@ -42,7 +42,7 @@ export const FormularioInseminacion = () => {
     * acceder al listado de los mismos. Para ello, se obtiene dicha información con
     * con "AnimalesContext" y TorosContext* */
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
-    const { animalesToros, modificarToro, obtenerListadoToros } = useContext(TorosContext); // Lista de toros
+    const { animalesToros, obtenerListadoToros } = useContext(TorosContext); // Lista de toros
 
     /* Se obtiene las funciones: agregarInseminacion y modificarInseminacion para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza InseminacionesContext
