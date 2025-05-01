@@ -333,7 +333,7 @@ def test_modificar_vtanimales_sin_cambiar_inventario_con_unidades_0():
     )
 
     vt_registro = VTAnimales.objects.create(
-        codigo="VTA-999",
+        codigo="VTA-10",
         tipo="Vacuna",
         ruta="Oral",
         fecha_inicio="2024-04-01",
@@ -364,7 +364,7 @@ def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
     client = APIClient()
 
     inventario_con_unidades = InventarioVT.objects.create(
-        codigo="VT-OK",
+        codigo="VT-1",
         tipo="Vacuna",
         nombre="Vacuna Origen",
         unidades=5, # 5 unidades.
@@ -373,7 +373,7 @@ def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
     )
 
     inventario_sin_unidades = InventarioVT.objects.create(
-        codigo="VT-EMPTY",
+        codigo="VT-2",
         tipo="Vacuna",
         nombre="Vacuna Destino",
         unidades=0, # 0 unidades.
