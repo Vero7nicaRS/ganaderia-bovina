@@ -282,8 +282,7 @@ def test_eliminar_inventariovt_error_con_relacion():
         ruta="Oral",
         fecha_inicio="2025-04-01",
         fecha_finalizacion="2025-04-03",
-        responsable="Veterinaria X",
-        dosis=2,
+        responsable="Veterinaria Prueba",
         id_animal=animal,
         inventario_vt=inventario
     )
@@ -339,9 +338,8 @@ def test_eliminar_inventarioVT_con_motivo_actualiza_estado():
         ruta="Oral",
         fecha_inicio="2025-04-01",
         fecha_finalizacion="2025-04-05",
-        responsable="Veterinario A",
-        inventario_vt=inventario,
-        dosis=3
+        responsable="Veterinario Prueba",
+        inventario_vt=inventario
     )
     # Se elimina al toro por el motivo "INACTIVA"
     response = client.delete(f"/api/inventariovt/{inventario.id}/eliminar/?motivo=INACTIVA")
@@ -354,7 +352,6 @@ def test_eliminar_inventarioVT_con_motivo_actualiza_estado():
     # y se mantienen la relación de la vacuna/tratamiento con las vacunas/tratamientos suministrados.
     vt.refresh_from_db()
     assert vt.inventario_vt == inventario
-    assert vt.dosis == 3
 
 # Test para comprobar la eliminación de un Animal por un motivo no correcto.
 @pytest.mark.django_db
