@@ -249,7 +249,7 @@ def test_vtanimales_resta_unidades_inventario():
 # Test para comprobar que no se puede crear una vacuna/tratamiento suministrado
 # si esa vacuna/tratamiento en el inventario no tiene ninguna unidad, es decir, 0.
 @pytest.mark.django_db
-def test_vtanimales_no_unidades_negativas():
+def test_vtanimales_no_crear_con_unidades_negativas():
     client = APIClient()
 
     # Crear un inventario con 0 unidades disponibles
