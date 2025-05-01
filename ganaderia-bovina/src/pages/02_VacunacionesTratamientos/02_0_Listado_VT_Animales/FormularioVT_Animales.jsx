@@ -145,52 +145,37 @@ export const FormularioVT_Animales= () => {
                     inventario_vt: vtinventario.id
                 }
                 if (esAgregar) {
-                    //Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
-                    // en el inventario.
-                    //const indexVT = vt.findIndex((item) => item.nombre === vt_animal.nombre_vt);
+                    /*Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
+                     en el inventario. */
                     console.log("Se ha añadido la vacuna/tratamiento del inventario");
                     await agregarVT_Animal(vt_suministrada); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
-                    await obtenerInventarioVT(); // Se actualiza en el contexto (listado de vacunas/tratamientos suministrados)
-
                 } else if (esModificar) {
-                    /* Si modifico una vacuna/tratamiento y le cambio la vacuna/tratamiento suministrado.
-                       Hay que hacer "sumas" y "restas", ya que la vacuna antigua (origen) pasará a tener +1 en el inventario,
-                       dado que no ha sido suministrada. Y la vacuna nueva (destino) pasará a tener -1 en el inventario.
-                       Ej:
-                        -> Inventario Vacuna "X": 10.
-                        Se usa Vacuna "X" en V-35.
-                        -> Inventario Vacuna "X": 9.
-                        Se modifica Vacuna "X" por Tratamiento "Y" en V-35.
-                        -> Inventario de Vacuna "Y" tenía 5 y pasa a tener 4.
-                        -> Inventario de Vacuna "X" tenía 9 y pasa a tener 10.
-                    */
                     console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
                     console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
 
-                    const vt_anterior_id = vt_animal.inventario_vt;
-                    const vt_nuevo_id = vtinventario.id;
-
+                    // const vt_anterior_id = vt_animal.inventario_vt;
+                    // const vt_nuevo_id = vtinventario.id;
                     /* Si la vacuna/tratamiento ha sido cambiado, se modifica el inventario del antigua
                        y nueva vacuna/tratamiento */
-                    if (vt_anterior_id !== vt_nuevo_id) {
-                        const vt_anterior = vt.find((item) => item.id === vt_anterior_id);
-                        const vt_nuevo = vtinventario;
-
-                        // Se suma 1 al inventario que estaba anteriormente (origen)
-                        await modificarVT({
-                            ...vt_anterior,
-                            unidades: vt_anterior.unidades + 1 // +1 en el inventario de origen.
-                        });
-
-                        // Se resta 1 al nuevo inventario (destino)
-                        await modificarVT({
-                            ...vt_nuevo,
-                            unidades: vt_nuevo.unidades - 1 // -1 en el inventario de destino.
-                        });
-                    }
+                    // if (vt_anterior_id !== vt_nuevo_id) {
+                    //     const vt_anterior = vt.find((item) => item.id === vt_anterior_id);
+                    //     const vt_nuevo = vtinventario;
+                    //
+                    //     // Se suma 1 al inventario que estaba anteriormente (origen)
+                    //     await modificarVT({
+                    //         ...vt_anterior,
+                    //         unidades: vt_anterior.unidades + 1 // +1 en el inventario de origen.
+                    //     });
+                    //
+                    //     // Se resta 1 al nuevo inventario (destino)
+                    //     await modificarVT({
+                    //         ...vt_nuevo,
+                    //         unidades: vt_nuevo.unidades - 1 // -1 en el inventario de destino.
+                    //     });
+                    // }
                     await modificarVT_Animal(vt_suministrada); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
-                    await obtenerInventarioVT(); // Se actualiza el listado del inventario de vacunas/tratamientos.
                 }
+                await obtenerInventarioVT(); // Se actualiza el contexto
             } else {
                 console.error("No se encontró el tratamiento/vacuna en el inventario");
             }
