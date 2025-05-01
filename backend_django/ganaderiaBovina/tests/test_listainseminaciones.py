@@ -193,7 +193,7 @@ def test_listainseminacion_sin_cantidad_semen():
 
     assert response.status_code == 400
     assert "id_toro" in response.data
-    assert response.data["id_toro"][0] == f"El toro {toro.codigo} no tiene suficiente cantidad de semen para inseminar."
+    assert response.data["id_toro"] == f"El toro {toro.codigo} no tiene suficiente cantidad de semen para inseminar."
 
     # Se asegura que no se ha creado ninguna inseminación
     assert ListaInseminaciones.objects.count() == 0
