@@ -534,7 +534,9 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
 
             if mismo_anio.exists():
                 raise serializers.ValidationError({
-                    "inventario_vt": "Este tratamiento o vacuna ya fue suministrado a este animal en el mismo año."
+                    "inventario_vt": f"Est{'e tratamiento' if inventario.tipo.lower() == 'tratamiento' else 'a vacuna'} "
+                                     f"ya fue suministrad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'} "
+                                     f"a {animal.codigo} en el mismo año."
                 })
         return data
 
