@@ -4,7 +4,6 @@
 # -----------------------------------------------------------------------------------
 import pytest
 from rest_framework.test import APIClient
-from django.urls import reverse
 from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 from decimal import Decimal
 
