@@ -609,8 +609,7 @@ def test_eliminar_animal_sin_motivo():
         fecha_inicio="2025-04-01",
         fecha_finalizacion="2025-04-05",
         responsable="Vet Final",
-        inventario_vt=inventario,
-        dosis=2
+        inventario_vt=inventario
     )
 
     # Se elimina al animar sin indicarle ningún motivo (NO -> ?motivo=...)
@@ -647,8 +646,7 @@ def test_eliminar_animal_sin_motivo():
     assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
     assert ListaInseminaciones.objects.filter(id_vaca__isnull=True).exists() # Existe un registro al menos con "id_vaca = null"
 
-    # Se comprueba que no se haya modificado el tratamiento ni las dosis
-    assert vt.dosis == 2
+    # Se comprueba que no se haya modificado el tratamiento
     assert vt.inventario_vt == inventario
 
 # Test para comprobar la eliminación de un Animal por el motivo "ERROR"
@@ -725,8 +723,7 @@ def test_eliminar_animal_error():
         fecha_inicio="2025-04-01",
         fecha_finalizacion="2025-04-05",
         responsable="Veterinario A",
-        inventario_vt=inventario,
-        dosis=2
+        inventario_vt=inventario
     )
 
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo=ERROR")
@@ -760,8 +757,7 @@ def test_eliminar_animal_error():
     assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
     assert ListaInseminaciones.objects.filter(id_vaca__isnull=True).exists() # Existe un registro al menos con "id_vaca = null"
 
-    # Se comprueba que no se haya modificado el tratamiento ni las dosis
-    assert vt.dosis == 2
+    # Se comprueba que no se haya modificado el tratamiento
     assert vt.inventario_vt == inventario
 
 # Test para comprobar la eliminación de un Animal por el motivo "MUERTE" o VENDIDA"
@@ -840,8 +836,7 @@ def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
         fecha_inicio="2025-04-01",
         fecha_finalizacion="2025-04-05",
         responsable="Veterinario A",
-        inventario_vt=inventario,
-        dosis=2
+        inventario_vt=inventario
     )
     response = client.delete(f"/api/animales/{animal.id}/eliminar/?motivo={motivo}")
 
@@ -866,9 +861,8 @@ def test_eliminar_animal_con_motivo_actualiza_estado(motivo):
     assert animal.padre == toro
     assert animal.madre == madre
 
-    # Se comprueba que no se haya modificado el tratamiento ni las dosis
+    # Se comprueba que no se haya modificado el tratamiento
     vt.refresh_from_db()
-    assert vt.dosis == 2
     assert vt.inventario_vt == inventario
 
 # Test para comprobar la eliminación de un Animal por un motivo no correcto.
