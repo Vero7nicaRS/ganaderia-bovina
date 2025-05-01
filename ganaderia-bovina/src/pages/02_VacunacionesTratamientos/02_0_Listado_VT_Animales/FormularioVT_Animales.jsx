@@ -52,7 +52,7 @@ export const FormularioVT_Animales= () => {
     /* Se obtiene las funciones: agregarVT_Animal y modificarVT_Animal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTListadoContext
        */
-    const {agregarVT_Animal, modificarVT_Animal} = useContext(VTListadoContext);
+    const { vt_animal: listadoVTAnimales, agregarVT_Animal, modificarVT_Animal} = useContext(VTListadoContext);
 
     //Se utiliza para controlar en qué modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modoFinal === "ver";
@@ -103,7 +103,7 @@ export const FormularioVT_Animales= () => {
     const [errores, setErrores] = useState({});
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioVT(vt_animal, "VTanimal"); // Revisa todos los campos y le indicamos que es un listado de animales
+        const erroresTemp = ComprobarCamposFormularioVT(vt_animal, "VTanimal", listadoVTAnimales); // Revisa todos los campos y le indicamos que es un listado de animales
         //ya que estamos usando ComprobarCamposFormularioVT para el inventario de VT y el listado de VT en animales.
 
         setErrores(erroresTemp);
