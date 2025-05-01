@@ -84,7 +84,7 @@ export const FormularioVT_Animales= () => {
     }, [id, esVisualizar, esModificar]);
 
 
-    //Manejador para llevar acabo las modificaciones de los tratamientos/vacunas (actualizar el estado del tratamiento/vacuna)
+    //Manejador para llevar a cabo las modificaciones de los tratamientos/vacunas (actualizar el estado del tratamiento/vacuna)
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -440,7 +440,7 @@ export const FormularioVT_Animales= () => {
                                 <option value="Intravaginal">Intravaginal</option>
                                 <option value="Oral">Oral</option>
                                 <option value="Nasal">Nasal</option>
-                                <option value="Subcutanea">Subcutánea</option>
+                                <option value="Subcutánea">Subcutánea</option>
                             </select>
                         </div>
                     </div>
