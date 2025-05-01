@@ -512,10 +512,6 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                 )
 
             # Verificación 1: Unidades disponibles
-            if inventario and inventario.unidades < 1:
-                raise serializers.ValidationError({
-                    "inventario_vt": f"No hay suficientes unidades en el inventario. Disponibles: {inventario.unidades}."
-                })
 
             # Se comprueba que se seleccione una vacuna o tratamiento que esté ACTIVA y NO INACTIVA.
             # Si es "INACTIVA", se muestra un error.
@@ -544,17 +540,18 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         inventario = validated_data.get('inventario_vt')
-        # Se descuenta 1 unidad automáticamente
-        if inventario:
+
+        if inventario.unidades < 1:
             # Si no hay suficientes unidades (0) en el inventario cuando se va a suministrar la vacuna/tratamiento,
             # se muestra un mensaje de error.
-            if inventario.unidades < 1:
-                raise serializers.ValidationError({
-                    "inventario_vt": f"No hay suficientes unidades disponibles del "
-                                     f"{inventario.tipo.lower()} '{inventario.nombre}'."
-                })
-            inventario.unidades -= 1
-            inventario.save()
+            raise serializers.ValidationError({
+                 "inventario_vt": f"No hay suficientes unidades disponibles de "
+                                 f"{inventario.tipo.lower()} '{inventario.nombre}'."
+            })
+
+        # Cuando se crea esa vacuna, se resta automáticamente una unidad a su inventario.
+        inventario.unidades -= 1
+        inventario.save()
             # Se crea el registro de VTAnimales como normalmente
         return super().create(validated_data)
 
@@ -573,11 +570,11 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
         # Se modifica Vacuna "X" por Tratamiento "Y" en V-35.
         # -> Inventario de Vacuna "Y" tenía 5 y pasa a tener 4.
         # -> Inventario de Vacuna "X" tenía 9 y pasa a tener 10.
-
+        # Se hacen suma/resta de las unidades de los inventarios, si ha cambiado esa vacuna/tratamiendo suministrado
         if inventario_anterior != inventario_nuevo:
             if inventario_nuevo.unidades < 1:
                 raise serializers.ValidationError({
-                    "inventario_vt": f"No hay suficientes unidades disponibles del {inventario_nuevo.tipo.lower()} '"
+                    "inventario_vt": f"No hay suficientes unidades disponibles de {inventario_nuevo.tipo.lower()} '"
                                      f"{inventario_nuevo.nombre}'."
                 })
             # Se suma 1 a la unidad del inventario anterior
