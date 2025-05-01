@@ -47,14 +47,14 @@ export const FormularioVT_Animales= () => {
     /* Para que haya un desplegable con el listado de vacunas y tratamientos disponibles, es necesario
     * acceder al listado de los mismos. Para ello, se obtiene dicha información con
     * con "VTContext" */
-    const {vt, modificarVT, obtenerInventarioVT} = useContext(VTContext); //Lista de vacunas/tratamientos y la función de modificarVT.
+    const {vt, obtenerInventarioVT} = useContext(VTContext); //Lista de vacunas/tratamientos y la función de modificarVT.
 
     /* Se obtiene las funciones: agregarVT_Animal y modificarVT_Animal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTListadoContext
        */
     const {agregarVT_Animal, modificarVT_Animal} = useContext(VTListadoContext);
 
-    //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
+    //Se utiliza para controlar en qué modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modoFinal === "ver";
     const esAgregar = modoFinal === "agregar";
     const esModificar = modoFinal === "modificar";
@@ -123,17 +123,7 @@ export const FormularioVT_Animales= () => {
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
         try {
-
-            /* Hay que obtener el identificador del "inventario_vt", ya que se guarda en el backend.
-              Como no lo obtenemos en el formulario, cogemos el "nombre_vt" que sí lo tenemos
-              y lo buscamos en el inventariovt.
-              Una vez que se haya encontrado el objeto, obtenemos su "id" para pasárselo al backend.
-           */
-
-            //const vtinventario = vt.filter(sol => sol.nombre === vt_animal.nombre_vt);
             const vtinventario = vt.find(obj_vactra => obj_vactra.nombre === vt_animal.nombre_vt)
-            // console.log("Objeto vacuna/tratamiento buscado: ", vtinventario);
-            // console.log("ID vacuna/tratamiento buscado: ", vtinventario[0].id);
 
             if (vtinventario) {
                 console.log("Objeto vacuna/tratamiento buscado:", vtinventario);
@@ -141,38 +131,13 @@ export const FormularioVT_Animales= () => {
 
                 const vt_suministrada = {
                     ...vt_animal,
-                    //inventario_vt: vtinventario[0].id
                     inventario_vt: vtinventario.id
                 }
                 if (esAgregar) {
-                    /*Se busca la posición del nombre del tratamiento/vacuna que se ha escogido para el animal,
-                     en el inventario. */
                     console.log("Se ha añadido la vacuna/tratamiento del inventario");
                     await agregarVT_Animal(vt_suministrada); // Llamada a la función agregar de VTListadoContext: Se añade el nuevo tratamiento/vacuna al inventario
                 } else if (esModificar) {
                     console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
-                    console.log("Se ha modificado la vacuna/tratamiento del animal inventario");
-
-                    // const vt_anterior_id = vt_animal.inventario_vt;
-                    // const vt_nuevo_id = vtinventario.id;
-                    /* Si la vacuna/tratamiento ha sido cambiado, se modifica el inventario del antigua
-                       y nueva vacuna/tratamiento */
-                    // if (vt_anterior_id !== vt_nuevo_id) {
-                    //     const vt_anterior = vt.find((item) => item.id === vt_anterior_id);
-                    //     const vt_nuevo = vtinventario;
-                    //
-                    //     // Se suma 1 al inventario que estaba anteriormente (origen)
-                    //     await modificarVT({
-                    //         ...vt_anterior,
-                    //         unidades: vt_anterior.unidades + 1 // +1 en el inventario de origen.
-                    //     });
-                    //
-                    //     // Se resta 1 al nuevo inventario (destino)
-                    //     await modificarVT({
-                    //         ...vt_nuevo,
-                    //         unidades: vt_nuevo.unidades - 1 // -1 en el inventario de destino.
-                    //     });
-                    // }
                     await modificarVT_Animal(vt_suministrada); // Llamada a la función modificar de VTListadoContext: Se modifica el tratamiento/vacuna existente
                 }
                 await obtenerInventarioVT(); // Se actualiza el contexto
@@ -304,7 +269,6 @@ export const FormularioVT_Animales= () => {
                                 Por tanto:
                                   - Se filtra por el tipo "Vaca" ya que "animales" contiene también "Terneros".
                                   - La vaca no debe tener el estado "muerte" ni "vendida".
-
                                 Se muestran las vacas activas: */}
                                 {animales && animales.length > 0 ? (
                                     animales
@@ -357,15 +321,12 @@ export const FormularioVT_Animales= () => {
                                 onChange={(e) => {
                                     handleChange(e);
                                     /* Se actualizan los campos "Nombre" y "Dosis" al modificar el campo "Tipo".
-                                    El campo "Nombre" se actualiza cada vez que se modifique el campo "Tipo"
-                                    , debido a que tienen que aparecer el nombre de las vacunas cuando son vacunas,
+                                    El campo "Nombre" se actualiza cada vez que se modifique el campo "Tipo",
+                                    debido a que tienen que aparecer el nombre de las vacunas cuando son vacunas,
                                     y el nombre de tratamientos cuando se trate de tratamientos.
-                                    También, se actualizará el campo dosis porque se quiere que
-                                    cuando aparezca una vacuna o tratamiento, se muestre el número de
-                                    dosis que hay disponibles.
                                     Ej: Bovisan: cantidad 6 (INVENTARIO)
                                         Nombre: Bosivan.
-                                        Dosis: Desplegable del 1-6.*/
+                                    */
                                     setVT_Animal((prev) => ({...prev, nombre_vt: ""}))
                                 }}
                             >
