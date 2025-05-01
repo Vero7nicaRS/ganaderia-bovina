@@ -671,20 +671,46 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Debe seleccionar un toro válido.')
         return value
 
-    # No hago un validate_id_toro() porque solo obtendría el identificador del toro.
-    # Y yo necesito acceder al objeto Toro para poder ver la cantidad de semen que tiene.
-    def validate(self,data):
-        toro = data.get('id_toro')
-        if toro and toro.cantidad_semen <= 0:
-            raise serializers.ValidationError(
-             {"id_toro": f"El toro {toro.codigo} no tiene suficiente cantidad de semen para inseminar."}
-            )
-        return data
-
     # Al crearse una inseminación, se actualiza la cantidad semen que tiene el toro.
     # Una inseminación solo usa 1 cantidad de semen del toro.
     def create(self, validated_data):
         toro = validated_data["id_toro"]
+        if toro and toro.cantidad_semen <= 0:
+            raise serializers.ValidationError({
+                "id_toro": f"El toro {toro.codigo} no tiene suficiente cantidad de semen para inseminar."
+            })
         toro.cantidad_semen -= 1 # Se decrementa la cantidad de semen a 1.
         toro.save() # Se guarda la información actualizada del toro.
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Se busca al toro que ya estaba en la inseminación por si ha habido algún cambio en la modificación.
+        toro_anterior = instance.id_toro
+        toro_nuevo = validated_data.get("id_toro", toro_anterior)
+        # Si modifico el "id" del toro y lo cambio por otro toro.
+        # Hay que hacer "sumas" y "restas" de la cantidad de semen del toro,
+        # Hay que hacer "sumas" y "restas" de la cantidad de semen del toro,
+        # ya que el toro (origen) pasará a tener +1 en su cantidad de semen, dado que no ha sido suministrada.
+        # Y el nuevo toro (destino) pasará a tener -1 en su cantidad de semen.
+        # Ej:
+        # -> Cantidad semen del toro "T-12": 10.
+        # Se usa el toro "T-12" en V-35.
+        # -> Cantidad semen del toro "T-12": 9.
+        # Se modifica el toro "T-12" por el toro "T-14" en V-35.
+        # -> Cantidad semen del toro "T-14" tenía 5 y pasa a tener 4.
+        # -> Cantidad semen del toro "T-12" tenía 9 y pasa a tener 10.
+
+        # Si el toro ha cambiado, se modifica las cantidades del semen del toro antiguo y del toro nuevo.
+        if toro_anterior != toro_nuevo:
+            if toro_nuevo.cantidad_semen <= 0:
+                raise serializers.ValidationError({
+                    "id_toro": f"El toro {toro_nuevo.codigo} no tiene suficiente cantidad de semen para inseminar."
+                })
+            # Se devuelve 1 al toro anterior
+            toro_anterior.cantidad_semen += 1
+            toro_anterior.save()
+            # Se quita 1 al toro nuevo
+            toro_nuevo.cantidad_semen -= 1
+            toro_nuevo.save()
+
+        return super().update(instance, validated_data)
