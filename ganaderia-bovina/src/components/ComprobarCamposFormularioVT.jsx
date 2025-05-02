@@ -13,7 +13,8 @@
 *
 * -----------------------------------------------------------------------------------------------------------
 * */
-export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
+import { parseISO, differenceInDays } from "date-fns";
+export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVTAnimales, animales) => {
     const erroresTemp = {};
 
     // Validaciones específicas para el Inventario de vacunas y/o tratamientos.
@@ -37,7 +38,7 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
 
             const nombreMayuscula = datosVT.nombre.toUpperCase();
             // Se comprueba si existe alguna vacuna/tratamiento con ese nombre.
-            const existeVT = listadoVT.some(v => v.nombre.toUpperCase() === nombreMayuscula);
+            const existeVT = listadoVTAnimales.some(v => v.nombre.toUpperCase() === nombreMayuscula);
             console.log("Existe vt ", existeVT);
             if(datosVT.id === null){ // Se está AGREGANDO: "id" es "null"
 
@@ -47,7 +48,7 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
                 }
             }else{ // Se está MODIFICANDO: "id" NO es "null".
 
-                const vactracduplicados = listadoVT.filter(v => v.nombre.toUpperCase() === nombreMayuscula);
+                const vactracduplicados = listadoVTAnimales.filter(v => v.nombre.toUpperCase() === nombreMayuscula);
                 /* Si...
                     - Hay 2 o más vacunas/tratamientos con ese mismo nombre.
                     - Si hay 1 vacuna/tratamiento con ese nombre y los "ids" son distintos al que se está modificando.
@@ -71,7 +72,6 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
         // if (datosVT.id_animal === "" || datosVT.id_animal === null) {
         //     erroresTemp.id_animal = "Campo obligatorio";
         // }
-
         if (!datosVT.nombre_vt?.trim()){
             // erroresTemp.nombre = "El campo fechaInicio es obligatorio";
             erroresTemp.nombre_vt = "Campo obligatorio";
@@ -107,25 +107,34 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVT) => {
         }
 
         /*
-        Se comprueba que no se suministre la misma vacuna al mismo animal
-        más de 1 vez en el mismo año
+            Se comprueba que no se suministre la misma vacuna al mismo animal
+            más de 1 vez en el mismo año (<365 días)
         */
-        if (datosVT.id_animal && datosVT.fecha_inicio && datosVT.nombre_vt) {
-            const anioNuevo = new Date(datosVT.fecha_inicio).getFullYear();
-            const nombreVT = datosVT.nombre_vt.toUpperCase();
-            console.log("nombreVT: ",nombreVT)
-            const mismaVTmismoAnyo = listadoVT.some(vt =>
-                vt.id_animal === datosVT.id_animal &&
-                vt.nombre?.toUpperCase?.() === nombreVT &&
-                new Date(vt.fecha_inicio).getFullYear() === anioNuevo &&
-                vt.id !== datosVT.id  /* Evita que si estamos modificando una vacuna/tratamiento con una fecha,
-                nos salte el error de que ya se está usando esa fecha.
-                Solo queremos que ocurra si estamos creando o modificando otra.*/
-            );
+        if(datosVT.fecha_inicio && datosVT.fecha_finalizacion){
+            // Se busca al animal para poner su "código" en el mensaje de error.
+            const objeto_animal = animales.find(animalito => Number(animalito.id)=== Number(datosVT.id_animal))
+            const fechaInicioNueva = parseISO(datosVT.fecha_inicio);
 
-            if (mismaVTmismoAnyo) {
-                erroresTemp.fecha_inicio = `Ya se suministró ${datosVT.tipo === "Vacuna" ? "esta vacuna" 
-                                            : "este tratamiento"} a este animal en ${anioNuevo}.`;
+            const repetida = listadoVTAnimales.some(vtsuministrada =>
+                vtsuministrada.nombre_vt.toUpperCase() === datosVT.nombre_vt.toUpperCase() && //Mismo nombre de vacuna.
+                Number(vtsuministrada.id_animal) === Number(datosVT.id_animal) && // Misma vaca.
+                differenceInDays(fechaInicioNueva, parseISO(vtsuministrada.fecha_inicio)) < 365 && // <365 días.
+                Number(vtsuministrada.id) !== Number(datosVT.id),
+                /* Evita que si estamos modificando una vacuna/tratamiento suministrada existente, no nos muestre
+                 mensaje de error indicando que la fecha se está usando.
+                 Ejemplo:
+                    - Inventario: "VTA-13" con fecha "2025-03-03" y ruta "Intramamaria".
+                    - Modificar "VTA-13" con fecha "2025-03-03" y ruta "Oral".
+                    No debería saltarnos el mensaje de error porque ya esa fecha existía anteriormente y lo único
+                    que se ha alterado es la ruta.
+                */
+            )
+
+            if (repetida) {
+                erroresTemp.fecha_inicio = `${datosVT.tipo.toLowerCase() === "vacuna" ? "Esta vacuna"
+                                                : "Este tratamiento"} ya fue suministrad
+                                                ${datosVT.tipo.toLowerCase() === "vacuna" ? "a" : "o"}
+                                                a ${objeto_animal.codigo} en los últimos 365 días.`
             }
         }
     }
