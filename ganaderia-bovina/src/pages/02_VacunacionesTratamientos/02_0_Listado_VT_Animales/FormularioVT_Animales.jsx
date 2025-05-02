@@ -103,8 +103,9 @@ export const FormularioVT_Animales= () => {
     const [errores, setErrores] = useState({});
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioVT(vt_animal, "VTanimal", listadoVTAnimales); // Revisa todos los campos y le indicamos que es un listado de animales
-        //ya que estamos usando ComprobarCamposFormularioVT para el inventario de VT y el listado de VT en animales.
+        const erroresTemp = ComprobarCamposFormularioVT(vt_animal, "VTanimal", listadoVTAnimales, animales);
+        /* Revisa todos los campos y le indicamos que es un listado de animales,
+        ya que estamos usando ComprobarCamposFormularioVT para el inventario de VT y el listado de VT en animales.*/
 
         setErrores(erroresTemp);
 
