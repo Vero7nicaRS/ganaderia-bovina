@@ -504,7 +504,7 @@ def test_modificar_vtanimales_actualiza_unidades_entre_inventarios():
 
 # Test para comprobar que no haya un mismo tratamiento/vacuna para un animal en el mismo año.
 @pytest.mark.django_db
-def test_vtanimales_no_permitir_repetir_vactrac_mismo_anio():
+def test_vtanimales_no_permitir_repetir_vactrac_mismo_anio_y_animal():
     client = APIClient()
 
     # Hay una vacuna en el inventario que será la primera que se le suministre al animal.
@@ -536,7 +536,7 @@ def test_vtanimales_no_permitir_repetir_vactrac_mismo_anio():
         codigo="VTA-200",
         tipo="Vacuna",
         ruta="Oral",
-        fecha_inicio="2024-04-01", # Se le suministra la vacuna el 2024-04-01
+        fecha_inicio="2024-04-12", # Se le suministra la vacuna el 2024-04-12
         fecha_finalizacion="2024-04-05",
         responsable="Veterinaro Prueba",
         id_animal=animal,
@@ -547,8 +547,8 @@ def test_vtanimales_no_permitir_repetir_vactrac_mismo_anio():
     datos = {
         "tipo": "Vacuna",
         "ruta": "Oral",
-        "fecha_inicio": "2024-05-01",  # Mismo año
-        "fecha_finalizacion": "2024-05-05",
+        "fecha_inicio": "2025-04-11",  # Ha pasado menos de un año (<365 días)
+        "fecha_finalizacion": "2025-05-08",
         "responsable": "Vet",
         "id_animal": animal.id,
         "inventario_vt": inventario.id # Vacuna VT-100
@@ -560,7 +560,7 @@ def test_vtanimales_no_permitir_repetir_vactrac_mismo_anio():
     mensaje_error = (
         f"Est{'e tratamiento' if inventario.tipo.lower() == 'tratamiento' else 'a vacuna'} "
         f"ya fue suministrad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'} "
-        f"a {animal.codigo} en el mismo año."
+        f"a {animal.codigo} en los últimos 365 días."
     )
     assert response.data["inventario_vt"] == [mensaje_error]
 
