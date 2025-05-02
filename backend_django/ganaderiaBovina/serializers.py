@@ -10,12 +10,11 @@
 # - Método validate(): comprobar entradar antes de que pasen al modelo.
 # -----------------------------------------------------------------------------------
 import re
-
+from datetime import timedelta
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
-from django.core.exceptions import ValidationError
 
 
 # --------------------------------------------------------------------------------------------------------------
@@ -511,8 +510,6 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                     {"tipo": f"El tipo '{tipo.lower()}' seleccionado no coincide con el tipo del inventario: {inventario.tipo}."}
                 )
 
-            # Verificación 1: Unidades disponibles
-
             # Se comprueba que se seleccione una vacuna o tratamiento que esté ACTIVA y NO INACTIVA.
             # Si es "INACTIVA", se muestra un error.
             if inventario.estado != "Activa":
@@ -522,12 +519,14 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                                f" tiene el estado 'Inactivo' y por tanto, no se puede usar."}
                 )
 
-        # Verificación 2: No repetir vacuna/tratamiento en el mismo año
+        # Se comprueba que NO se repitan vacuna/tratamiento suministrados en el mismo año (<365 días)
         if animal and inventario and fecha:
+            intervalo = fecha - timedelta(days=365)
             mismo_anio = VTAnimales.objects.filter(
                 id_animal=animal,
                 inventario_vt=inventario,
-                fecha_inicio__year=fecha.year
+                fecha_inicio__gte=intervalo,
+                fecha_inicio__lte=fecha
             )
             if self.instance:
                 mismo_anio = mismo_anio.exclude(pk=self.instance.pk)
@@ -536,7 +535,7 @@ class VTAnimalesSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     "inventario_vt": f"Est{'e tratamiento' if inventario.tipo.lower() == 'tratamiento' else 'a vacuna'} "
                                      f"ya fue suministrad{'o' if inventario.tipo.lower() == 'tratamiento' else 'a'} "
-                                     f"a {animal.codigo} en el mismo año."
+                                     f"a {animal.codigo} en los últimos 365 días."
                 })
         return data
 
