@@ -12,7 +12,6 @@ import "../../styles/InventarioVT.css";
 import {useContext, useState} from "react";
 import {VTContext} from "../../DataAnimales/DataVacunasTratamientos/VTContext.jsx";
 import { useMemo } from "react";
-import Swal from 'sweetalert2'; // Se importa SweetAlert2 para llevar a cabo el mensaje de confirmación de eliminación.
 
 export const InventarioVT = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de InventarioVT.
@@ -35,7 +34,6 @@ export const InventarioVT = () => {
         });
     }, [vt, busquedaID, tipoSeleccionado]);
 
-
     //Manejadores de las búsquedas realizadas por ID y por TIPO para encontrar la vacuna/tratamiento
     const manejarBusquedaID = (e) => {
         setBusquedaID(e.target.value);
@@ -44,32 +42,6 @@ export const InventarioVT = () => {
     const manejarTipoSeleccionado = (e) => {
         setTipoSeleccionado(e.target.value);
     };
-
-    const {eliminarVT} = useContext(VTContext);
-    /* ----------------------- MANEJADOR FORMULARIOVTCONTEXT: ELIMINAR -----------------------*/
-
-    // Ventana de confirmación de la eliminación de vacunas/tratamiento utilizando SweetAlert2
-    // const manejarEliminar = (id, codigo, tipo, nombre) => {
-    //     Swal.fire({
-    //         title: `¿Desea eliminar  ${tipo === "Vacuna" ? "la vacuna" : "el tratamiento"} ${codigo} ${nombre} seleccionada?`,
-    //         text: "¡Esta acción no se puede deshacer!",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonText: 'ELIMINAR',
-    //         cancelButtonText: 'CANCELAR',
-    //         reverseButtons: true // Cambia el orden de los botones
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             eliminarVT(id);
-    //             Swal.fire(
-    //                 'Eliminado!',
-    //                 `${tipo.toLowerCase() === "vacuna" ? "La vacuna" : "El tratamiento"}
-    //                 ha sido eliminad${tipo.toLowerCase() === "vacuna" ? "a" : "o"}.`,
-    //                 'success'
-    //             );
-    //         }
-    //     });
-    // };
 
     return (
 
@@ -156,8 +128,8 @@ export const InventarioVT = () => {
                                         VER
                                     </NavLink>
 
-                                    {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
-
+                                    {/* Se muestran los botones de MODIFICAR y ELIMINAR
+                                     cuando el estado NO es "INACTIVO */}
                                     {item.estado !== "Inactiva" && (
                                         <>
                                             {/* BOTÓN MODIFICAR */}
@@ -172,13 +144,6 @@ export const InventarioVT = () => {
                                                 MODIFICAR
                                             </NavLink>
                                             {/* BOTÓN ELIMINAR */}
-                                            {/*<button*/}
-                                            {/*    className="btn-eliminar"*/}
-                                            {/*     onClick={ () => manejarEliminar(item.id, item.codigo,*/}
-                                            {/*                                           item.tipo, item.nombre)}*/}
-                                            {/*>*/}
-                                            {/*    ELIMINAR*/}
-                                            {/*</button>*/}
                                             <NavLink
                                                 to="/eliminar-inventario-vt"
                                                 state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
