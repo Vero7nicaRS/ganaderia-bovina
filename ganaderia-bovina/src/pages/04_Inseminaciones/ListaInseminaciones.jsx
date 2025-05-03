@@ -201,9 +201,11 @@ export const ListaInseminaciones = () => {
                                                  NI el toro tiene el "ESTADO": "No existente" (eliminado del sistema),
                                                                                 "MUERTE" y "OTROS".*/}
                                                 {vaca && vaca.estado &&
-                                                    ["MUERTE", "VENDIDA", "NO EXISTENTE"].includes(vaca.estado.toUpperCase()) === false &&
+                                                    ["MUERTE", "VENDIDA", "NO EXISTENTE"].
+                                                        includes(vaca.estado.toUpperCase()) === false &&
                                                     toro && toro.estado &&
-                                                    ["MUERTE", "OTROS", "NO EXISTENTE"].includes(vaca.estado.toUpperCase()) === false &&
+                                                    ["MUERTE", "OTROS", "NO EXISTENTE"].
+                                                        includes(toro.estado.toUpperCase()) === false &&
                                                     (
                                                     <>
                                                         {/* BOTÓN MODIFICAR */}
