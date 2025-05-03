@@ -151,17 +151,27 @@ class AnimalSerializer(serializers.ModelSerializer):
         return value
 
     # validate_<campo>: Validación para el campo "padre".
+    # def validate_padre(self, value):
+    #    if value in [None, '']:
+    #        raise serializers.ValidationError('Debe seleccionar un padre válido.')
+    #    return value
     def validate_padre(self, value):
-        if value in [None, '']:
+        if not self.instance and value in [None, '']:
+            # Si se está creando un animal (no hay instancia), y no se indica padre
             raise serializers.ValidationError('Debe seleccionar un padre válido.')
         return value
 
     # validate_<campo>: Validación para el campo "madre".
+    #def validate_madre(self, value):
+    #    if value in [None, '']:
+    #        raise serializers.ValidationError('Debe seleccionar una madre válida.')
+    #    return value
+
     def validate_madre(self, value):
-        if value in [None, '']:
+        if not self.instance and value in [None, '']:
+            # Si se está creando un animal (no hay instancia), y no se indica madre
             raise serializers.ValidationError('Debe seleccionar una madre válida.')
         return value
-
     # validate_<campo>: Validación para el campo "corral".
     def validate_corral(self, value):
         if value in [None, '']:
