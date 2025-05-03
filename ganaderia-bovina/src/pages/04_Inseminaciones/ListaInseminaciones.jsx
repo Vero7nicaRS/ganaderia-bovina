@@ -179,8 +179,6 @@ export const ListaInseminaciones = () => {
                                             <td>{item.hora_inseminacion}</td>
                                             <td>{vaca ? vaca.codigo : "No existente"}</td>
                                             <td>{toro ? toro.codigo : "No existente"}</td>
-                                            {/*<td>{item.id_vaca}</td>*/}
-                                            {/*<td>{item.id_toro}</td>*/}
 
                                             <td>
                                                 {/* BOTÓN VER */}
@@ -227,34 +225,12 @@ export const ListaInseminaciones = () => {
                 </div>
             </div>
 
-
             {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
             <div className="boton-volver">
                 <NavLink to="/" className="btn btn-info">
                     VOLVER AL MENÚ
                 </NavLink>
-
             </div>
         </>
     )
 }
-
-/*Si se desea filtrar por una fecha disponible en lista de inseminaciones:
-*
-*    const fechasUnicas = useMemo(() => {
-        const fechas = inseminaciones.map(item => item.fechaInseminacion);
-        return ["Sin filtro", ...new Set(fechas)];
-    }, [inseminaciones]);
-* <select
-                    className="date"
-                    aria-label="Default select example"
-                    value={fechaSeleccionada} // Maneja el valor que tiene el fechaSeleccionada
-                    onChange={manejarFechaSeleccionada}
-                >
-                    {fechasUnicas.map((fecha, index) => (
-                        <option key={index} value={fecha}>
-                            {fecha}
-                        </option>
-                    ))}
-                </select>
-* */
