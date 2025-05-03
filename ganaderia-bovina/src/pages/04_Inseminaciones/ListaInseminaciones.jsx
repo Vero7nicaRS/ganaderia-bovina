@@ -12,7 +12,8 @@ export const ListaInseminaciones = () => {
     */
     const {inseminaciones} = useContext(InseminacionesContext);
     const [fechaSeleccionada, setFechaSeleccionada] = useState("Sin filtro"); //Busqueda por FECHA en la lista de inseminaciones.
-    const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID (vaca/toro) en la lista de inseminaciones.
+    const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID de la inseminación.
+    const [busquedaIDAnimal, setBusquedaIDAnimal] = useState(""); //Busqueda por ID (vaca/toro) en la lista de inseminaciones.
     const {animales} = useContext(AnimalesContext);
     const {animalesToros} = useContext(TorosContext);
 
@@ -30,22 +31,28 @@ export const ListaInseminaciones = () => {
             const codigoToro = toro ? toro.codigo : "";
 
             const coincideBusqueda =
-                // busquedaID === "" || item.id_vaca.toString().toUpperCase().includes(busquedaID.toUpperCase())
-                //                   || item.id_toro.toString().toUpperCase().includes(busquedaID.toUpperCase());
-                busquedaID === "" ||
-                                codigoVaca.toUpperCase().includes(busquedaID.toUpperCase()) ||
-                                codigoToro.toUpperCase().includes(busquedaID.toUpperCase());
+                busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase())
+            const coincideBusquedaAnimal =
+                busquedaIDAnimal === "" ||
+                                codigoVaca.toUpperCase().includes(busquedaIDAnimal.toUpperCase()) ||
+                                codigoToro.toUpperCase().includes(busquedaIDAnimal.toUpperCase());
 
             const coincideFecha =
                 fechaSeleccionada === "Sin filtro" || item.fecha_inseminacion === fechaSeleccionada;
-            return coincideBusqueda && coincideFecha;
+            return coincideBusqueda && coincideBusquedaAnimal && coincideFecha;
         });
-    }, [inseminaciones, busquedaID, fechaSeleccionada]);
+    }, [inseminaciones, busquedaID, busquedaIDAnimal, fechaSeleccionada]);
 
 
-    //Manejadores de las búsquedas realizadas por ID y por TIPO para encontrar la vacuna/tratamiento
+    /* Manejadores de las búsquedas realizadas por ID (Inseminación y ANIMAL)
+    y por TIPO para encontrar la vacuna/tratamiento */
     const manejarBusquedaID = (e) => {
         setBusquedaID(e.target.value);
+    };
+
+    //Manejadores de las búsquedas realizadas por ID del ANIMAL para encontrar el animal inseminado
+    const manejarBusquedaIDAnimal= (e) => {
+        setBusquedaIDAnimal(e.target.value);
     };
     //Manejadores de las búsquedas realizadas por TIPO para encontrar la vacuna/tratamiento
     const manejarFechaSeleccionada = (e) => {
@@ -92,6 +99,19 @@ export const ListaInseminaciones = () => {
             {/*Añade una línea/raya */}
             <div className="contenedor-filtro-tipo">
                 <div className="contenedor-linea">
+                    <label htmlFor="filtroIDInseminacion">Filtrar inseminación (ID):</label>
+                    <input
+                        id="filtroIDInseminacion" //Obligatoriamente debe coincidir con htmlFor
+                        name="filtroIDInseminacion"
+                        type="text"
+                        className="cuadro-texto"
+                        placeholder=""
+                        value={busquedaID} //Maneja el valor que tiene el ID seleccionado
+                        onChange={manejarBusquedaID}
+                    />
+                </div>
+
+                <div className="contenedor-linea">
                     <label htmlFor="filtroIDVacasToros">Filtrar animal (ID):</label>
                     <input
                         id="filtroIDVacasToros" //Obligatoriamente debe coincidir con htmlFor
@@ -99,8 +119,8 @@ export const ListaInseminaciones = () => {
                         type="text"
                         className="cuadro-texto"
                         placeholder=""
-                        value={busquedaID} //Maneja el valor que tiene el ID seleccionado
-                        onChange={manejarBusquedaID}
+                        value={busquedaIDAnimal} //Maneja el valor que tiene el ID seleccionado
+                        onChange={manejarBusquedaIDAnimal}
                     />
                 </div>
                 <div className="contenedor-linea">
@@ -119,7 +139,7 @@ export const ListaInseminaciones = () => {
             <div className="listaVacunasTratamientos">Lista de inseminaciones:</div>
 
             <div>
-                <div className = "contenedor-tablaLI">
+                <div className="contenedor-tablaLI">
                     <table className="table">
                         <thead>
                         <tr>
@@ -154,7 +174,7 @@ export const ListaInseminaciones = () => {
 
                                     return (
                                         <tr key={item.id}>
-                                            <td>{item.id}</td>
+                                            <td>{item.codigo}</td>
                                             <td>{item.fecha_inseminacion}</td>
                                             <td>{item.hora_inseminacion}</td>
                                             <td>{vaca ? vaca.codigo : "No existente"}</td>
