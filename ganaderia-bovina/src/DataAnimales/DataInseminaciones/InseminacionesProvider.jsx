@@ -9,13 +9,12 @@
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {InseminacionesContext} from "./InseminacionesContext.jsx";
-import {inseminacionesMock} from "./InseminacionesMock.jsx";
 import api from "../../api.js";
 
 export const InseminacionesProvider = ({children}) => {
 
     //setInseminaciones permite actualizar el estado de inseminaciones (evitando modificar el estado actual "inseminaciones").
-    const [inseminaciones, setInseminaciones] = useState(inseminacionesMock);
+    const [inseminaciones, setInseminaciones] =  useState([]);
 
     // Se cargan los datos de las inseminaciones que están en el backend.
     useEffect(() => {
