@@ -226,7 +226,7 @@ export const ListadoVT_Animales = () => {
                                                     </NavLink>
                                                 </>
 
-                                                {/* Se muestran los botones de MODIFICAR y ELIMINAR si la vaca
+                                                {/* Se muestran los botones de MODIFICAR si la vaca
                                                  NO está "No existente", ni muerta ni vendida. Tampoco si la vacuna
                                                  tiene el estado "INACTIVA"*/}
                                                 {vaca && vaca.estado &&
@@ -234,20 +234,22 @@ export const ListadoVT_Animales = () => {
                                                     vtInventario && vtInventario.estado &&
                                                     vtInventario.estado.toUpperCase() !== "INACTIVA" &&
                                                     (
+                                                    <>
+                                                        {/* BOTÓN MODIFICAR */}
+                                                        <NavLink
+                                                            to={`/formulario-vt-animal/${item.id}`}
+                                                            state={{
+                                                                modo: "modificar",
+                                                                vt_animal: item
+                                                            }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                                            className="btn-modificar"
+                                                        >
+                                                                MODIFICAR
+                                                        </NavLink>
+                                                    </>
+                                                )}
                                                 <>
-
-                                                    {/* BOTÓN MODIFICAR */}
-                                                    <NavLink
-                                                        to={`/formulario-vt-animal/${item.id}`}
-                                                        state={{
-                                                            modo: "modificar",
-                                                            vt_animal: item
-                                                        }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                                        className="btn-modificar"
-                                                    >
-                                                            MODIFICAR
-                                                    </NavLink>
-                                                    {/* BOTÓN ELIMINAR */}
+                                                   {/* BOTÓN ELIMINAR */}
                                                     <button
                                                         className="btn-eliminar"
                                                         onClick={() => manejarEliminar(item.id, item.codigo,
@@ -256,7 +258,6 @@ export const ListadoVT_Animales = () => {
                                                         ELIMINAR
                                                     </button>
                                                 </>
-                                            )}
                                             </td>
                                         </tr>
                                     )
