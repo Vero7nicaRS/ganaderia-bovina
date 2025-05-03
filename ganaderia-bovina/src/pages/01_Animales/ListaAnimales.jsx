@@ -24,18 +24,6 @@ export const ListaAnimales = () => {
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de animales.
     const [animalesFiltrados, setAnimalesFiltrados] = useState(animales); // Estado para almacenar los animales filtrados
 
-
-    //Realización del filtrado por ID y por TIPO
-    // const datosFiltrados = animales.filter((item) => {
-    //     const coincideBusqueda =
-    //         /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
-    //         se convierten a mayúsculas (toUpperCase)*/
-    //         busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
-    //     const coincideTipo =
-    //         tipoSeleccionado === "Sin filtro" || item.tipo === tipoSeleccionado; // Búsqueda por TIPO
-    //     return coincideBusqueda && coincideTipo;
-    // });
-
     // Realización del filtrado por ID y por TIPO
     useEffect(() => {
         // Filtrar animales cada vez que cambien los filtros de búsqueda
@@ -162,13 +150,6 @@ export const ListaAnimales = () => {
                                 {item.estado !== "Muerte" && item.estado !== "Vendida" && (
                                     <>
                                         {/* BOTÓN MODIFICAR */}
-                                        {/*<NavLink*/}
-                                        {/*    to="/formulario-animal"*/}
-                                        {/*    state={{modo: "modificar", animal: item}} //Se le pasa el modo (modificar) y ANIMAL (item)*/}
-                                        {/*    className="btn-modificar"*/}
-                                        {/*>*/}
-                                        {/*    MODIFICAR*/}
-                                        {/*</NavLink>*/}
                                         <NavLink
                                             to={`/formulario-animal/${item.id}`}
                                             state={{modo: "modificar", animal: item}}
