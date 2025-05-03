@@ -110,7 +110,8 @@ export const ListaAnimales = () => {
                     </thead>
                     <tbody>
                     {/* Cada fila consta de un identificador único, en este caso es el ID del animal (vaca/ternero)*/}
-                    { /* Si la tabla no contiene ningún elemento, aparece un mensaje indicando que no hay elementos disponibles*/
+                    {
+                        /* Si la tabla no contiene ningún elemento, aparece un mensaje indicando que no hay elementos disponibles*/
                         animalesFiltrados.length === 0 ? (
                             <tr>
                                 <td colSpan="4" className="mensaje-no-hay-elementos">
@@ -118,46 +119,52 @@ export const ListaAnimales = () => {
                                 </td>
                             </tr>
                         ) : (
-                        animalesFiltrados.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.codigo}</td>
-                                <td>{item.tipo}</td>
-                                <td>{item.nombre}</td>
-                                <td>
-                                    {/* BOTÓN VER */}
-                                    <NavLink
-                                        to={`/formulario-animal/${item.id}`}
-                                        state={{modo: "ver", animal: item}}
-                                        className="btn-ver"
-                                    >
-                                        VER
-                                    </NavLink>
-                                    {/*Si el animal ha sido eliminado (estado = "Muerte" o "Vendida")*, NO se muestran
-                                     los botones MODIFICAR y ELIMINAR */}
-                                    {item.estado !== "Muerte" && item.estado !== "Vendida" && (
+                        animalesFiltrados.map((item) => {
+                            return (
+                                <tr key={item.id}>
+                                    <td>{item.codigo}</td>
+                                    <td>{item.tipo}</td>
+                                    <td>{item.nombre}</td>
+                                    <td>
+                                        {/* BOTÓN VER */}
                                         <>
-                                            {/* BOTÓN MODIFICAR */}
                                             <NavLink
                                                 to={`/formulario-animal/${item.id}`}
-                                                state={{modo: "modificar", animal: item}}
-                                                className="btn-modificar"
+                                                state={{modo: "ver", animal: item}}
+                                                className="btn-ver"
                                             >
-                                                MODIFICAR
-                                            </NavLink>
-
-                                            {/* BOTÓN ELIMINAR */}
-                                            <NavLink
-                                                to="/eliminar-animal"
-                                                state={{animal: item}} //Se le pasa el ANIMAL (item)
-                                                className="btn-eliminar"
-                                            >
-                                                ELIMINAR
+                                                VER
                                             </NavLink>
                                         </>
-                                    )}
-                                </td>
-                            </tr>
-                        )))
+                                        {/*Si el animal ha sido eliminado (estado = "Muerte" o "Vendida")*
+                                         NO se muestran los botones MODIFICAR y ELIMINAR */}
+                                        {item.estado !== "Muerte" && item.estado !== "Vendida" &&
+                                          (
+                                            <>
+                                                {/* BOTÓN MODIFICAR */}
+                                                <NavLink
+                                                    to={`/formulario-animal/${item.id}`}
+                                                    state={{modo: "modificar", animal: item}}
+                                                    className="btn-modificar"
+                                                >
+                                                    MODIFICAR
+                                                </NavLink>
+
+                                                {/* BOTÓN ELIMINAR */}
+                                                <NavLink
+                                                    to="/eliminar-animal"
+                                                    state={{animal: item}} //Se le pasa el ANIMAL (item)
+                                                    className="btn-eliminar"
+                                                >
+                                                    ELIMINAR
+                                                </NavLink>
+                                            </>
+                                         )
+                                        }
+                                    </td>
+                                </tr>
+                            )
+                        }))
                     }
                     </tbody>
                 </table>
