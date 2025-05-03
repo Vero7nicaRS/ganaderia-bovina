@@ -196,8 +196,10 @@ export const ListaInseminaciones = () => {
                                                 {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
 
                                                 {/* Se muestran los botones de MODIFICAR si la vaca
-                                                 NO está "No existente", ni muerta ni vendida.
-                                                 Ni el toro tiene "MUERTE", "OTROS" y "No existente".*/}
+                                                 NO tiene el "ESTADO": "No existente" (eliminado del sistema),
+                                                                        "MUERTA" ni "VENDIDA".
+                                                 NI el toro tiene el "ESTADO": "No existente" (eliminado del sistema),
+                                                                                "MUERTE" y "OTROS".*/}
                                                 {vaca && vaca.estado &&
                                                     ["MUERTE", "VENDIDA", "NO EXISTENTE"].includes(vaca.estado.toUpperCase()) === false &&
                                                     toro && toro.estado &&
