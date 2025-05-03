@@ -181,39 +181,52 @@ export const ListaInseminaciones = () => {
                                             <td>{toro ? toro.codigo : "No existente"}</td>
 
                                             <td>
-                                                {/* BOTÓN VER */}
-                                                <NavLink
-                                                    to={`/formulario-inseminacion/${item.id}`}
-                                                    state={{
-                                                        modo: "ver",
-                                                        inseminacion: item
-                                                    }} //Se le pasa la vacuna/tratamiento (item)
-                                                    className="btn-ver">
-                                                    VER
-                                                </NavLink>
-
-                                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
                                                 <>
-                                                    {/* BOTÓN MODIFICAR */}
+                                                    {/* BOTÓN VER */}
                                                     <NavLink
                                                         to={`/formulario-inseminacion/${item.id}`}
                                                         state={{
-                                                            modo: "modificar",
+                                                            modo: "ver",
                                                             inseminacion: item
-                                                        }} //Se le pasa el MODO (modificar) y la inseminación (item)
-                                                        className="btn-modificar"
-                                                    >
-                                                        MODIFICAR
+                                                        }} //Se le pasa la vacuna/tratamiento (item)
+                                                        className="btn-ver">
+                                                        VER
                                                     </NavLink>
+                                                </>
+                                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
+
+                                                {/* El botón MODIFICAR desaparece cuando los animales
+                                                    han sido eliminados*/}
+                                                {vaca && vaca.estado &&
+                                                    ["MUERTE", "VENDIDA", "NO EXISTENTE"].includes(vaca.estado.toUpperCase()) === false &&
+                                                    toro && toro.estado &&
+                                                    ["MUERTE", "OTROS", "NO EXISTENTE"].includes(vaca.estado.toUpperCase()) === false &&
+                                                    (
+                                                    <>
+                                                        {/* BOTÓN MODIFICAR */}
+                                                        <NavLink
+                                                            to={`/formulario-inseminacion/${item.id}`}
+                                                            state={{
+                                                                modo: "modificar",
+                                                                inseminacion: item
+                                                            }} //Se le pasa el MODO (modificar) y la inseminación (item)
+                                                            className="btn-modificar"
+                                                        >
+                                                            MODIFICAR
+                                                        </NavLink>
+                                                        </>
+                                                    )}
+                                                <>
                                                     {/* BOTÓN ELIMINAR */}
                                                     <button
                                                         className="btn-eliminar"
                                                         onClick={() => manejarEliminar(item.id, item.codigo,
                                                             item.fecha_inseminacion, item.hora_inseminacion)}
-                                                    >
+                                                        >
                                                         ELIMINAR
                                                     </button>
                                                 </>
+
                                             </td>
                                         </tr>
                                     )
