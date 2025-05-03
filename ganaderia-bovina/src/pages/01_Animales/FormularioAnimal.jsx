@@ -28,7 +28,7 @@ export const FormularioAnimal = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-    const { modo, animal: animalInicial } = location.state || { tipo: "Vaca", estado:"Vacía", corral: "Corral vacas 1"}; // Se recupera el modo y animal desde el state
+    const {modo, animal: animalInicial} = location.state || {tipo: "Vaca", estado: "Vacía", corral: "Corral vacas 1"}; // Se recupera el modo y animal desde el state
     const {id} = useParams(); // Se emplea para acceder mediante URL
     const modoFinal = modo || (id ? "ver" : "agregar") // Se indica el modo en el que debe estar el formulario, si ha sido pasado por el state o no.
 
@@ -55,13 +55,13 @@ export const FormularioAnimal = () => {
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza AnimalesContext
        */
-     const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
+    const {agregarAnimal, modificarAnimal} = useContext(AnimalesContext)
 
     /* Se extrae la información de las vacas, terneros, toros y corrales existentes para poder
     * utilizarlo en el formulario y seleccionar animales dichos animales. */
-    const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
-    const { animalesToros } = useContext(TorosContext); // Lista de toros
-    const { corrales, modificarCorral } = useContext(CorralesContext); // Lista de corrales
+    const {animales} = useContext(AnimalesContext); // Lista de vacas/terneros
+    const {animalesToros} = useContext(TorosContext); // Lista de toros
+    const {corrales, modificarCorral} = useContext(CorralesContext); // Lista de corrales
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modoFinal === "ver";
@@ -110,11 +110,11 @@ export const FormularioAnimal = () => {
         fetchAnimal(); // Se llama después una única vez. Se ha añadido de nuevo porque no se puede poner async el "useEffect".
         console.log("Animales actualizados en el contexto:", animales);
         console.log("Corrales actualizados en el contexto:", corrales);
-    }, [id, esVisualizar, esModificar, animalInicial,animales, corrales]);
+    }, [id, esVisualizar, esModificar, animalInicial, animales, corrales]);
 
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setAnimal({
             ...animal,
             [name]: value,
@@ -128,7 +128,7 @@ export const FormularioAnimal = () => {
     };
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo); // Revisa todos los campos
+        const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo, esModificar); // Revisa todos los campos
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);
@@ -150,7 +150,7 @@ export const FormularioAnimal = () => {
         const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
 
         // 1. Se realiza la petición al backend.
-        try{
+        try {
             if (esAgregar) {
                 console.log("Se ha añadido el animal");
                 // Se añade el nuevo animal al backend y se muestra la información en el frontend.
@@ -160,13 +160,13 @@ export const FormularioAnimal = () => {
                 // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
                 await modificarAnimal(animalConvertido);
             }
-        }catch (error){
+        } catch (error) {
             console.error("❌ Error al guardar el animal:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
 
         // 2. Se actualiza el estado del corral (contexto) con el animal asignado.
-        try{
+        try {
             if (nuevoAnimalConId) {
                 const corralSeleccionado = corrales.find((c) => c.id === nuevoAnimalConId.corral);
                 console.log("Corral seleccionado:", corralSeleccionado);
@@ -175,7 +175,7 @@ export const FormularioAnimal = () => {
                     modificarCorral(corralSeleccionado);
                 }
             }
-        }catch(error){
+        } catch (error) {
             console.error("❌ Error al guardar el animal:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
@@ -194,14 +194,14 @@ export const FormularioAnimal = () => {
         if (!validarFormulario()) return; // Si hay errores, no continúa
         const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
 
-        try{
+        try {
             if (esAgregar) {
                 console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
                 await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
                 setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
                 // También, se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
-        }catch(error){
+        } catch (error) {
             console.error("❌ Error al guardar el animal:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
@@ -233,15 +233,15 @@ export const FormularioAnimal = () => {
                 {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
                 se mostrará el ID del animal dentro de un cuadrado. */}
                 {!esAgregar && (
-                        <div className="cuadradoID">
-                            <span className="identificador">ID</span>
-                            <input
-                                type="text"
-                                name="id"
-                                className="cuadro-texto"
-                                value={animal.codigo || ""}
-                                disabled
-                            />
+                    <div className="cuadradoID">
+                        <span className="identificador">ID</span>
+                        <input
+                            type="text"
+                            name="id"
+                            className="cuadro-texto"
+                            value={animal.codigo || ""}
+                            disabled
+                        />
                     </div>
                 )}
             </div>
@@ -318,7 +318,8 @@ export const FormularioAnimal = () => {
                                 value={animal.fecha_nacimiento || ""}
                                 onChange={handleChange}
                             />
-                            {errores.fecha_nacimiento && <div className="mensaje-error">{errores.fecha_nacimiento}</div>}
+                            {errores.fecha_nacimiento &&
+                                <div className="mensaje-error">{errores.fecha_nacimiento}</div>}
                         </div>
 
                         <div className="contenedor-linea">
@@ -326,7 +327,7 @@ export const FormularioAnimal = () => {
                             <select
                                 className={`form-select ${errores.padre ? "error" : ""}`}
                                 name="padre"
-                                disabled={esVisualizar}
+                                disabled={esVisualizar || (esModificar && animal.padre === null)}
                                 //value={animal.padre || ""}
                                 value={animal.padre !== null ? animal.padre : "eliminado"}
                                 onChange={handleChange}
@@ -380,7 +381,7 @@ export const FormularioAnimal = () => {
                             <select
                                 className={`form-select ${errores.madre ? "error" : ""}`}
                                 name="madre"
-                                disabled={esVisualizar}
+                                disabled={esVisualizar || (esModificar && animal.madre === null)}
                                 //value={animal.madre || ""}
                                 value={animal.madre !== null ? animal.madre : "eliminada"}
                                 onChange={handleChange}
@@ -503,7 +504,8 @@ export const FormularioAnimal = () => {
                                 value={animal.produccion_leche || ""}
                                 onChange={handleChange}
                             />
-                            {errores.produccion_leche && <div className="mensaje-error">{errores.produccion_leche}</div>}
+                            {errores.produccion_leche &&
+                                <div className="mensaje-error">{errores.produccion_leche}</div>}
                         </div>
 
                         <div className="contenedor-linea">
@@ -599,7 +601,7 @@ export const FormularioAnimal = () => {
                                 ACEPTAR
                             </button>
                             <>
-                            {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
+                                {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
                                     BOTÓN DE ACEPTAR Y SEGUIR AÑADIENDO */}
                                 {esAgregar && (
                                     <button type="button"
@@ -618,7 +620,8 @@ export const FormularioAnimal = () => {
 
                     {esVisualizar && (
                         <div className="boton-espacio">
-                            <NavLink to="/visualizar-animales" className="btn btn-info">VISUALIZAR OTROS ANIMALES</NavLink>
+                            <NavLink to="/visualizar-animales" className="btn btn-info">VISUALIZAR OTROS
+                                ANIMALES</NavLink>
                         </div>
                     )}
                 </>
