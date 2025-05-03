@@ -7,7 +7,7 @@
 * */
 export function convertirAnimalParaAPI(animal, corralesBackend, animalesBackend, torosBackend) {
 
-    console.log("🔁 CONVERTIR recibiendo:", animal);
+    console.log("CONVERSIÓN 'ANIMAL' PARA BACKEND", animal);
 
     const convertido = {
         ...animal,
