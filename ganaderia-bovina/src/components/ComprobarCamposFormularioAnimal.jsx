@@ -7,7 +7,7 @@
 * -----------------------------------------------------------------------------------------------------------
 * */
 
-export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
+export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModificar) => {
     const erroresTemp = {};
 
     // Validaciones comunes para todos los animales
@@ -43,12 +43,17 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal) => {
             erroresTemp.fecha_nacimiento = "Campo obligatorio";
         }
 
-        if (!datosAnimal.padre) {
+        /* Si estamos creando y el campo no tiene valor, se muestra mensaje de error.
+           En modificar no lo contemplamos porque su padre ha sido eliminado del sistema.
+        */
+        if (!datosAnimal.padre && !esModificar) {
             // erroresTemp.padre = "El identificador del padre es obligatorio";
             erroresTemp.padre = "Campo obligatorio";
         }
-
-        if (!datosAnimal.madre) {
+        /* Si estamos creando y el campo no tiene valor, se muestra mensaje de error.
+           En modificar no lo contemplamos porque su madre ha sido eliminada del sistema.
+        */
+        if (!datosAnimal.madre && !esModificar) {
             // erroresTemp.madre = "El identificador de la madre es obligatorio";
             erroresTemp.madre = "Campo obligatorio";
         }
