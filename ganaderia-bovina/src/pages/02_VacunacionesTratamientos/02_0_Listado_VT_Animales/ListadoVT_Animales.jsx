@@ -227,10 +227,12 @@ export const ListadoVT_Animales = () => {
                                                 </>
 
                                                 {/* Se muestran los botones de MODIFICAR si la vaca
-                                                 NO está "No existente", ni muerta ni vendida. Tampoco si la vacuna
-                                                 tiene el estado "INACTIVA"*/}
+                                                 NO tiene el "ESTADO": "No existente" (eliminada del sistema),
+                                                                       "MUERTE" o "VENDIDA".
+                                                 Tampoco si la vacuna tiene el "ESTADO": "INACTIVA"*/}
                                                 {vaca && vaca.estado &&
-                                                    ["MUERTE", "VENDIDA", "NO EXISTENTE"].includes(vaca.estado.toUpperCase()) === false &&
+                                                    ["MUERTE", "VENDIDA", "NO EXISTENTE"].
+                                                                includes(vaca.estado.toUpperCase()) === false &&
                                                     vtInventario && vtInventario.estado &&
                                                     vtInventario.estado.toUpperCase() !== "INACTIVA" &&
                                                     (
