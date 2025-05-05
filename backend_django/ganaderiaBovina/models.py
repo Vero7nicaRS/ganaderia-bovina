@@ -265,7 +265,9 @@ class InventarioVT(models.Model):
     codigo = models.CharField(max_length=10, unique=True, blank=True, null=True)
 
     tipo = models.CharField(max_length=15, choices=TIPOS_CHOICES, default='Tratamiento')
-    nombre = models.CharField(max_length=100)
+    # El nombre de la vacuna/tratamiento debe ser único, ya que no puede haber dos vacunas y/o tratamientos
+    # con el mismo nombre.
+    nombre = models.CharField(max_length=100, unique=True)
 
     # Unidades del tratamiento/vacuna (Rango comprendido entre 0 y 30)
     unidades = models.IntegerField(
