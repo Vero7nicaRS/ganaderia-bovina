@@ -223,16 +223,23 @@ class ToroSerializer(serializers.ModelSerializer):
             )
         ]
     )
+    nombre = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=Toro.objects.all(),
+                message="Ya existe un toro con este nombre."
+            )
+        ],
+        error_messages={
+            'required': 'El nombre es obligatorio.',
+            'blank': 'El nombre no puede estar vacío.'
+        }
+    )
+
     class Meta:
         model = Toro
         fields = '__all__'
         extra_kwargs = {
-            'nombre': {
-                'error_messages': {
-                    'required': 'El nombre es obligatorio.',
-                    'blank': 'El nombre no puede estar vacío.'
-                }
-            },
             'cantidad_semen': {
                 'error_messages': {
                     'required': 'La cantidad de semen es obligatoria.',
