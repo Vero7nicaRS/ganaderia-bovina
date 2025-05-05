@@ -71,8 +71,8 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
 
     // Validaciones específicas para Toros
     if (tipoAnimal === "Toro") {
-        if (!datosAnimal.cantidad_semen) {
-            // erroresTemp.cantidad_semen = "El campo cantidad de semen es obligatorio";
+        if (datosAnimal.cantidad_semen === "" || datosAnimal.cantidad_semen === null
+            || Number(datosAnimal.cantidad_semen) < 0) {
             erroresTemp.cantidad_semen = "Campo obligatorio";
         }
 
