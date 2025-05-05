@@ -37,16 +37,22 @@ class AnimalSerializer(serializers.ModelSerializer):
             )
         ]
     )
+    nombre = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=Animal.objects.all(),
+                message="Ya existe un animal (vaca/ternero) con este nombre."
+            )
+        ],
+        error_messages={
+            'required': 'El nombre es obligatorio.',
+            'blank': 'El nombre no puede estar vacío.'
+        }
+    )
     class Meta:
         model = Animal
         fields = '__all__'
         extra_kwargs = {
-            'nombre': {
-                'error_messages': {
-                    'required': 'El nombre es obligatorio.',
-                    'blank': 'El nombre no puede estar vacío.'
-                }
-            },
             'fecha_nacimiento': {
                 'error_messages': {
                     'required': 'La fecha de nacimiento es obligatoria.',
