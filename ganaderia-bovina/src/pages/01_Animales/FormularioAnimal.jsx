@@ -128,7 +128,7 @@ export const FormularioAnimal = () => {
     };
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo, esModificar); // Revisa todos los campos
+        const erroresTemp = ComprobarCamposFormularioAnimal(animal, animal.tipo, esModificar, animales); // Revisa todos los campos
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);

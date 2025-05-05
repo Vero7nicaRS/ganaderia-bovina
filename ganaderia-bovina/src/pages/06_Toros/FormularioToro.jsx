@@ -50,7 +50,7 @@ export const FormularioToro = () => {
     /* Se obtiene las funciones: agregarAnimal y modificarAnimal para hacer CU (agregar y modificar).
        Para ello se emplea useContext (se accede al contexto) ----> Se utiliza TorosContext
        */
-     const {agregarToro, modificarToro} = useContext(TorosContext);
+     const {animalesToros, agregarToro, modificarToro} = useContext(TorosContext);
 
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modoFinal === "ver";
@@ -103,7 +103,7 @@ export const FormularioToro = () => {
 
 
     const validarFormulario = () => {
-        const erroresTemp = ComprobarCamposFormularioAnimal(animalToro, animalToro.tipo); // Revisa todos los campos
+        const erroresTemp = ComprobarCamposFormularioAnimal(animalToro, animalToro.tipo, esModificar,animalesToros); // Revisa todos los campos
         setErrores(erroresTemp);
 
         console.log("Errores detectados:", erroresTemp);
