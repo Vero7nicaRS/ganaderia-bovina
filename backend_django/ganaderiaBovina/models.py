@@ -179,7 +179,9 @@ class Animal(models.Model):
     )
     tipo = models.CharField(max_length=15, choices=TIPOS_CHOICES, default='Vaca')
     estado = models.CharField(max_length=15, choices=ESTADOS_CHOICES, default='Vacía')
-    nombre = models.CharField(max_length=100)
+    # El nombre de los animales (vacas/terneros) debe ser único, ya que no puede haber dos Animales (vacas/terneros)
+    # con el mismo nombre.
+    nombre = models.CharField(max_length=100, unique="True")
     fecha_nacimiento = models.DateField()
 
     #Los reproductores se quedarán a "NULL" si es "Error".
