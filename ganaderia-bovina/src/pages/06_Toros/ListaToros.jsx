@@ -18,14 +18,6 @@ export const ListaToros = () => {
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de toros.
     const [animalesTorosFiltrados, setAnimalesTorosFiltrados] = useState(animalesToros); //Para almacenar los animales que han sido filtrados.
 
-    //Realización del filtrado por ID
-    // const datosFiltrados = animalesToros.filter((item) => {
-    //     const coincideBusqueda =
-    //         /*Se ignoran las mayúsculas y minúsculas, ya que tanto el ID que introduce el usuario como el almacenado
-    //         se convierten a mayúsculas (toUpperCase)*/
-    //         busquedaID === "" || item.id.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
-    //     return coincideBusqueda ;
-    // });
     useEffect(() => {
         const datosFiltrados = animalesToros.filter((item) => {
             const coincideBusqueda =
