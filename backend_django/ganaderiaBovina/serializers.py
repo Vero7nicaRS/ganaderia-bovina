@@ -395,6 +395,18 @@ class InventarioVTSerializer(serializers.ModelSerializer):
             )
         ]
     )
+    nombre = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=InventarioVT.objects.all(),
+                message="Ya existe una vacuna/tratamiento con este nombre."
+            )
+        ],
+        error_messages={
+            'required': 'El nombre es obligatorio.',
+            'blank': 'El nombre no puede estar vacío.'
+        }
+    )
     class Meta:
         model = InventarioVT
         fields = '__all__'
