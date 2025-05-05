@@ -160,7 +160,7 @@ export const ListadoVT_Animales = () => {
                     <select
                         id="filtroTipoVT_Animal" //Obligatoriamente debe coincidir con htmlFor
                         name="filtroTipoVT_Animal"
-                        className="form-select"
+                        className="form-select filtro-ancho" // Para visualizar correctamente el contenido del desplegable.
                         aria-label="Default select example"
                         value={tipoSeleccionado} // Maneja el valor que tiene el tipoSeleccionado
                         onChange={manejarTipoSeleccionado}
