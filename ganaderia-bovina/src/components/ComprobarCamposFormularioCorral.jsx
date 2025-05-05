@@ -20,7 +20,7 @@ export const ComprobarCamposFormularioCorral = (datosCorral, listadoCorral) => {
         const nombreMayuscula = datosCorral.nombre.toUpperCase();
 
         /* OJO: cuando se modifica un corral puede ser que el nombre se mantenga, por tanto
-        * hay que contemplar que el nombre puede ser igual que el que se esta modificando.
+        * hay que contemplar que el nombre puede ser igual que el que se está modificando.
         * Ejemplo:
         *                               VISUALIZAR
         * Nombre: Corral 01
@@ -30,7 +30,7 @@ export const ComprobarCamposFormularioCorral = (datosCorral, listadoCorral) => {
         * Nombre: Corral 01
         * Animales: Lola V-1, Sol T-32, Girasol T-12, Pepa V-5
         *
-        * En esta situación, cuando guarde los cambios de modificar, me lo debe aceptar ya que
+        * En esta situación, cuando guarde los cambios de modificar, me lo debe aceptar, ya que
         * quiero que el nombre "Corral 01" se mantenga y no tenga que ponerle un nuevo nombre.
         * */
 
