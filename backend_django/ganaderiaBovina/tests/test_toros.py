@@ -128,6 +128,43 @@ def test_toro_valores_fuera_de_rango():
     assert responseMax.data["proteinas"][0] == "El porcentaje de proteínas no puede ser nulo."
 
 
+# Test para comprobar que no puede haber dos corrales con el mismo nombre.
+@pytest.mark.django_db
+def test_toro_nombre_duplicado():
+    client = APIClient()
+    toro = Toro.objects.create(
+        codigo="T-1",
+        nombre="ToroPrueba",
+        estado="Vivo",
+        cantidad_semen=100,
+        transmision_leche=3.0,
+        celulas_somaticas=1.0,
+        calidad_patas=7.0,
+        calidad_ubres=7.0,
+        grasa=4.0,
+        proteinas=3.5
+    )
+
+    datos_duplicados = {
+        "nombre":"ToroPrueba",
+        "estado":"Vivo",
+        "cantidad_semen":100,
+        "transmision_leche":3.0,
+        "celulas_somaticas":1.0,
+        "calidad_patas":7.0,
+        "calidad_ubres":7.0,
+        "grasa":4.0,
+        "proteinas":3.5
+    }
+
+    response = client.post("/api/toros/", datos_duplicados, format="json")
+
+    assert response.status_code == 400
+    assert "nombre" in response.data # Error del campo "nombre"
+    # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
+    assert response.data["nombre"][0] == "Ya existe un toro con este nombre."
+
+
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_toro():
