@@ -109,6 +109,33 @@ def test_inventariovt_valores_fuera_de_rango():
     # MÁXIMO
     assert responseMax.data["unidades"][0] == "El valor máximo permitido es 30."
 
+# Test para comprobar que no puede haber dos corrales con el mismo nombre.
+@pytest.mark.django_db
+def test_inventariovt_nombre_duplicado():
+    client = APIClient()
+    vacuna = InventarioVT.objects.create(
+        codigo="VT-11",
+        tipo= "Vacuna",
+        nombre= "Vacuna Prueba",
+        unidades= 10,
+        cantidad = "Sobre",
+        estado =  "Activa"
+    )
+
+    datos_duplicados = {
+        "tipo": "Vacuna",
+        "nombre": "Vacuna Prueba",
+        "unidades": 15,
+        "cantidad": "Botella",
+        "estado": "Activa"
+    }
+
+    response = client.post("/api/inventariovt/", datos_duplicados, format="json")
+
+    assert response.status_code == 400
+    assert "nombre" in response.data # Error del campo "nombre"
+    # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
+    assert response.data["nombre"][0] == "Ya existe una vacuna/tratamiento con este nombre."
 
 
 # Test para comprobar si se generan códigos duplicados
@@ -449,7 +476,7 @@ def test_filtrado_combinado_inventariovt_por_tipo_y_estado():
 
     # No cumple tipo
     InventarioVT.objects.create(
-        nombre="Tratamiento Prueba 1",
+        nombre="Tratamiento Prueba 2",
         tipo="Tratamiento", # No
         unidades=3,
         cantidad="Botella",
