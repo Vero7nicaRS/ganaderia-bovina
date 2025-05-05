@@ -17,7 +17,7 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
     }else{
         // Verificar si el nombre ya existe en la lista de corrales
         const nombreMayuscula = datosAnimal.nombre.toUpperCase();
-
+        console.log("nombre: ",nombreMayuscula)
         /* OJO: cuando se modifica un animal puede ser que el nombre se mantenga, por tanto
         * hay que contemplar que el nombre puede ser igual que el que se está modificando.
         * Ejemplo (vaca):
@@ -36,13 +36,14 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
         * */
 
         // Filtrar los animales que no sean el que se está editando
-        const listadoFiltrado = listadoAnimal.filter(v => v.id !== listadoAnimal.id);
+        const listadoFiltrado = listadoAnimal.filter(v => v.id !== datosAnimal.id);
+
         // Verificar si el nombre ya existe en la lista filtrada
-        const existeCorral = listadoFiltrado.some(v => v.nombre.toUpperCase() === nombreMayuscula);
+        const existeAnimal = listadoFiltrado.some(v => v.nombre.toUpperCase() === nombreMayuscula);
         // Aparece un mensaje indicando que existe ese animal.
-        if (existeCorral && (tipoAnimal === "Vaca" || tipoAnimal === "Ternero")) {
+        if (existeAnimal && (tipoAnimal.toUpperCase() === "VACA" || tipoAnimal.toUpperCase() === "TERNERO")) {
             erroresTemp.nombre = "Ya existe una vaca con este nombre.";
-        }else if(existeCorral && tipoAnimal === "Toro"){
+        }else if(existeAnimal && tipoAnimal.toUpperCase() === "TORO"){
             erroresTemp.nombre = "Ya existe un toro con este nombre.";
         }
     }
