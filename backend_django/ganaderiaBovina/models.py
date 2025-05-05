@@ -416,7 +416,8 @@ class Toro(models.Model):
     # Se le indica el código (key) para los toros ("T-x", siendo "x" un número).
     codigo = models.CharField(max_length=10, unique=True, blank=True, null=True)
 
-    nombre = models.CharField(max_length=100)
+    # El nombre del toro debe ser único, ya que no puede haber dos toros con el mismo nombre.
+    nombre = models.CharField(max_length=100, unique=True)
 
     estado = models.CharField(max_length=15, choices=ESTADOS_CHOICES, default='Vivo')
 
