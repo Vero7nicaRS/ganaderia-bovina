@@ -201,6 +201,62 @@ def test_animal_valores_fuera_de_rango():
     assert responseMax.data['grasa'][0] == "El valor máximo permitido es 6."
     assert responseMax.data['proteinas'][0] == "El valor máximo permitido es 4."
 
+# Test para comprobar que no puede haber dos corrales con el mismo nombre.
+@pytest.mark.django_db
+def test_animal_nombre_duplicado():
+    client = APIClient()
+    toro = Toro.objects.create(
+        codigo="T-1",
+        nombre="ToroPrueba",
+        estado="Vivo",
+        cantidad_semen=100,
+        transmision_leche=3.0,
+        celulas_somaticas=1.0,
+        calidad_patas=7.0,
+        calidad_ubres=7.0,
+        grasa=4.0,
+        proteinas=3.5
+    )
+    corral = Corral.objects.create(nombre="Corralito")
+    Animal.objects.create(
+        codigo="V-100",
+        tipo="Vaca",
+        estado="Vacía",
+        nombre="Amapola",
+        fecha_nacimiento="2024-01-01",
+        celulas_somaticas=100000,
+        produccion_leche=20,
+        calidad_patas=5,
+        calidad_ubres=6,
+        grasa=4,
+        proteinas=3.5,
+        padre=toro,
+        corral=corral
+    )
+
+    datos_duplicados = {
+        "tipo":"Vaca",
+        "estado":"Vacía",
+        "nombre":"Amapola",
+        "fecha_nacimiento":"2024-01-01",
+        "celulas_somaticas":100000,
+        "produccion_leche":20,
+        "calidad_patas":5,
+        "calidad_ubres":6,
+        "grasa":4,
+        "proteinas":3.5,
+        "padre":toro.id,
+        "corral":corral.id
+    }
+
+    response = client.post("/api/animales/", datos_duplicados, format="json")
+
+    assert response.status_code == 400
+    assert "nombre" in response.data # Error del campo "nombre"
+    # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
+    assert response.data["nombre"][0] == "Ya existe un animal (vaca/ternero) con este nombre."
+
+
 # TEST QUE INCLUYE TODO
 # Se comprueba que se NO se puede crear un animal (vaca/ternero) correctamente con datos no válidos.
 @pytest.mark.django_db
