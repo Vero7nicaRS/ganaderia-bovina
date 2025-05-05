@@ -7,13 +7,44 @@
 * -----------------------------------------------------------------------------------------------------------
 * */
 
-export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModificar) => {
+export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModificar, listadoAnimal) => {
     const erroresTemp = {};
 
     // Validaciones comunes para todos los animales
     if (!datosAnimal.nombre?.trim()) {
         // erroresTemp.nombre = "El campo nombre es obligatorio";
         erroresTemp.nombre = "Campo obligatorio";
+    }else{
+        // Verificar si el nombre ya existe en la lista de corrales
+        const nombreMayuscula = datosAnimal.nombre.toUpperCase();
+
+        /* OJO: cuando se modifica un animal puede ser que el nombre se mantenga, por tanto
+        * hay que contemplar que el nombre puede ser igual que el que se está modificando.
+        * Ejemplo (vaca):
+        *                               VISUALIZAR
+        * Nombre: Amapola
+        * Estado: Vacía
+        *
+        *                               MODIFICAR
+        * Nombre: Amapola
+        * Estado: Preñada (<--- se modifica)
+        *
+        * En esta situación, cuando guarde los cambios de modificar, me lo debe aceptar, ya que
+        * quiero que el nombre "Amapola" se mantenga y no tenga que ponerle un nuevo nombre.
+        *
+        * Esta situación es idéntica si fuera un Toro.
+        * */
+
+        // Filtrar los animales que no sean el que se está editando
+        const listadoFiltrado = listadoAnimal.filter(v => v.id !== listadoAnimal.id);
+        // Verificar si el nombre ya existe en la lista filtrada
+        const existeCorral = listadoFiltrado.some(v => v.nombre.toUpperCase() === nombreMayuscula);
+        // Aparece un mensaje indicando que existe ese animal.
+        if (existeCorral && (tipoAnimal === "Vaca" || tipoAnimal === "Ternero")) {
+            erroresTemp.nombre = "Ya existe una vaca con este nombre.";
+        }else if(existeCorral && tipoAnimal === "Toro"){
+            erroresTemp.nombre = "Ya existe un toro con este nombre.";
+        }
     }
     if (!datosAnimal.celulas_somaticas) {
         // erroresTemp.celulas_somaticas = "El campo células somáticas es obligatorio";
