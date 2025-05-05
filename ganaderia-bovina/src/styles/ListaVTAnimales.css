@@ -55,6 +55,15 @@
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Sombra en foco */
 }
 
+/* Se controla el tamaño de "Filtrar por tipo": se puede visualizar correctamente el contenido
+ del desplegable*/
+.filtro-ancho {
+    width: 220px;
+    min-width: 120px;
+    height: auto;
+    white-space: nowrap;
+}
+
 /*.contenedor-filtros {*/
 /*    display: flex; !* Alinea los elementos horizontalmente *!*/
 /*    gap: 15px; !* Espaciado entre los elementos *!*/
