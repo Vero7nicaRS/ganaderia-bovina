@@ -56,6 +56,7 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             erroresTemp.celulas_somaticas = "Rango no valido: min 50.000 y máx 2.000.000";
         }
     }
+
     if (!datosAnimal.calidad_patas) {
         // erroresTemp.calidad_patas = "El campo calidad de patas es obligatorio";
         erroresTemp.calidad_patas = "Campo obligatorio";
