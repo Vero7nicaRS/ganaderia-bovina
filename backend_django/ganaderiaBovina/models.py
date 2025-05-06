@@ -206,7 +206,7 @@ class Animal(models.Model):
     # Producción de leche: (min. 0)
     produccion_leche = models.FloatField(validators=[MinValueValidator(0)])
 
-    # Calidad ubres: (comprendido entre 1 y 9, con dos decimales)
+    # Calidad patas: (comprendido entre 1 y 9, con dos decimales)
     # Usamos Decimal porque estamos siendo muy específicos.
     calidad_patas = models.DecimalField(
         max_digits=4, decimal_places= 2,
