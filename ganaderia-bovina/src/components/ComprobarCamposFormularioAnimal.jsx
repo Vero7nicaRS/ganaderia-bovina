@@ -50,22 +50,39 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
     if (!datosAnimal.celulas_somaticas) {
         // erroresTemp.celulas_somaticas = "El campo células somáticas es obligatorio";
         erroresTemp.celulas_somaticas = "Campo obligatorio";
+    }else{ // Si tiene valores, se comprueban sus rangos máximos y mínimos.
+        // Células somáticas: (min. 50.000 - max. 2.000.000, sin decimales)
+        if(datosAnimal.celulas_somaticas <"50000" || datosAnimal.celulas_somaticas > "2000000"){
+            erroresTemp.celulas_somaticas = "Rango no valido: min 50.000 y máx 2.000.000";
+        }
     }
     if (!datosAnimal.calidad_patas) {
         // erroresTemp.calidad_patas = "El campo calidad de patas es obligatorio";
         erroresTemp.calidad_patas = "Campo obligatorio";
+    }else{ // Si tiene valores, se comprueban sus rangos máximos y mínimos.
+        // Calidad patas: (comprendido entre 1 y 9, con dos decimales)
+        if(datosAnimal.calidad_patas <"1" || datosAnimal.calidad_patas > "9"){
+            erroresTemp.calidad_patas = "Rango no valido: min 1 y máx 9";
+        }
     }
     if (!datosAnimal.calidad_ubres) {
         // erroresTemp.calidad_ubres = "El campo calidad de ubres es obligatorio";
         erroresTemp.calidad_ubres = "Campo obligatorio";
+    }else{
+        //Calidad patas: (comprendido entre 1 y 9, con dos decimales)
+
     }
     if (!datosAnimal.grasa) {
         // erroresTemp.grasa = "El campo grasa es obligatorio";
         erroresTemp.grasa = "Campo obligatorio";
+    }else{
+        // Grasa: (Porcentaje [%] comprendido entre 2.5 y 6)
     }
     if (!datosAnimal.proteinas) {
         // erroresTemp.proteinas = "El campo proteinas es obligatorio";
         erroresTemp.proteinas = "Campo obligatorio";
+    }else{
+        // Proteinas: (Porcentaje [%] comprendido entre 2.8 y 4)
     }
     // Validaciones específicas para Vacas y Terneros
     if (tipoAnimal === "Vaca" || tipoAnimal === "Ternero") {
@@ -98,6 +115,11 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
         if (!datosAnimal.produccion_leche) {
             // erroresTemp.produccion_leche = "El campo produccion de leche es obligatorio";
             erroresTemp.produccion_leche = "Campo obligatorio";
+        }else{ // Si tiene valores, se comprueban sus rangos máximos y mínimos.
+            // Producción de leche: (min. 0)
+            if(datosAnimal.produccion_leche < "0"){
+                erroresTemp.produccion_leche = "Rango no valido: min 0 y máx 9";
+            }
         }
     }
 
