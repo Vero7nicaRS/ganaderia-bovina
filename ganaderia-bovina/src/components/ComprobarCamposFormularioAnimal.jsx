@@ -27,8 +27,8 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
         * Estado: Vacía
         *
         *                               MODIFICAR
-        * Nombre: Amapola
-        * Estado: Preñada (<--- se modifica)
+        * Nombre: Amapola ( <--- queremos modificar a esta vaca)
+        * Estado: Preñada (<--- se modifica su estado)
         *
         * En esta situación, cuando guarde los cambios de modificar, me lo debe aceptar, ya que
         * quiero que el nombre "Amapola" se mantenga y no tenga que ponerle un nuevo nombre.
