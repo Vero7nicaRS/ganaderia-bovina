@@ -425,7 +425,7 @@ class Toro(models.Model):
 
     estado = models.CharField(max_length=15, choices=ESTADOS_CHOICES, default='Vivo')
 
-    # Cantidad de semen: no tiene un valor negativo.
+    # Cantidad de semen: no tiene un valor negativo (<0).
     cantidad_semen = models.IntegerField(
         validators=[MinValueValidator(0)]
     )
