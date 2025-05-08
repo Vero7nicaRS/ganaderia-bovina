@@ -61,7 +61,7 @@ export const SimulacionCrias = () => {
                                             onChange={() => toggleSeleccionAnimal(animal.id)}
                                         />
                                         {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra*/}
-                                        {animal.id}
+                                        {animal.codigo}
                                     </label>
                                 ))
                                     ) : (
@@ -97,7 +97,7 @@ export const SimulacionCrias = () => {
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
-                                                {toro.id}
+                                                {toro.codigo}
                                             </option>
                                         ))
                                 ) : (
@@ -107,22 +107,40 @@ export const SimulacionCrias = () => {
                             </select>
                             {errores.toro && <div className="mensaje-error">{errores.toro}</div>}
                         </div>
+
+                        {/* Se añade desplegable para seleccionar el atributo que se desea optimizar*/}
+                        <div className="contenedor-linea">
+                            <div className="label">Característica a optimizar</div>
+                            <select
+                                className={`form-select ${errores.toro ? "error" : ""}`}
+                                name="atributo_prioridad"
+                                onChange={handleChange}
+                            >
+                                <option value="celulas_somaticas">Células somáticas</option>
+                                <option value="produccion_leche">Producción leche</option>
+                                <option value="calidad_patas">Calidad patas</option>
+                                <option value="calidad_ubres">Calidad ubres</option>
+                                <option value="grasa">Grasa</option>
+                                <option value="proteinas">Proteinas</option>
+                            </select>
+                            {errores.toro && <div className="mensaje-error">{errores.toro}</div>}
+                        </div>
                     </div>
                 </div>
 
 
-                    {/* BOTÓN DE INICIAR SIMULACIÓN */}
-                    <>
-                        <button className="btn btn-info boton-derecha">
-                            INICIAR SIMULACIÓN
-                        </button>
-                    </>
+                {/* BOTÓN DE INICIAR SIMULACIÓN */}
+                <>
+                    <button className="btn btn-info boton-derecha">
+                        INICIAR SIMULACIÓN
+                    </button>
+                </>
 
-                    {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
-                    <div className="boton-volver">
-                        <NavLink to="/" className="btn btn-info">VOLVER AL MENÚ</NavLink>
-                    </div>
+                {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
+                <div className="boton-volver">
+                    <NavLink to="/" className="btn btn-info">VOLVER AL MENÚ</NavLink>
+                </div>
             </form>
         </>
-)
+    )
 }
