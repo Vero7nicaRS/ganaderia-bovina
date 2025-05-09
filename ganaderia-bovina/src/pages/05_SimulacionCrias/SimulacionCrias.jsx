@@ -3,6 +3,9 @@ import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesConte
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {NavLink} from "react-router-dom";
 import "../../styles/SimulacionCrias.css";
+import api from "../../api.js";
+import {ComprobarCamposSimulacion} from "../../components/ComprobarCamposSimulacion.jsx";
+
 export const SimulacionCrias = () => {
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
@@ -10,10 +13,17 @@ export const SimulacionCrias = () => {
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
 
+    // Almacena los datos de la simulación
+    const [datosSimulacion, setDatosSimulacion] = useState({
+        idToro: "",
+        atributo_prioridad: "celulas_somaticas",
+    });
+
+    const [resultadoSimulacion, setResultadoSimulacion] = useState(null);
     //Manejador para llevar acabo las modificaciones de los animales (actualizar el estado del animal)
     const handleChange = (e) => {
         const { name, value } = e.target;
-
+        setDatosSimulacion((prev) => ({ ...prev, [name]: value }));
         // Se elimina el error (error + mensaje de error) cuando el usuario seleccione una opción válida en el campo correspondiente.
         setErrores((prevErrores) => ({
             ...prevErrores,
@@ -27,10 +37,51 @@ export const SimulacionCrias = () => {
 
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
+        // setAnimalesSeleccionados((prev) =>
+        //     prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
+        // );
+        const animal = animales.find((a) => a.id === id);
+        if (!animal) return;
         setAnimalesSeleccionados((prev) =>
-            prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
+            prev.includes(animal.codigo)
+                ? prev.filter((codigo) => codigo !== animal.codigo)
+                : [...prev, animal.codigo]
         );
     };
+
+    const validarFormulario = () => {
+        const erroresTemp = ComprobarCamposSimulacion(datosSimulacion,animalesSeleccionados); // Revisa todos los campos
+        setErrores(erroresTemp);
+
+        console.log("Errores detectados:", erroresTemp);
+        console.log("¿Formulario válido?", Object.keys(erroresTemp).length === 0);
+
+        return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
+    };
+
+    const handleSimular = async (e) => {
+
+        e.preventDefault();
+        if (!validarFormulario()) return; // Si hay errores, no continúa
+        // 1. Se realiza la petición al backend.
+        try {
+            const response = await api.post("/simular-cria/", {
+                id_vacas: animalesSeleccionados,
+                id_toro: datosSimulacion.idToro,
+                atributo_prioridad: datosSimulacion.atributo_prioridad,
+            });
+            console.log("✅ Simulación exitosa:", response.data);
+            setResultadoSimulacion(response.data);
+
+            // Aquí puedes mostrar el resultado al usuario (ej: en un modal o mensaje)
+        }
+        catch (error) {
+            console.error("❌ Error al hacer la simulación:", error);
+            console.log("💬 Respuesta del backend:", error.response?.data);
+        }
+
+    };
+
     return (
         <>
             <div className="contenedor">
@@ -96,7 +147,7 @@ export const SimulacionCrias = () => {
                                         //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
                                         // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
-                                            <option key={toro.id} value={toro.id}>
+                                            <option key={toro.id} value={toro.codigo}>
                                                 {toro.codigo}
                                             </option>
                                         ))
@@ -127,15 +178,40 @@ export const SimulacionCrias = () => {
                         </div>
                     </div>
                 </div>
-
-
                 {/* BOTÓN DE INICIAR SIMULACIÓN */}
                 <>
-                    <button className="btn btn-info boton-derecha">
+                    <button
+                        type ="button"
+                        className="btn btn-info boton-derecha"
+                        onClick={handleSimular}
+                    >
                         INICIAR SIMULACIÓN
                     </button>
-                </>
 
+
+
+                </>
+                <>
+                    {resultadoSimulacion && (
+                        <div className="resultado-simulacion">
+                            <h4>🐄 Resultado de la cría óptima:</h4>
+                            <p><strong>Vaca:</strong> {resultadoSimulacion.id_vaca}</p>
+                            <p><strong>Toro:</strong> {resultadoSimulacion.id_toro}</p>
+                            <p><strong>Atributo optimizado:</strong> {datosSimulacion.atributo_prioridad.replace("_", " ")}</p>
+                            <p><strong>Valor óptimo:</strong> {resultadoSimulacion.valor_prioridad.toFixed(2)}</p>
+
+                            <h5>Características predichas de la cría:</h5>
+                            <ul>
+                                <li>Células somáticas: {Math.round(resultadoSimulacion.atributos.celulas_somaticas)}</li>
+                                <li>Producción de leche: {resultadoSimulacion.atributos.produccion_leche.toFixed(2)}</li>
+                                <li>Calidad de patas: {resultadoSimulacion.atributos.calidad_patas.toFixed(2)}</li>
+                                <li>Calidad de ubres: {resultadoSimulacion.atributos.calidad_ubres.toFixed(2)}</li>
+                                <li>Grasa: {resultadoSimulacion.atributos.grasa.toFixed(2)}</li>
+                                <li>Proteínas: {resultadoSimulacion.atributos.proteinas.toFixed(2)}</li>
+                            </ul>
+                        </div>
+                    )}
+                </>
                 {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
                 <div className="boton-volver">
                     <NavLink to="/" className="btn btn-info">VOLVER AL MENÚ</NavLink>
