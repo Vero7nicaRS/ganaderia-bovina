@@ -7,7 +7,7 @@ from .views import (
     InventarioVTViewSet,
     VTAnimalesViewSet,
     ListaInseminacionesViewSet,
-    inventario_por_tipo
+    inventario_por_tipo, SimulacionCriaView
 )
 
 # Creamos un router y registramos nuestras vistas (viewsets)
@@ -23,4 +23,5 @@ router.register(r'listainseminaciones', ListaInseminacionesViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('inventario_por_tipo/', inventario_por_tipo),
+    path("simular-cria/", SimulacionCriaView.as_view(), name="simular-cria"),
 ]
