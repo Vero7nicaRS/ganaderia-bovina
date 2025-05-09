@@ -27,12 +27,15 @@ from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .filters import AnimalFilter, ToroFilter, CorralFilter, InventarioVTFilter, VTAnimalesFilter, \
     ListaInseminacionesFilter
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 from .serializers import AnimalSerializer, ToroSerializer, CorralSerializer, InventarioVTSerializer,\
     VTAnimalesSerializer, ListaInseminacionesSerializer
+from .simulacionCria import simular_cria_optima
+
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Vista de ANIMAL
@@ -510,3 +513,23 @@ class ListaInseminacionesViewSet(viewsets.ModelViewSet):
                     {"ERROR": f"No se pudo eliminar la inseminación {codigo}.", "MOTIVO DEL ERROR": str(e)},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+
+# --------------------------------------------------------------------------------------------------------------
+#                                       Vista de SIMULACIONCRIA (Simulación de la cría)
+# --------------------------------------------------------------------------------------------------------------
+
+class SimulacionCriaView(APIView):
+    def post(self, request):
+        vacas = request.data.get("id_vacas")
+        toro = request.data.get("id_toro")
+        atributo = request.data.get("atributo_prioridad")
+
+        if not vacas or not toro or not atributo:
+            return Response({"simulacion_cria": "Faltan datos obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
+
+        resultado = simular_cria_optima(vacas, toro, atributo)
+        if not resultado:
+            return Response({"simulacion_cria": "No se pudo calcular la cría óptima."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"cria_mas_optima":resultado})
