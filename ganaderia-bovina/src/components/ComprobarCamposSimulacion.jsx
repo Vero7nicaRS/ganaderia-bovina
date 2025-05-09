@@ -1,24 +1,25 @@
 /*
 * ------------------------------------------ ComprobarCamposSimulacion.jsx: ------------------------------------------
 * Funcionalidad: se emplea para mostrar un mensaje de error y el campo en rojo.
-* Se le pasa como argumento datosSimulacion(objeto) y listadoCorral(lista de todos los corrales)
+* Se le pasa como argumento datosSimulacion(objeto).
 * ERRORES:
 *  - Indicar que el campo es obligatorio.
 * -----------------------------------------------------------------------------------------------------------
 * */
 
-export const ComprobarCamposFormularioCorral = (datosAnimal) => {
+export const ComprobarCamposSimulacion = (datosFormulario, vacasSeleccionadas) => {
     const erroresTemp = {};
 
-    // Validaciones comunes para todos los corrales
-    if (!datosAnimal.toro) {
-        // erroresTemp.toro = "El identificador del toro es obligatorio";
+    if (!datosFormulario.idToro) {
         erroresTemp.toro = "Campo obligatorio";
     }
 
-    if (!datosAnimal.vaca) {
-        // erroresTemp.vaca = "El identificador de la vaca es obligatorio";
-        erroresTemp.vaca = "Campo obligatorio";
+    if (vacasSeleccionadas.length === 0) {
+        erroresTemp.listaAnimales = "Campo obligatorio";
+    }
+
+    if (!datosFormulario.atributo_prioridad) {
+        erroresTemp.atributo_prioridad = "Campo obligatorio";
     }
 
     return erroresTemp; // Devuelve los errores encontrados
