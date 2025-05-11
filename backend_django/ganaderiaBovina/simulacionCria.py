@@ -45,11 +45,19 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
         # Se selecciona el toro indicado.
         toro = toro_df.iloc[0]
 
+        # Columnas usadas para el DataFrame
+        columnas = ['cs_vaca', 'pl_vaca', 'pa_vaca', 'u_vaca', 'g_vaca', 'pr_vaca',
+                    'cs_toro', 'pl_toro', 'pa_toro', 'u_toro', 'g_toro', 'pr_toro']
+
         # Se crean las entradas para la predicción (características de la vaca y el toro)
-        x_input = [[
+        x_input = pd.DataFrame([[
             vaca['cs_vaca'], vaca['pl_vaca'], vaca['pa_vaca'], vaca['u_vaca'], vaca['g_vaca'], vaca['pr_vaca'],
             toro['cs_toro'], toro['pl_toro'], toro['pa_toro'], toro['u_toro'], toro['g_toro'], toro['pr_toro']
-        ]]
+        ]], columns=columnas)
+        #x_input = [[
+        #    vaca['cs_vaca'], vaca['pl_vaca'], vaca['pa_vaca'], vaca['u_vaca'], vaca['g_vaca'], vaca['pr_vaca'],
+        #    toro['cs_toro'], toro['pl_toro'], toro['pa_toro'], toro['u_toro'], toro['g_toro'], toro['pr_toro']
+        #]]
 
         # Se predicen las características de la cría
         pred = modelo.predict(x_input)[0]
