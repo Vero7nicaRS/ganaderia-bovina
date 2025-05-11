@@ -34,7 +34,7 @@ from .filters import AnimalFilter, ToroFilter, CorralFilter, InventarioVTFilter,
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 from .serializers import AnimalSerializer, ToroSerializer, CorralSerializer, InventarioVTSerializer,\
     VTAnimalesSerializer, ListaInseminacionesSerializer
-from .simulacionCria import simular_cria_optima
+from .simulacionCria import simular_cria_optima, agregar_y_reentrenar_cria
 
 
 # --------------------------------------------------------------------------------------------------------------
@@ -521,8 +521,8 @@ class ListaInseminacionesViewSet(viewsets.ModelViewSet):
 
 class SimulacionCriaView(APIView):
     def post(self, request):
-        vacas = request.data.get("id_vacas")
-        toro = request.data.get("id_toro")
+        vacas = request.data.get("codigo_vacas")
+        toro = request.data.get("codigo_toro")
         atributo = request.data.get("atributo_prioridad")
 
         if not vacas or not toro or not atributo:
@@ -533,3 +533,16 @@ class SimulacionCriaView(APIView):
             return Response({"simulacion_cria": "No se pudo calcular la cría óptima."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"cria_mas_optima":resultado})
+
+class ReentrenarCriaView(APIView):
+    def post(self, request):
+        nueva_muestra = request.data
+
+        try:
+            exito = agregar_y_reentrenar_cria(nueva_muestra)
+            if exito:
+                return Response({"mensaje": "Cría añadida y modelo actualizado correctamente."})
+            else:
+                return Response({"error": "No se pudo actualizar el modelo."}, status=400)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
