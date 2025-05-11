@@ -232,3 +232,17 @@
     font-size: 16px; /* Opcional: Ajusta el tamaño del texto */
     margin-bottom: 10px; /* Espacio entre el texto y la tabla */
 }
+
+.resultado-simulacion {
+    margin-top: 30px;
+    padding: 20px;
+    border: 2px solid #17a2b8;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+}
+
+.resultado-simulacion table {
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+}
