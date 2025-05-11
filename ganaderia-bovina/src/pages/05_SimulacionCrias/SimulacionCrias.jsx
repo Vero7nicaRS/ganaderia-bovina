@@ -37,16 +37,16 @@ export const SimulacionCrias = () => {
 
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
-        // setAnimalesSeleccionados((prev) =>
-        //     prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
-        // );
-        const animal = animales.find((a) => a.id === id);
-        if (!animal) return;
         setAnimalesSeleccionados((prev) =>
-            prev.includes(animal.codigo)
-                ? prev.filter((codigo) => codigo !== animal.codigo)
-                : [...prev, animal.codigo]
+            prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
         );
+        // const animal = animales.find((a) => a.id === id);
+        // if (!animal) return;
+        // setAnimalesSeleccionados((prev) =>
+        //     prev.includes(animal.codigo)
+        //         ? prev.filter((codigo) => codigo !== animal.codigo)
+        //         : [...prev, animal.codigo]
+        // );
     };
 
     const validarFormulario = () => {
@@ -63,23 +63,34 @@ export const SimulacionCrias = () => {
 
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
-        // 1. Se realiza la petición al backend.
+        // Se obtiene el código de las vacas, ya que la simulación trabaja con el "código"
+        const codigosVacas = animales
+            .filter((animal) => animalesSeleccionados.includes(animal.id))
+            .map((animal) => animal.codigo);
+
+        // Se obtiene el código del toro, ya que la simulación trabaja con el "código"
+        const toroSeleccionado = animalesToros.find((t) => t.id === parseInt(datosSimulacion.idToro));
+        if (!toroSeleccionado) {
+            console.error("❌ Toro no encontrado con ID:", datosSimulacion.idToro);
+            return;
+        }
         try {
+            /* Se realiza la petición al backend, pasándole el código de las vacas, el toro y el atributo
+            que se desea optimizar */
             const response = await api.post("/simular-cria/", {
-                id_vacas: animalesSeleccionados,
-                id_toro: datosSimulacion.idToro,
+                codigo_vacas: codigosVacas,
+                codigo_toro: toroSeleccionado.codigo,
                 atributo_prioridad: datosSimulacion.atributo_prioridad,
             });
-            console.log("✅ Simulación exitosa:", response.data);
-            setResultadoSimulacion(response.data);
 
-            // Aquí puedes mostrar el resultado al usuario (ej: en un modal o mensaje)
+            console.log("✅ Simulación exitosa:", response.data);
+            setResultadoSimulacion(response.data.cria_mas_optima);
+
         }
         catch (error) {
             console.error("❌ Error al hacer la simulación:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
-
     };
 
     return (
@@ -92,7 +103,6 @@ export const SimulacionCrias = () => {
             <hr/> {/*Añade una línea/raya */}
 
             <form>
-                {/*onSubmit={handleSubmit}*/}
                 <div className="contenedor-flex">
                     <div className="contenedor-izquierda">
                         <div className="contenedor-linea">
@@ -111,8 +121,7 @@ export const SimulacionCrias = () => {
                                             checked={animalesSeleccionados.includes(animal.id)}
                                             onChange={() => toggleSeleccionAnimal(animal.id)}
                                         />
-                                        {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra*/}
-                                        {animal.codigo}
+                                        {animal.codigo} {/*Aparece el ID de la vaca*/}
                                     </label>
                                 ))
                                     ) : (
@@ -144,11 +153,9 @@ export const SimulacionCrias = () => {
                                             && animalToro.estado.toUpperCase() !== "Muerte".toUpperCase()
                                             && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
                                         )
-                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
-                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
-                                            <option key={toro.id} value={toro.codigo}>
-                                                {toro.codigo}
+                                            <option key={toro.id} value={toro.id}>
+                                                {toro.codigo} {/*Aparece el ID del toro*/}
                                             </option>
                                         ))
                                 ) : (
@@ -187,28 +194,58 @@ export const SimulacionCrias = () => {
                     >
                         INICIAR SIMULACIÓN
                     </button>
-
-
-
                 </>
+
                 <>
+                    {/* Se visualiza el resultado de la simulación de las crías */}
                     {resultadoSimulacion && (
                         <div className="resultado-simulacion">
-                            <h4>🐄 Resultado de la cría óptima:</h4>
-                            <p><strong>Vaca:</strong> {resultadoSimulacion.id_vaca}</p>
-                            <p><strong>Toro:</strong> {resultadoSimulacion.id_toro}</p>
-                            <p><strong>Atributo optimizado:</strong> {datosSimulacion.atributo_prioridad.replace("_", " ")}</p>
-                            <p><strong>Valor óptimo:</strong> {resultadoSimulacion.valor_prioridad.toFixed(2)}</p>
+                            <h4>Resultado de la cría óptima</h4>
+                            {/* Primera tabla que contiene el resultado de manera general: reproductores y valor óptimo.*/}
+                            <table className="table table-bordered mt-3">
+                                <thead className="table-info">
+                                <tr>
+                                    <th>Vaca</th>
+                                    <th>Toro</th>
+                                    <th>Atributo optimizado</th>
+                                    <th>Valor óptimo</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{resultadoSimulacion.id_vaca}</td>
+                                    <td>{resultadoSimulacion.id_toro}</td>
+                                    <td>{datosSimulacion.atributo_prioridad.replace("_", " ")}</td>
+                                    <td>{resultadoSimulacion.valor_prioridad.toFixed(2)}</td>
+                                </tr>
+                                </tbody>
+                            </table>
 
-                            <h5>Características predichas de la cría:</h5>
-                            <ul>
-                                <li>Células somáticas: {Math.round(resultadoSimulacion.atributos.celulas_somaticas)}</li>
-                                <li>Producción de leche: {resultadoSimulacion.atributos.produccion_leche.toFixed(2)}</li>
-                                <li>Calidad de patas: {resultadoSimulacion.atributos.calidad_patas.toFixed(2)}</li>
-                                <li>Calidad de ubres: {resultadoSimulacion.atributos.calidad_ubres.toFixed(2)}</li>
-                                <li>Grasa: {resultadoSimulacion.atributos.grasa.toFixed(2)}</li>
-                                <li>Proteínas: {resultadoSimulacion.atributos.proteinas.toFixed(2)}</li>
-                            </ul>
+                            <h5 className="mt-4">Características predichas de la cría</h5>
+                            {/* Segunda tabla que contiene el resultado de manera más detallada:
+                            características de la cría.*/}
+                            <table className="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Células somáticas</th>
+                                    <th>Producción leche</th>
+                                    <th>Calidad patas</th>
+                                    <th>Calidad ubres</th>
+                                    <th>Grasa</th>
+                                    <th>Proteínas</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{Math.round(resultadoSimulacion.atributos.celulas_somaticas)}</td>
+                                    <td>{resultadoSimulacion.atributos.produccion_leche.toFixed(2)}</td>
+                                    <td>{resultadoSimulacion.atributos.calidad_patas.toFixed(2)}</td>
+                                    <td>{resultadoSimulacion.atributos.calidad_ubres.toFixed(2)}</td>
+                                    <td>{resultadoSimulacion.atributos.grasa.toFixed(2)}</td>
+                                    <td>{resultadoSimulacion.atributos.proteinas.toFixed(2)}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     )}
                 </>
