@@ -88,3 +88,26 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
     print("📊 Toro encontrado en el CSV:", crias_df[crias_df['id_toro'] == id_toro].shape[0])
     # Se devuelve el resultado de la cría más óptima dado el atributo que se ha querido mejorar.
     return resultados_ordenados[0] if resultados_ordenados else None
+
+
+
+def agregar_y_reentrenar_cria(nueva_muestra):
+    """
+    nueva_muestra: diccionario con los siguientes campos:
+    - id_vaca, id_toro, id_cria, celulas_somaticas, produccion_leche, calidad_patas, calidad_ubres, grasa, proteinas
+    - cs_vaca, pl_vaca, pa_vaca, u_vaca, g_vaca, pr_vaca
+    - cs_toro, pl_toro, pa_toro, u_toro, g_toro, pr_toro
+    """
+    ruta_csv = os.path.join(settings.BASE_DIR, 'backend_django', 'ganaderiaBovina', 'cria_ganado_dataset_05_03_25.csv')
+
+    # Se carga el conjunto de datos actual.
+    df = pd.read_csv(ruta_csv, delimiter=";")
+
+    # Se convierte la muestra a un DataFrame de una fila.
+    nueva_fila = pd.DataFrame([nueva_muestra])
+
+    # Se añade y se guarda esa fila al conjunto de datos.
+    df = pd.concat([df, nueva_fila], ignore_index=True)
+    df.to_csv(ruta_csv, sep=";", index=False)
+
+    return True
