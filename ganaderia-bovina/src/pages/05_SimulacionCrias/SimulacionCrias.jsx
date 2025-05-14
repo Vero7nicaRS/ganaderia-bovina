@@ -142,47 +142,60 @@ export const SimulacionCrias = () => {
 
             <form>
                 <div className="contenedor-flex">
+
+                    {/* PARTE IZQUIERDA: Buscador de vacas, listado de vacas y botones. */}
                     <div className="contenedor-izquierda">
-                        <div className="contenedor-linea">
-                            <div className="label">Identificador vaca</div>
+                        {/*<div className="contenedor-linea-vertical">*/}
+                        {/*    <div className="label">Identificador vaca</div>*/}
 
-                            <input
-                                type="text"
-                                id="filtroIDAnimal"
-                                name="filtroIDAnimal"
-                                className={`cuadro-texto ${errores.listaAnimales ? "error" : ""}`}
-                                placeholder="Buscar vaca por código..."
-                                value={busquedaID}
-                                onChange={(e) => setBusquedaID(e.target.value)}
-                            />
+                        {/*    <input*/}
+                        {/*        type="text"*/}
+                        {/*        id="filtroIDAnimal"*/}
+                        {/*        name="filtroIDAnimal"*/}
+                        {/*        className={`cuadro-texto ${errores.listaAnimales ? "error" : ""}`}*/}
+                        {/*        placeholder="Buscar vaca por código..."*/}
+                        {/*        value={busquedaID}*/}
+                        {/*        onChange={(e) => setBusquedaID(e.target.value)}*/}
+                        {/*    />*/}
 
 
-                            <div className="lista-vacas">
-                                {vacasFiltradas.length > 0 ? (
-                                    vacasFiltradas.map((animal) => (
-                                        <label key={animal.id} className="item-vaca">
-                                            <input
-                                                type="checkbox"
-                                                name="listaAnimales"
-                                                checked={animalesSeleccionados.includes(animal.id)}
-                                                onChange={() => toggleSeleccionAnimal(animal.id)}
-                                            />
-                                            {/*{animal.codigo}*/}
-                                            <span>{animal.codigo}</span> {/*Aparece el Código de la vaca*/}
-                                        </label>
-                                    ))
-                                ) : (
-                                    <div className="mensaje-no-animales">No hay vacas disponibles</div>
-                                )}
+                        <div className="contenedor-linea-vertical">
+                            <div className="fila-buscador">
+                                <div className="label">Identificador vaca</div>
+                                <input
+                                    type="text"
+                                    id="filtroIDAnimal"
+                                    name="filtroIDAnimal"
+                                    className={`cuadro-texto ${errores.listaAnimales ? "error" : ""}`}
+                                    placeholder="Buscar vaca por código..."
+                                    value={busquedaID}
+                                    onChange={(e) => setBusquedaID(e.target.value)}
+                                />
 
-                            </div>
-                            {/* Se muestra el mensaje de error debajo del título "Identificador vaca"*/}
-                            <div className="contenedor-error-vacas">
                                 {errores.listaAnimales && (
-                                    <div className="mensaje-error-vacas">
+                                    <div className="mensaje-error-al-lado">
                                         {errores.listaAnimales}
                                     </div>
                                 )}
+                            </div>
+                            <div className="fila-vacas">
+                                <div className="lista-vacas">
+                                    {vacasFiltradas.length > 0 ? (
+                                        vacasFiltradas.map((animal) => (
+                                            <label key={animal.id} className="item-vaca">
+                                                <input
+                                                    type="checkbox"
+                                                    name="listaAnimales"
+                                                    checked={animalesSeleccionados.includes(animal.id)}
+                                                    onChange={() => toggleSeleccionAnimal(animal.id)}
+                                                />
+                                                <span>{animal.codigo}</span>
+                                            </label>
+                                        ))
+                                    ) : (
+                                        <div className="mensaje-no-animales">No hay vacas disponibles</div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -206,6 +219,7 @@ export const SimulacionCrias = () => {
                         </div>
                     </div>
 
+                    {/* PARTE DERECHA: Toro y Características a optimizar. */}
                     <div className="contenedor-derecha">
                         <div className="contenedor-linea">
                             <div className="label">Identificador toro</div>
@@ -241,7 +255,7 @@ export const SimulacionCrias = () => {
                         <div className="contenedor-linea">
                             <div className="label">Característica a optimizar</div>
                             <select
-                                className={`form-select ${errores.toro ? "error" : ""}`}
+                                className={`form-select ${errores.atributo_prioridad ? "error" : ""}`}
                                 name="atributo_prioridad"
                                 onChange={handleChange}
                             >
@@ -252,7 +266,8 @@ export const SimulacionCrias = () => {
                                 <option value="grasa">Grasa</option>
                                 <option value="proteinas">Proteinas</option>
                             </select>
-                            {errores.toro && <div className="mensaje-error">{errores.toro}</div>}
+                            {errores.atributo_prioridad &&
+                                <div className="mensaje-error">{errores.atributo_prioridad}</div>}
                         </div>
                     </div>
                 </div>
