@@ -36,7 +36,7 @@ from .serializers import AnimalSerializer, ToroSerializer, CorralSerializer, Inv
     VTAnimalesSerializer, ListaInseminacionesSerializer
 from .simulacionCria import simular_cria_optima, agregar_y_reentrenar_cria
 
-
+import traceback
 # --------------------------------------------------------------------------------------------------------------
 #                                       Vista de ANIMAL
 # --------------------------------------------------------------------------------------------------------------
@@ -545,4 +545,7 @@ class ReentrenarCriaView(APIView):
             else:
                 return Response({"error": "No se pudo actualizar el modelo."}, status=400)
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            return Response({
+                "error": str(e),
+                "traceback": traceback.format_exc()
+            }, status=500)
