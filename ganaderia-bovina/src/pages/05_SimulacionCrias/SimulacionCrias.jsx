@@ -211,14 +211,16 @@ export const SimulacionCrias = () => {
                             <button
                                 type="button"
                                 className="boton-seleccion-azul"
-                                onClick={() => setAnimalesSeleccionados(vacasFiltradas.map((v) => v.id))}
+                                //onClick={() => setAnimalesSeleccionados(vacasFiltradas.map((v) => v.id))}
+                                onClick={seleccionarTodas}
                             >
                                 Seleccionar todo
                             </button>
                             <button
                                 type="button"
                                 className="boton-seleccion-rojo"
-                                onClick={() => setAnimalesSeleccionados([])}
+                                //onClick={() => setAnimalesSeleccionados([])}
+                                onClick={deseleccionarTodas}
                             >
                                 Quitar selección
                             </button>
