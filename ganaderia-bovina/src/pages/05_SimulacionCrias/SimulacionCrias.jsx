@@ -150,14 +150,12 @@ export const SimulacionCrias = () => {
                                 type="text"
                                 id="filtroIDAnimal"
                                 name="filtroIDAnimal"
-                                className="cuadro-texto"
+                                className={`cuadro-texto ${errores.listaAnimales ? "error" : ""}`}
                                 placeholder="Buscar vaca por código..."
                                 value={busquedaID}
                                 onChange={(e) => setBusquedaID(e.target.value)}
                             />
 
-                            {/* Se muestra el mensaje de error debajo del título "Identificador vaca"*/}
-                            {errores.listaAnimales && <div className="mensaje-error">{errores.listaAnimales}</div>}
 
                             <div className="lista-vacas">
                                 {vacasFiltradas.length > 0 ? (
@@ -177,6 +175,7 @@ export const SimulacionCrias = () => {
                                 ) : (
                                     <div className="mensaje-no-animales">No hay vacas disponibles</div>
                                 )}
+
                                 {/*{animales && animales.length > 0 ? (*/}
                                 {/*    animales.filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()*/}
                                 {/*        && animal.estado.toUpperCase() !== "Muerte".toUpperCase()*/}
@@ -198,9 +197,16 @@ export const SimulacionCrias = () => {
                                 {/*)*/}
                                 {/*}*/}
                             </div>
-
-
+                            {/* Se muestra el mensaje de error debajo del título "Identificador vaca"*/}
+                            <div className="contenedor-error-vacas">
+                                {errores.listaAnimales && (
+                                    <div className="mensaje-error-vacas">
+                                        {errores.listaAnimales}
+                                    </div>
+                                )}
+                            </div>
                         </div>
+
                         <div className="contenedor-botones-seleccion">
                             <button
                                 type="button"
