@@ -1,14 +1,20 @@
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {NavLink} from "react-router-dom";
 import "../../styles/SimulacionCrias.css";
 import api from "../../api.js";
 import {ComprobarCamposSimulacion} from "../../components/ComprobarCamposSimulacion.jsx";
+import Swal from "sweetalert2";
 
 export const SimulacionCrias = () => {
     const { animales } = useContext(AnimalesContext); // Lista de vacas/terneros
     const { animalesToros } = useContext(TorosContext); // Lista de toros
+    const [vacasFiltradas, setVacasFiltradas] = useState("");
+    const [busquedaID, setBusquedaID] = useState("");
+
+    // Para el mensaje de "Cargando simulación..."
+    const [cargandoSimulacion, setCargandoSimulacion] = useState(false);
 
     //Se emplea para gestionar el mensaje de error que indica que hay campos obligatorios.
     const [errores, setErrores] = useState({});
@@ -29,25 +35,47 @@ export const SimulacionCrias = () => {
             ...prevErrores,
             [name]: value ? "" : prevErrores[name], // Si hay un valor en el campo, borra el error (error + mensaje de error)
         }));
+        setResultadoSimulacion(null); /* Borra los datos seleccionados de la simulación, si el usuario selecciona
+                                               otros datos. */
     };
 
-    //Se emplea para seleccionar los animales que se van añadir al corral.
+    useEffect(() => {
+        const vacasValidas = animales.filter((animal) =>
+            animal.tipo.toUpperCase() === "VACA" &&
+            animal.estado.toUpperCase() !== "MUERTE" &&
+            animal.estado.toUpperCase() !== "VENDIDA"
+        );
+
+        const filtradas = vacasValidas.filter((vaca) =>
+            vaca.codigo.toUpperCase().includes(busquedaID.toUpperCase())
+        );
+
+        setVacasFiltradas(filtradas);
+    }, [animales, busquedaID]);
+
+    //Se emplea para seleccionar los animales (vacas) que se van añadir al corral.
     //Parte de los animales que ya están en el corral o si no hay ningún animal, coge una lista vacia.
     const [animalesSeleccionados, setAnimalesSeleccionados] = useState(animales.listaAnimales || []);
 
-    //Para hacer el check-box de animales.
+    //Para hacer el check-box de animales (vacas).
     const toggleSeleccionAnimal = (id) => {
         setAnimalesSeleccionados((prev) =>
             prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
         );
-        // const animal = animales.find((a) => a.id === id);
-        // if (!animal) return;
-        // setAnimalesSeleccionados((prev) =>
-        //     prev.includes(animal.codigo)
-        //         ? prev.filter((codigo) => codigo !== animal.codigo)
-        //         : [...prev, animal.codigo]
-        // );
+        setResultadoSimulacion(null); /* Borra los datos seleccionados de la simulación, si el usuario selecciona
+                                               otros datos. */
     };
+
+    //Para seleccionar o deseleccionar todo el check-box de animales (vacas).
+    const seleccionarTodas = () => {
+        const idsVacas = vacasFiltradas.map((vaca) => vaca.id);
+        setAnimalesSeleccionados(idsVacas);
+    };
+    const deseleccionarTodas = () => {
+        setAnimalesSeleccionados([]);
+    };
+
+
 
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposSimulacion(datosSimulacion,animalesSeleccionados); // Revisa todos los campos
@@ -67,6 +95,8 @@ export const SimulacionCrias = () => {
         const codigosVacas = animales
             .filter((animal) => animalesSeleccionados.includes(animal.id))
             .map((animal) => animal.codigo);
+        setCargandoSimulacion(true); // Empieza la carga
+        setResultadoSimulacion(null); // Borra resultado anterior
 
         // Se obtiene el código del toro, ya que la simulación trabaja con el "código"
         const toroSeleccionado = animalesToros.find((t) => t.id === parseInt(datosSimulacion.idToro));
@@ -86,17 +116,25 @@ export const SimulacionCrias = () => {
             console.log("✅ Simulación exitosa:", response.data);
             setResultadoSimulacion(response.data.cria_mas_optima);
 
-        }
-        catch (error) {
+        }catch (error) {
             console.error("❌ Error al hacer la simulación:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
+
+            await Swal.fire({
+                title: "No se realizó la simulación",
+                text: "Asegúrate de que el toro y al menos una vaca seleccionada tengan crías registradas en el sistema.",
+                icon: "warning",
+                confirmButtonText: 'Entendido',
+            });
+        }finally{
+            setCargandoSimulacion(false); //Se oculta el mensaje de "Cargando simulación..."
         }
     };
 
     return (
         <>
             <div className="contenedor">
-                <div className="cuadradoVisualizarAgregarModificar">
+                <div className="cuadradoSimulacion">
                     SIMULACIÓN CRÍAS
                 </div>
             </div>
@@ -107,31 +145,77 @@ export const SimulacionCrias = () => {
                     <div className="contenedor-izquierda">
                         <div className="contenedor-linea">
                             <div className="label">Identificador vaca</div>
-                            <div className="lista-animales">
-                               {animales && animales.length > 0 ? (
-                                   animales.filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()
-                                           && animal.estado.toUpperCase() !== "Muerte".toUpperCase()
-                                           && animal.estado.toUpperCase() !== "Vendida".toUpperCase()
-                                       )
-                                    .map((animal) => (
-                                    <label key={animal.id} className="item-animal">
-                                        <input
-                                            type="checkbox"
-                                            name="listaAnimales"
-                                            checked={animalesSeleccionados.includes(animal.id)}
-                                            onChange={() => toggleSeleccionAnimal(animal.id)}
-                                        />
-                                        {animal.codigo} {/*Aparece el ID de la vaca*/}
-                                    </label>
-                                ))
-                                    ) : (
-                                    <div className="mensaje-no-animales">No hay vacas disponibles</div>
-                                    )
-                               }
-                            </div>
-                            {errores.listaAnimales && <div className="mensaje-error">{errores.listaAnimales}
-                            </div>}
 
+                            <input
+                                type="text"
+                                id="filtroIDAnimal"
+                                name="filtroIDAnimal"
+                                className="cuadro-texto"
+                                placeholder="Buscar vaca por código..."
+                                value={busquedaID}
+                                onChange={(e) => setBusquedaID(e.target.value)}
+                            />
+
+                            {/* Se muestra el mensaje de error debajo del título "Identificador vaca"*/}
+                            {errores.listaAnimales && <div className="mensaje-error">{errores.listaAnimales}</div>}
+
+                            <div className="lista-vacas">
+                                {vacasFiltradas.length > 0 ? (
+                                    vacasFiltradas.map((animal) => (
+                                        <label key={animal.id} className="item-vaca">
+                                            <input
+                                                type="checkbox"
+                                                name="listaAnimales"
+                                                checked={animalesSeleccionados.includes(animal.id)}
+                                                onChange={() => toggleSeleccionAnimal(animal.id)}
+                                            />
+                                            {/*{animal.codigo}*/}
+                                            <span>{animal.codigo}</span>
+
+                                        </label>
+                                    ))
+                                ) : (
+                                    <div className="mensaje-no-animales">No hay vacas disponibles</div>
+                                )}
+                                {/*{animales && animales.length > 0 ? (*/}
+                                {/*    animales.filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()*/}
+                                {/*        && animal.estado.toUpperCase() !== "Muerte".toUpperCase()*/}
+                                {/*        && animal.estado.toUpperCase() !== "Vendida".toUpperCase()*/}
+                                {/*    )*/}
+                                {/*        .map((animal) => (*/}
+                                {/*            <label key={animal.id} className="item-animal">*/}
+                                {/*                <input*/}
+                                {/*                    type="checkbox"*/}
+                                {/*                    name="listaAnimales"*/}
+                                {/*                    checked={animalesSeleccionados.includes(animal.id)}*/}
+                                {/*                    onChange={() => toggleSeleccionAnimal(animal.id)}*/}
+                                {/*                />*/}
+                                {/*                {animal.codigo} /!*Aparece el ID de la vaca*!/*/}
+                                {/*            </label>*/}
+                                {/*        ))*/}
+                                {/*) : (*/}
+                                {/*    <div className="mensaje-no-animales">No hay vacas disponibles</div>*/}
+                                {/*)*/}
+                                {/*}*/}
+                            </div>
+
+
+                        </div>
+                        <div className="contenedor-botones-seleccion">
+                            <button
+                                type="button"
+                                className="boton-seleccion-azul"
+                                onClick={() => setAnimalesSeleccionados(vacasFiltradas.map((v) => v.id))}
+                            >
+                                Seleccionar todo
+                            </button>
+                            <button
+                                type="button"
+                                className="boton-seleccion-rojo"
+                                onClick={() => setAnimalesSeleccionados([])}
+                            >
+                                Quitar selección
+                            </button>
                         </div>
                     </div>
 
@@ -187,18 +271,31 @@ export const SimulacionCrias = () => {
                 </div>
                 {/* BOTÓN DE INICIAR SIMULACIÓN */}
                 <>
-                    <button
-                        type ="button"
-                        className="btn btn-info boton-derecha"
-                        onClick={handleSimular}
-                    >
-                        INICIAR SIMULACIÓN
-                    </button>
+                    <div className="boton-simulacion">
+                        <button
+                            type="button"
+                            className="btn btn-info"
+                            onClick={handleSimular}
+                            disabled ={cargandoSimulacion} /* Se evita que se den clics cuando se
+                             está cargando la simulación*/
+                        >
+                            {cargandoSimulacion ? "Simulando..." : "INICIAR SIMULACIÓN"}
+                        </button>
+                    </div>
                 </>
 
+                {cargandoSimulacion && (
+                    <div style={{ textAlign: "center", marginTop: "10px", color: "#007bff" }}>
+                        Cargando simulación, por favor espere...
+                    </div>
+                )}
+
                 <>
+                    <hr/> {/*Añade una línea/raya */}
+
                     {/* Se visualiza el resultado de la simulación de las crías */}
                     {resultadoSimulacion && (
+
                         <div className="resultado-simulacion">
                             <h4>Resultado de la cría óptima</h4>
                             {/* Primera tabla que contiene el resultado de manera general: reproductores y valor óptimo.*/}
