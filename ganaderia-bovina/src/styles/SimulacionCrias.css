@@ -120,7 +120,7 @@
 
 /* MANEJO DE LISTADO DE VACAS: visualización del listado de vacas*/
 .lista-vacas {
-    width: 270px;
+    width: 337px;
     min-height: 300px; /* Se fija el mínimo de altura del listado de vacas*/
     max-height: 300px;
     border: 1px solid #ccc;
@@ -224,6 +224,36 @@
 .contenedor-botones-seleccion {
     display: flex;
     justify-content: flex-start; /* Alinea a la izquierda */
-    margin-top: 10px;
+    margin-top: 15px;
+    margin-left: 35px;
     gap: 8px; /* Espacio entre los dos botones */
+}
+
+
+/* MENSAJE DE ERROR LISTADO VACAS*/
+.contenedor-linea-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.fila-buscador {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+.fila-vacas {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.mensaje-error-al-lado {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    max-width: 140px;
+    white-space: nowrap; /* Se mantiene el texto en una línea */
 }
