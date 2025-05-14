@@ -168,34 +168,13 @@ export const SimulacionCrias = () => {
                                                 onChange={() => toggleSeleccionAnimal(animal.id)}
                                             />
                                             {/*{animal.codigo}*/}
-                                            <span>{animal.codigo}</span>
-
+                                            <span>{animal.codigo}</span> {/*Aparece el Código de la vaca*/}
                                         </label>
                                     ))
                                 ) : (
                                     <div className="mensaje-no-animales">No hay vacas disponibles</div>
                                 )}
 
-                                {/*{animales && animales.length > 0 ? (*/}
-                                {/*    animales.filter((animal) => animal.tipo.toUpperCase() === "Vaca".toUpperCase()*/}
-                                {/*        && animal.estado.toUpperCase() !== "Muerte".toUpperCase()*/}
-                                {/*        && animal.estado.toUpperCase() !== "Vendida".toUpperCase()*/}
-                                {/*    )*/}
-                                {/*        .map((animal) => (*/}
-                                {/*            <label key={animal.id} className="item-animal">*/}
-                                {/*                <input*/}
-                                {/*                    type="checkbox"*/}
-                                {/*                    name="listaAnimales"*/}
-                                {/*                    checked={animalesSeleccionados.includes(animal.id)}*/}
-                                {/*                    onChange={() => toggleSeleccionAnimal(animal.id)}*/}
-                                {/*                />*/}
-                                {/*                {animal.codigo} /!*Aparece el ID de la vaca*!/*/}
-                                {/*            </label>*/}
-                                {/*        ))*/}
-                                {/*) : (*/}
-                                {/*    <div className="mensaje-no-animales">No hay vacas disponibles</div>*/}
-                                {/*)*/}
-                                {/*}*/}
                             </div>
                             {/* Se muestra el mensaje de error debajo del título "Identificador vaca"*/}
                             <div className="contenedor-error-vacas">
