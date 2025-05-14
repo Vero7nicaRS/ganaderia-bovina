@@ -18,12 +18,12 @@
     gap: 20px; /* Espacio entre los dos bloques */
 }
 
-/* Contenedor izquierdo (tiene 7 elementos) */
+/* Contenedor izquierdo */
 .contenedor-izquierda {
     width: 50%;
 }
 
-/* Contenedor derecho (tiene 5 elementos) */
+/* Contenedor derecho*/
 .contenedor-derecha {
     width: 50%;
 }
@@ -48,6 +48,7 @@
     margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
 }
 
+/* BOTÓN VOLVER AL MENÚ: botón para volver al menú principal*/
 .boton-volver {
     display: flex; /*Permite una mejor dispoición de los elementos*/
     justify-content: flex-end; /* Alinea el botón a la derecha */
@@ -61,7 +62,7 @@
     color: white; /* Color del texto */
     border: 1px solid #007bff; /* Borde sólido*/
     border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Manita al pasar por el botón */
+    cursor: pointer; /* Aparece una manita cuando se pasa por encima del botón */
 }
 
 .boton-volver .btn:hover {
@@ -69,33 +70,6 @@
     color: #007bff; /* Cambia el texto al color original del fondo */
     border: 1px solid #007bff; /* Añade un borde del color original */
 }
-
-{/* Afecta a todos los elementos de boton-espacio*/}
-.boton-espacio{
-    display: flex; /*Permite una mejor dispoición de los elementos*/
-    justify-content: center; /* Alinea el botón a la derecha */
-    gap: 10px; /* Espaciado entre los botones */
-
-}
-
-{/*Afecta al elemento botón*/}
-.boton-espacio .btn{
-
-    font-size: 14px;/* Tamaño del texto */
-    padding: 5px 10px;/* Tamaño del botón */
-    color: white; /* Color del texto */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Manita al pasar por el botón */
-    margin-top: 15px; /* Espacio entre la tabla y el botón */
-}
-
-{/*Cuando pasas el puntero del ratón por encima del botón*/}
-.boton-espacio .btn:hover {
-    background-color: white; /* Cambia el fondo a blanco */
-    color: #007bff; /* Cambia el texto al color original del fondo */
-    border: 1px solid #007bff; /* Añade un borde del color original */
-}
-
 
 .boton-derecha {
     font-size: 14px; /* Tamaño del texto */
@@ -114,14 +88,7 @@
     border: 1px solid #007bff; /* Añade un borde del color original */
 }
 
-.identificador {
-    font-weight: bold;
-    font-size: 1.2em;
-    justify-content: left;
-    margin: 50px auto;
-}
-
-.cuadradoID{
+.cuadradoSimulacion{
     width: 300px;
     height: 60px;
     background-color: #ffffff;
@@ -136,33 +103,6 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.cuadradoVisualizarAgregarModificarInseminacion{
-    width: 300px;
-    height: 60px;
-    background-color: #ffffff;
-    border: 2px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    margin: 50px auto;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-
-/* ---- Control del botón de ES SEXADO ---- */
-.checkbox-container {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px; /* Se ajusta el espacio que hay entre el checkbox y "Es sexado" */
-    white-space: nowrap; /* Evita que haya un salto de línea en "Es sexado" */
-}
-
-.checkbox-label {
-    margin-left: 4px; /* Reduce el espacio entre el checkbox y "Es sexado" */
-}
 
 /* MANEJO DE ERRORES: Cuadrado del campo se vuelve en color rojo*/
 .error {
@@ -178,71 +118,112 @@
     white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
 }
 
+/* MANEJO DE LISTADO DE VACAS: visualización del listado de vacas*/
+.lista-vacas {
+    width: 270px;
+    min-height: 300px; /* Se fija el mínimo de altura del listado de vacas*/
+    max-height: 300px;
+    border: 1px solid #ccc;
+    overflow-y: auto; /*Barra de scroll situada a la derecha*/
+    padding: 4px;
+    background-color: #fafafa;
+}
 
-
-
-.lista-animales {
+.item-vaca {
     display: flex;
-    flex-direction: column; /* Esto hace que los elementos aparezcan en vertical */
-    gap: 5px; /* Espaciado entre los elementos */
-}
-
-.item-animal {
     align-items: center;
+    gap: 10px;
+    padding: 3px 4px;
+    font-size: 14px;
 }
 
-.tabla-corrales {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background-color: white;
+.item-vaca span {
+    display: inline-block;
+    min-width: 60px;
+    white-space: nowrap;
 }
 
-.tabla-corrales th, .tabla-corrales td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-.tabla-corrales th {
-
-}
 .mensaje-no-animales {
     text-align: center;
     font-style: italic;
     color: #888;
 }
 
-.btn-eliminar {
-    background-color: red;
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 5px;
+/* BOTÓN DE SIMULACIÓN: Separarlo de la lista de vacas. */
+.boton-simulacion {
+    margin-top: 30px;
+    display: flex; /*Permite una mejor dispoición de los elementos*/
+    justify-content: center; /* Alinea el botón a la derecha */
+    gap: 10px; /* Espaciado entre los botones */
+
 }
 
-.btn-eliminar:hover {
-    background-color: darkred;
+.boton-simulacion .btn{
+
+    font-size: 14px;/* Tamaño del texto */
+    padding: 5px 10px;/* Tamaño del botón */
+    color: white; /* Color del texto */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Manita al pasar por el botón */
+    margin-top: 15px; /* Espacio entre la tabla y el botón */
+}
+
+{/*Cuando pasas el puntero del ratón por encima del botón*/}
+.boton-simulacion .btn:hover {
+    background-color: white; /* Cambia el fondo a blanco */
+    color: #007bff; /* Cambia el texto al color original del fondo */
+    border: 1px solid #007bff; /* Añade un borde del color original */
 }
 
 
-.listaAnimalesAgregadosEnCorral {
-    text-align: left; /* Alinea el texto a la izquierda */
-    font-size: 16px; /* Opcional: Ajusta el tamaño del texto */
-    margin-bottom: 10px; /* Espacio entre el texto y la tabla */
-}
-
+/* RESULTADO DE LA SIMULACIÓN: como aparece el resultado de la simulación*/
 .resultado-simulacion {
     margin-top: 30px;
     padding: 20px;
-    border: 2px solid #17a2b8;
     border-radius: 10px;
-    background-color: #f0f8ff;
 }
 
-.resultado-simulacion table {
-    width: 100%;
+/* BOTONES DE SELECCIONAR Y DESELECCIONAR: seleccionar todo o quitar todo del listado de vacas*/
+/* Botón azul: "Seleccionar todo" */
+.boton-seleccion-azul {
+    font-size: 14px;
+    padding: 5px 10px;
+    background-color: #747bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
     margin-top: 10px;
-    text-align: center;
+    margin-right: 8px;
+}
+
+.boton-seleccion-azul:hover {
+    background-color: #007bff; /* Azul oscuro */
+    color: white; /* Cambia el texto al color original del fondo */
+
+}
+
+/* Botón rojo: "Quitar selección" */
+.boton-seleccion-rojo {
+    font-size: 14px;
+    padding: 5px 10px;
+    background-color: #e35864;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 10px;
+}
+
+.boton-seleccion-rojo:hover {
+    background-color: #b02a37;
+    color: white;
+}
+
+/* Contenedor para los botones de selección/deselección */
+.contenedor-botones-seleccion {
+    display: flex;
+    justify-content: flex-start; /* Alinea a la izquierda */
+    margin-top: 10px;
+    gap: 8px; /* Espacio entre los dos botones */
 }
