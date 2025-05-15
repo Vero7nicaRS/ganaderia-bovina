@@ -98,82 +98,85 @@ export const ListaCorrales = () => {
 
             <div className="listaVacunasTratamientos">Lista de corrales:</div>
             <div>
+
                 <div className = "contenedor-tablaLI">
-                    <table className="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">NOMBRE DE CORRAL</th>
-                            <th scope="col">ACCIONES</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    <div className="scroll-vertical-tablaCorrales">  {/* Para hacer scoll en la derecha de la tabla*/}
+                        <table className="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">NOMBRE DE CORRAL</th>
+                                <th scope="col">ACCIONES</th>
+                            </tr>
+                            </thead>
+                            <tbody>
 
-                        {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
-                        {
-                            datosFiltrados.length === 0 ? (
-                                <tr>
-                                    <td colSpan="4" className="mensaje-no-hay-elementos">
-                                        No hay corrales existentes
-                                    </td>
-                                </tr>
-
-                            ) : (
-                                datosFiltrados.map((item) => (
-                                    <tr key={item.id}>
-                                        <td>{item.codigo}</td>
-                                        <td>{item.nombre}</td>
-
-                                        <td>
-                                            {/* BOTÓN VER */}
-                                            <NavLink
-                                                to={`/formulario-corral/${item.id}`}
-                                                state={{modo: "ver", corral: item}}
-                                                className="btn-ver"
-                                            >
-                                                VER
-                                            </NavLink>
-
-                                            {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
-
-                                            <>
-                                                {/* BOTÓN MODIFICAR */}
-                                                <NavLink
-                                                    to={`/formulario-corral/${item.id}`}
-                                                    state={{modo: "modificar", corral: item}}
-                                                    className="btn-modificar"
-                                                >
-                                                    MODIFICAR
-                                                </NavLink>
-                                                {/* BOTÓN ELIMINAR */}
-
-                                                {/* Solo se muestra el botón "ELIMINAR" si el corral no
-                                                tiene ningun animal, es decir, está el corral vacío */}
-                                                {!animales.some(animal => animal.corral === item.id) ? (
-                                                    //Si NO hay animales, aparece el botón de ELIMINAR.
-
-                                                    <button
-                                                        className="btn-eliminar"
-                                                        onClick={() => manejarEliminar(item.id, item.codigo)}
-                                                        /* Se le pasa el "id" y el "código" para borrar el corral
-                                                  y mostrar un mensaje de error indicándole el código del corral. */
-                                                    >
-                                                        ELIMINAR
-                                                    </button>
-                                                ) : ( //Si hay animales, deshabilito el botón de ELIMINAR.
-                                                    <button
-                                                        className="btn-eliminar btn-eliminar-hidden"
-                                                    >
-                                                        ELIMINAR
-                                                    </button>
-                                                )}
-                                            </>
+                            {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
+                            {
+                                datosFiltrados.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" className="mensaje-no-hay-elementos">
+                                            No hay corrales existentes
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+
+                                ) : (
+                                    datosFiltrados.map((item) => (
+                                        <tr key={item.id}>
+                                            <td>{item.codigo}</td>
+                                            <td>{item.nombre}</td>
+
+                                            <td>
+                                                {/* BOTÓN VER */}
+                                                <NavLink
+                                                    to={`/formulario-corral/${item.id}`}
+                                                    state={{modo: "ver", corral: item}}
+                                                    className="btn-ver"
+                                                >
+                                                    VER
+                                                </NavLink>
+
+                                                {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
+
+                                                <>
+                                                    {/* BOTÓN MODIFICAR */}
+                                                    <NavLink
+                                                        to={`/formulario-corral/${item.id}`}
+                                                        state={{modo: "modificar", corral: item}}
+                                                        className="btn-modificar"
+                                                    >
+                                                        MODIFICAR
+                                                    </NavLink>
+                                                    {/* BOTÓN ELIMINAR */}
+
+                                                    {/* Solo se muestra el botón "ELIMINAR" si el corral no
+                                                    tiene ningun animal, es decir, está el corral vacío */}
+                                                    {!animales.some(animal => animal.corral === item.id) ? (
+                                                        //Si NO hay animales, aparece el botón de ELIMINAR.
+
+                                                        <button
+                                                            className="btn-eliminar"
+                                                            onClick={() => manejarEliminar(item.id, item.codigo)}
+                                                            /* Se le pasa el "id" y el "código" para borrar el corral
+                                                      y mostrar un mensaje de error indicándole el código del corral. */
+                                                        >
+                                                            ELIMINAR
+                                                        </button>
+                                                    ) : ( //Si hay animales, deshabilito el botón de ELIMINAR.
+                                                        <button
+                                                            className="btn-eliminar btn-eliminar-hidden"
+                                                        >
+                                                            ELIMINAR
+                                                        </button>
+                                                    )}
+                                                </>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

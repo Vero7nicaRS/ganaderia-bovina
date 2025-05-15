@@ -93,73 +93,75 @@ export const InventarioVT = () => {
 
             <div>
                 <div className="contenedor-tablaVT">
-                    <table className="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">TIPO</th>
-                            <th scope="col">NOMBRE</th>
-                            <th scope="col">ACCIONES</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    <div className="scroll-vertical-tablaInventarioVT">  {/* Para hacer scoll en la derecha de la tabla*/}
+                        <table className="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">TIPO</th>
+                                <th scope="col">NOMBRE</th>
+                                <th scope="col">ACCIONES</th>
+                            </tr>
+                            </thead>
+                            <tbody>
 
-                        {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
-                        {
-                            datosFiltrados.length === 0 ? (
-                                <tr>
-                                    <td colSpan="4" className="mensaje-no-hay-elementos">
-                                        No hay vacunas/tratamientos existentes
+                            {/* Botones que aparecen al lado de cada uno de los animales: VER - MODIFICAR - ELIMINAR*/}
+                            {
+                                datosFiltrados.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" className="mensaje-no-hay-elementos">
+                                            No hay vacunas/tratamientos existentes
+                                        </td>
+                                    </tr>
+                                ) : (
+                                datosFiltrados.map((item) => (
+                                <tr key={item.id}>
+                                    <td>{item.codigo}</td>
+                                    <td>{item.tipo}</td>
+                                    <td>{item.nombre}</td>
+
+                                    <td>
+                                        {/* BOTÓN VER */}
+                                        <NavLink
+                                            to={`/formulario-vt/${item.id}`}
+                                            state={{modo: "ver", vt: item}} //Se le pasa la vacuna/tratamiento (item)
+                                            className="btn-ver">
+                                            VER
+                                        </NavLink>
+
+                                        {/* Se muestran los botones de MODIFICAR y ELIMINAR
+                                         cuando el estado NO es "INACTIVO */}
+                                        {item.estado !== "Inactiva" && (
+                                            <>
+                                                {/* BOTÓN MODIFICAR */}
+                                                <NavLink
+                                                    to={`/formulario-vt/${item.id}`}
+                                                    state={{
+                                                        modo: "modificar",
+                                                        vt: item
+                                                    }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                                    className="btn-modificar"
+                                                >
+                                                    MODIFICAR
+                                                </NavLink>
+                                                {/* BOTÓN ELIMINAR */}
+                                                <NavLink
+                                                    to="/eliminar-inventario-vt"
+                                                    state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
+                                                    className="btn-eliminar"
+
+                                                >
+                                                    ELIMINAR
+                                                </NavLink>
+                                            </>
+                                        )}
                                     </td>
                                 </tr>
-                            ) : (
-                            datosFiltrados.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.codigo}</td>
-                                <td>{item.tipo}</td>
-                                <td>{item.nombre}</td>
-
-                                <td>
-                                    {/* BOTÓN VER */}
-                                    <NavLink
-                                        to={`/formulario-vt/${item.id}`}
-                                        state={{modo: "ver", vt: item}} //Se le pasa la vacuna/tratamiento (item)
-                                        className="btn-ver">
-                                        VER
-                                    </NavLink>
-
-                                    {/* Se muestran los botones de MODIFICAR y ELIMINAR
-                                     cuando el estado NO es "INACTIVO */}
-                                    {item.estado !== "Inactiva" && (
-                                        <>
-                                            {/* BOTÓN MODIFICAR */}
-                                            <NavLink
-                                                to={`/formulario-vt/${item.id}`}
-                                                state={{
-                                                    modo: "modificar",
-                                                    vt: item
-                                                }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                                className="btn-modificar"
-                                            >
-                                                MODIFICAR
-                                            </NavLink>
-                                            {/* BOTÓN ELIMINAR */}
-                                            <NavLink
-                                                to="/eliminar-inventario-vt"
-                                                state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
-                                                className="btn-eliminar"
-
-                                            >
-                                                ELIMINAR
-                                            </NavLink>
-                                        </>
-                                    )}
-                                </td>
-                            </tr>
-                            ))
-                            )}
-                        </tbody>
-                    </table>
+                                ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
