@@ -320,7 +320,7 @@ export const SimulacionCrias = () => {
                                 </tbody>
                             </table>
 
-                            <h5 className="mt-4">Características predichas de la cría</h5>
+                            <h5 className="mt-4">Características aproximadas de la cría</h5>
                             {/* Segunda tabla que contiene el resultado de manera más detallada:
                             características de la cría.*/}
                             <table className="table table-striped">
