@@ -201,3 +201,15 @@ button {
     padding: 20px 0;
     font-style: italic;
 }
+
+
+/* SCROLL DE LA TABLA: Se usa para hacer scoll lateral (derecha) */
+.scroll-vertical-tablaToros {
+    max-height: 400px;
+    overflow-y: auto; /* Se activa el scroll en el lateral derecho*/
+    border: 1px solid #ddd;
+}
+
+.scroll-vertical-tablaToros .table {
+    margin-bottom: 0; /* Para que haya espacio por debajo */
+}
