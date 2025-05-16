@@ -213,3 +213,9 @@ button {
 .scroll-vertical-tablaToros .table {
     margin-bottom: 0; /* Para que haya espacio por debajo */
 }
+
+/* MENSAJE DE MOTIVO DE ELIMINACIÓN: Comentarios de la eliminación del Toro */
+.mensaje-motivo-eliminacionToro {
+    color: red;
+    margin-top: 10px;
+}
