@@ -64,6 +64,7 @@ MIDDLEWARE = [
 # Se indica el puerto del frontend (con Vite) que es el 5173
 CORS_ALLOWED_ORIGINS  = [
     "http://localhost:5173",  # Puerto del frontend con Vite
+    "http://localhost:5174",  # Puerto del frontend con Vite
 ]
 
 ROOT_URLCONF = 'backend_django.urls'
