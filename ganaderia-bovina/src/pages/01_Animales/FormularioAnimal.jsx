@@ -412,7 +412,7 @@ export const FormularioAnimal = () => {
                                             </option>
                                         ))
                                 ) : (
-                                    <option>No hay toros disponibles</option>
+                                    <option value="" disabled>No hay toros disponibles</option>
                                 )}
 
                                 {/* A la hora de visualizar, si el toro ha sido eliminada por "muerte" u "otros".
@@ -474,7 +474,7 @@ export const FormularioAnimal = () => {
                                             </option>
                                         ))
                                 ) : (
-                                    <option>No hay vacas disponibles</option>
+                                    <option value="" disabled>No hay vacas disponibles</option>
                                 )}
 
                                 {/* A la hora de visualizar, si la vaca ha sido eliminada por "muerte" o "vendida".
