@@ -257,3 +257,11 @@
     max-width: 140px;
     white-space: nowrap; /* Se mantiene el texto en una línea */
 }
+
+
+/* MENSAJE CARGANDO SIMULACIÓN*/
+.mensaje-cargando-simulacion{
+    textAlign: center;
+    marginTop: 10px;
+    color: #007bff;
+}
