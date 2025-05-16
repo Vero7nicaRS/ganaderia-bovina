@@ -42,12 +42,22 @@ INSTALLED_APPS = [
     'django_filters', # Añadido para usar filtros en los datos mediante la URL.
     'corsheaders' # Añadido para permitir la conexión entre diferentes puertos (backend y frontend)
 ]
-
-REST_FRAMEWORK = { # Añadido para emplear filtros y ordenaciones en los datos en la URL.
+# Añadido para emplear filtros y ordenaciones en los datos en la URL.
+# También, todos los usuarios deben estar autenticados para poder acceder a la API.
+REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.OrderingFilter'
-    ]
+        'rest_framework.filters.OrderingFilter',
+
+    ],
+    # Clases de autenticación (en este caso, JWT)
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    # Clases de permiso
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # Añadido para permitir la conexión entre diferentes puertos (backend y frontend)
