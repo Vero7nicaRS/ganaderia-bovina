@@ -264,7 +264,10 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.transmision_leche ? "error" : ""}`}
                                 name="transmision_leche"
                                 disabled={esVisualizar} //Se indica que el campo "Transmisión de producción de leche" no se puede modificar cuando se Visualiza.
-                                value={animalToro.transmision_leche || ""}
+                                //value={animalToro.transmision_leche || ""}
+                                value={animalToro.transmision_leche !== null &&
+                                       animalToro.transmision_leche !== undefined ? animalToro.transmision_leche : ""}
+
                                 onChange={handleChange}
                             />
                             {errores.transmision_leche && <div className="mensaje-error">{errores.transmision_leche}</div>}
@@ -281,7 +284,9 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.celulas_somaticas ? "error" : ""}`}
                                 name="celulas_somaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
-                                value={animalToro.celulas_somaticas || ""}
+                                //value={animalToro.celulas_somaticas || ""}
+                                value={animalToro.celulas_somaticas !== null &&
+                                       animalToro.celulas_somaticas !== undefined ? animalToro.celulas_somaticas : ""}
                                 onChange={handleChange}
                             />
                             {errores.celulas_somaticas && <div className="mensaje-error">{errores.celulas_somaticas}</div>}
@@ -293,7 +298,9 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.calidad_patas ? "error" : ""}`}
                                 name="calidad_patas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
-                                value={animalToro.calidad_patas || ""}
+                                //value={animalToro.calidad_patas || ""}
+                                value={animalToro.calidad_patas !== null &&
+                                       animalToro.calidad_patas !== undefined ? animalToro.calidad_patas : ""}
                                 onChange={handleChange}
                             />
                             {errores.calidad_patas && <div className="mensaje-error">{errores.calidad_patas}</div>}
@@ -306,7 +313,9 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.calidad_ubres ? "error" : ""}`}
                                 name="calidad_ubres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
-                                value={animalToro.calidad_ubres || ""}
+                                //value={animalToro.calidad_ubres || ""}
+                                value={animalToro.calidad_ubres !== null &&
+                                       animalToro.calidad_ubres !== undefined ? animalToro.calidad_ubres : ""}
                                 onChange={handleChange}
                             />
                             {errores.calidad_ubres && <div className="mensaje-error">{errores.calidad_ubres}</div>}
@@ -319,7 +328,9 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.grasa ? "error" : ""}`}
                                 name="grasa"
                                 disabled={esVisualizar} //Se indica que el campo "Grasa" no se puede modificar cuando se Visualiza.
-                                value={animalToro.grasa || ""}
+                                //value={animalToro.grasa || ""}
+                                value={animalToro.grasa !== null &&
+                                       animalToro.grasa !== undefined ? animalToro.grasa : ""}
                                 onChange={handleChange}
                             />
                             {errores.grasa && <div className="mensaje-error">{errores.grasa}</div>}
@@ -332,7 +343,9 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.proteinas ? "error" : ""}`}
                                 name="proteinas"
                                 disabled={esVisualizar} //Se indica que el campo "Proteínas" no se puede modificar cuando se Visualiza.
-                                value={animalToro.proteinas || ""}
+                                //value={animalToro.proteinas || ""}
+                                value={animalToro.proteinas !== null &&
+                                       animalToro.proteinas !== undefined ? animalToro.proteinas : ""}
                                 onChange={handleChange}
                             />
                             {errores.proteinas && <div className="mensaje-error">{errores.proteinas}</div>}
