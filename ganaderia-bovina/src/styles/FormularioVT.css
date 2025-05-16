@@ -172,3 +172,9 @@
     margin: 50px auto;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+/* MENSAJE DE MOTIVO DE ELIMINACIÓN: Comentarios de la eliminación de la vacuna/tratamiento */
+.mensaje-motivo-eliminacionVT {
+    color: red;
+    margin-top: 10px;
+}
