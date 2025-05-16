@@ -61,7 +61,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
         // Se convierte el valor a número para realizar la comprobación.
         const valorCalPat = Number(datosAnimal.calidad_patas);
         // Calidad patas: (comprendido entre 1 y 9, con dos decimales)
-        if(valorCalPat <1 || valorCalPat > 9 ){
+        if(isNaN(valorCalPat)){  // Se comprueban que sea un número.
+            erroresTemp.calidad_patas = "Debe ser un número válido";
+        }else if(valorCalPat <1 || valorCalPat > 9 ){
             erroresTemp.calidad_patas = "Rango no valido: min 1 y máx 9";
         }else if(!(Math.floor(valorCalPat * 100) === valorCalPat * 100)){ // Se comprueba que hay 2 decimales.
             erroresTemp.calidad_patas = "Máximo dos decimales";
@@ -74,7 +76,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
         // Se convierte el valor a número para realizar la comprobación.
         const valorCalUbre = Number(datosAnimal.calidad_ubres);
         //Calidad ubres: (comprendido entre 1 y 9, con dos decimales)
-        if(valorCalUbre <1 || valorCalUbre > 9 ){
+        if(isNaN(valorCalUbre)){  // Se comprueban que sea un número.
+            erroresTemp.calidad_ubres = "Debe ser un número válido";
+        }else if(valorCalUbre <1 || valorCalUbre > 9 ){
             erroresTemp.calidad_ubres = "Rango no valido: min 1 y máx 9";
         }else if(!(Math.floor(valorCalUbre * 100) === valorCalUbre * 100)){ // Se comprueba que hay 2 decimales.
             erroresTemp.calidad_ubres = "Máximo dos decimales";
@@ -96,10 +100,13 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorCelSom = Number(datosAnimal.celulas_somaticas);
             // Células somáticas: (min. 50.000 - max. 2.000.000, sin decimales)
-            if(isNaN(valorCelSom) || valorCelSom < 50000 || valorCelSom > 2000000){
+            if(isNaN(valorCelSom)){  // Se comprueban que sea un número.
+                erroresTemp.celulas_somaticas = "Debe ser un número válido";
+            }else if(valorCelSom < 50000 || valorCelSom > 2000000){
                 erroresTemp.celulas_somaticas = "Rango no valido: min 50.000 y máx 2.000.000";
-            }else if(!(Math.floor(valorCelSom) === valorCelSom)){  /* Se comprueba que no tiene ningún decimal
-                Es como si fuera una multiplicación por 1*/
+            }else if(!(Math.floor(valorCelSom) === valorCelSom)){
+                /* Se comprueba que no tiene ningún decimal
+                (en este caso, es como si fuera una multiplicación por 1)*/
                 erroresTemp.celulas_somaticas = "Máximo dos decimales";
             }
         }
@@ -114,7 +121,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorGrasa = Number(datosAnimal.grasa);
             // Grasa: (Porcentaje [%] comprendido entre 2.5 y 6)
-            if(valorGrasa <2.5 || valorGrasa > 6 ){
+            if(isNaN(valorGrasa)){ // Se comprueban que sea un número.
+                erroresTemp.grasa = "Debe ser un número válido";
+            }else if(valorGrasa <2.5 || valorGrasa > 6 ){
                 erroresTemp.grasa = "Rango no valido: min 2.5 y máx 6";
             }
         }
@@ -123,7 +132,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorProteinas = Number(datosAnimal.proteinas);
             // Proteinas: (Porcentaje [%] comprendido entre 2.8 y 4)
-            if(valorProteinas <2.8 || valorProteinas > 4){
+            if(isNaN(valorProteinas)){  // Se comprueban que sea un número.
+                erroresTemp.proteinas = "Debe ser un número válido";
+            }else if(valorProteinas <2.8 || valorProteinas > 4){
                 erroresTemp.proteinas = "Rango no valido: min 2.8 y máx 4";
             }
         }
@@ -155,7 +166,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorProdLeche = Number(datosAnimal.produccion_leche);
             // Producción de leche: (min. 0)
-            if(valorProdLeche < 0){
+            if(isNaN(valorProdLeche)){  // Se comprueban que sea un número.
+                erroresTemp.produccion_leche = "Debe ser un número válido";
+            }else if(valorProdLeche < 0){
                 erroresTemp.produccion_leche = "Rango no valido: min 0";
             }
         }
@@ -166,7 +179,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorCelSom = Number(datosAnimal.celulas_somaticas);
             // Transmisión de células somáticas: (Media 0.5 y desviación 1.5. Tiene 2 decimales.)
-            if(!(Math.floor(valorCelSom * 100) === valorCelSom * 100)){ // Se comprueba que hay 2 decimales.
+            if(isNaN(valorCelSom)){  // Se comprueban que sea un número.
+                erroresTemp.celulas_somaticas = "Debe ser un número válido";
+            }else if(!(Math.floor(valorCelSom * 100) === valorCelSom * 100)){ // Se comprueba que hay 2 decimales.
                 erroresTemp.celulas_somaticas = "Máximo dos decimales.";
             }
         }
@@ -178,7 +193,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorCantSemen = Number(datosAnimal.cantidad_semen);
             // Cantidad de semen: (min. 0)
-            if(valorCantSemen < 0){
+            if(isNaN(valorCantSemen)){  // Se comprueban que sea un número.
+                erroresTemp.cantidad_semen = "Debe ser un número válido";
+            }else if(valorCantSemen < 0){
                 erroresTemp.cantidad_semen = "Rango no valido: min 0";
             }else if(!(Math.floor(valorCantSemen) === valorCantSemen)){ /* Se comprueba que no tiene ningún decimal
                 Es como si fuera una multiplicación por 1*/
@@ -193,9 +210,24 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Se convierte el valor a número para realizar la comprobación.
             const valorTransLeche = Number(datosAnimal.transmision_leche);
             // Transmisión de producción de leche: (Media 30 y desviación 20. Tiene 2 decimales.)
-            if (!(Math.floor(valorTransLeche * 100) === valorTransLeche * 100)) { /* Se comprueba que no tiene ningún decimal
+            if(isNaN(valorTransLeche)){  // Se comprueban que sea un número.
+                erroresTemp.transmision_leche = "Debe ser un número válido";
+            }else if (!(Math.floor(valorTransLeche * 100) === valorTransLeche * 100)) { /* Se comprueba que no tiene ningún decimal
                 Es como si fuera una multiplicación por 1*/
                 erroresTemp.transmision_leche = "Máximo dos decimales permitidos";
+            }
+        }
+
+        if (datosAnimal.grasa) { // Si tiene valores, se comprueban que sea un número.
+            const valorCelSom = Number(datosAnimal.grasa);
+            if(isNaN(valorCelSom)){
+                erroresTemp.grasa = "Debe ser un número válido";
+            }
+        }
+        if (datosAnimal.proteinas) { // Si tiene valores, se comprueban que sea un número.
+            const valorCelSom = Number(datosAnimal.proteinas);
+            if(isNaN(valorCelSom)){
+                erroresTemp.proteinas = "Debe ser un número válido";
             }
         }
     }
