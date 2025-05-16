@@ -187,3 +187,9 @@
     height: 16px; /* Fijar la altura para que el formulario no se desplace */
     white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
 }
+
+/* MENSAJE DE MOTIVO DE ELIMINACIÓN: Comentarios de la eliminación del Animal */
+.mensaje-motivo-eliminacionAnimal {
+    color: red;
+    margin-top: 10px;
+}
