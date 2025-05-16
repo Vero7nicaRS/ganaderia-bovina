@@ -1,6 +1,6 @@
 #
 # --------------------------------- views.py: ---------------------------------
-# Funcionalidad: permite realizar todas las operaciones CRUDS sin necesidad de
+# Funcionalidad: permite realizar todas las operaciones CRUD sin necesidad de
 # escribirlas y conectarse con los modelos y sus serializers.  [RECIBE PETICIONES]
 # Se consigue:
 # GET /.../
@@ -16,6 +16,8 @@
 # - Try/catch: manejo de errores.
 # - Método destroy(): cuando se hace "DELETE", se ejecuta y se realiza la acción
 #   o se muestra error si no se ha podido hacer.
+#
+# También, se verifica los permisos que tiene el usuario.
 # -----------------------------------------------------------------------------------
 from datetime import datetime
 
@@ -26,12 +28,14 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import OrderingFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .filters import AnimalFilter, ToroFilter, CorralFilter, InventarioVTFilter, VTAnimalesFilter, \
     ListaInseminacionesFilter
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
+from .permisos import EsAdministrador, PermisosPorModelo
 from .serializers import AnimalSerializer, ToroSerializer, CorralSerializer, InventarioVTSerializer,\
     VTAnimalesSerializer, ListaInseminacionesSerializer
 from .simulacionCria import simular_cria_optima, agregar_y_reentrenar_cria
@@ -42,6 +46,9 @@ import traceback
 # --------------------------------------------------------------------------------------------------------------
 
 class AnimalViewSet(viewsets.ModelViewSet):
+    # Se usan los permisos del modelo.
+    # Django se encarga de asignar el permiso según la petición que se realice.
+    permission_classes = [PermisosPorModelo]
     queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
 
@@ -168,6 +175,9 @@ class AnimalViewSet(viewsets.ModelViewSet):
 # --------------------------------------------------------------------------------------------------------------
 
 class ToroViewSet(viewsets.ModelViewSet):
+    # Se usan los permisos del modelo.
+    # Django se encarga de asignar el permiso según la petición que se realice.
+    permission_classes = [PermisosPorModelo]
     queryset = Toro.objects.all()
     serializer_class = ToroSerializer
 
@@ -247,6 +257,9 @@ class ToroViewSet(viewsets.ModelViewSet):
 # --------------------------------------------------------------------------------------------------------------
 
 class CorralViewSet(viewsets.ModelViewSet):
+    # Se usan los permisos del modelo.
+    # Django se encarga de asignar el permiso según la petición que se realice.
+    permission_classes = [PermisosPorModelo]
     queryset = Corral.objects.all()
     serializer_class = CorralSerializer
 
@@ -296,6 +309,9 @@ class CorralViewSet(viewsets.ModelViewSet):
 # --------------------------------------------------------------------------------------------------------------
 
 class InventarioVTViewSet(viewsets.ModelViewSet):
+    # Se usan los permisos del modelo.
+    # Django se encarga de asignar el permiso según la petición que se realice.
+    permission_classes = [PermisosPorModelo]
     queryset = InventarioVT.objects.all()
     serializer_class = InventarioVTSerializer
 
@@ -354,7 +370,7 @@ class InventarioVTViewSet(viewsets.ModelViewSet):
                 "MOTIVO DEL ERROR": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # ELiminar cuando se le indica un motivo: ERROR O INACTIVA.
+    # Eliminar cuando se le indica un motivo: ERROR O INACTIVA.
     @action(detail=True, methods=['delete'], url_path='eliminar')
     def eliminar_vt_inventario(self, request, pk=None):
         instance = self.get_object()
@@ -362,26 +378,8 @@ class InventarioVTViewSet(viewsets.ModelViewSet):
         tipo = instance.tipo.lower()  # lo pasamos a minúsculas para construir el mensaje
         motivo = request.query_params.get('motivo', '').upper()
         try:
-            #vtinventario = self.get_object()  # Si no existe lanza 404 automáticamente
-            #motivo = request.query_params.get('motivo', '').upper()
-
             if motivo == "ERROR":
                 return self.destroy(request, pk=pk)  # Se utiliza el método destroy de arriba.
-            # try:
-               #     self.perform_destroy(vtinventario)
-               #     return Response(
-               #         {f"{'El' if tipo == 'tratamiento' else 'La'} "
-               #          f"{tipo} "
-               #          f"{codigo} ha sido eliminad{'o' if tipo == 'tratamiento' else 'a'} correctamente."},
-               #         status=status.HTTP_204_NO_CONTENT
-               #     )
-               # except ProtectedError as e:
-               #     relaciones = "\n".join(f"- {obj}" for obj in e.protected_objects)
-               #     return Response({
-               #         "ERROR": f"No se puede eliminar '{codigo}' porque está asociado a otros registros.",
-               #         "MOTIVO DEL ERROR": relaciones
-               #     }, status=status.HTTP_400_BAD_REQUEST)
-
             elif motivo == "INACTIVA":
 
                 instance.estado = motivo.capitalize()
@@ -421,6 +419,9 @@ def inventario_por_tipo(request):
 # --------------------------------------------------------------------------------------------------------------
 
 class VTAnimalesViewSet(viewsets.ModelViewSet):
+    # Se usan los permisos del modelo.
+    # Django se encarga de asignar el permiso según la petición que se realice.
+    permission_classes = [PermisosPorModelo]
     queryset = VTAnimales.objects.all()
     serializer_class = VTAnimalesSerializer
     # Para realizar filtrado de los datos mediante la URL
@@ -476,6 +477,9 @@ class VTAnimalesViewSet(viewsets.ModelViewSet):
 # --------------------------------------------------------------------------------------------------------------
 
 class ListaInseminacionesViewSet(viewsets.ModelViewSet):
+    # Se usan los permisos del modelo.
+    # Django se encarga de asignar el permiso según la petición que se realice.
+    permission_classes = [PermisosPorModelo]
     queryset = ListaInseminaciones.objects.all()
     serializer_class = ListaInseminacionesSerializer
 
@@ -520,6 +524,8 @@ class ListaInseminacionesViewSet(viewsets.ModelViewSet):
 # --------------------------------------------------------------------------------------------------------------
 
 class SimulacionCriaView(APIView):
+    # Solamente se indica que el usuario debe estar autenticado para poder realizar la simulación.
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         vacas = request.data.get("codigo_vacas")
         toro = request.data.get("codigo_toro")
@@ -535,6 +541,9 @@ class SimulacionCriaView(APIView):
         return Response({"cria_mas_optima":resultado})
 
 class ReentrenarCriaView(APIView):
+    # Solo pueden acceder administradores.
+    permission_classes = [EsAdministrador]
+
     def post(self, request):
         nueva_muestra = request.data
 
