@@ -617,7 +617,7 @@ export const FormularioAnimal = () => {
                          */}
                         <div>
                             {animal.comentario && (
-                                <div style={{color: 'red', marginTop: '10px'}}>
+                                <div className="mensaje-motivo-eliminacionAnimal">
                                     <strong>Comentarios:</strong> {animal.comentario}
                                 </div>
                             )}
