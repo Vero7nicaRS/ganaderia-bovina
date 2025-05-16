@@ -47,7 +47,6 @@ export const FormularioCorral = () => {
     */
     const {agregarCorral, modificarCorral, corrales} = useContext(CorralesContext);
 
-
     //Se utiliza para controlar en que modo esta el formulario: VER, AGREGAR o MODIFICAR.
     const esVisualizar = modoFinal === "ver";
     const esAgregar = modoFinal === "agregar";
@@ -65,6 +64,29 @@ export const FormularioCorral = () => {
         }
         return [];
     });
+
+    /* Para realizar una búsqueda*/
+    const [busquedaAnimal, setBusquedaAnimal] = useState("");
+    const animalesFiltrados = animales.filter(
+        (animal) =>
+            !animalesSeleccionados.includes(animal.id) &&
+            animal.estado.toUpperCase() !== "MUERTE" &&
+            animal.estado.toUpperCase() !== "VENDIDA" &&
+            animal.codigo.toUpperCase().includes(busquedaAnimal.toUpperCase())
+    );
+
+
+    //Para seleccionar o deseleccionar todo el check-box de animales (vacas/terneros).
+    const seleccionarTodas = () => {
+        const nuevosIds = animalesFiltrados.map(a => a.id);
+        setAnimalesSeleccionados((prev) => [...new Set([...prev, ...nuevosIds])]);
+    };
+    const deseleccionarTodas = () => {
+        setAnimalesSeleccionados((prev) =>
+            prev.filter(id => animalesOriginalesRef.current.includes(id))
+        );
+    };
+
 
     //Manejador para llevar acabo las modificaciones de los corrales (actualizar el estado de corral)
     const handleChange = (e) => {
@@ -97,6 +119,10 @@ export const FormularioCorral = () => {
      (no hay información en el location.state porque no se ha llegado por un NavLink que enviaba el estado)
      */
     const animalesOriginalesRef = useRef([]);
+    // Se muestra cuántos animales nuevos se quieren añadir al corral.
+    const animalesNuevosSeleccionados = animalesSeleccionados.filter(
+        id => !animalesOriginalesRef.current.includes(id)
+    );
 
     useEffect(() => {
         const fetchCorral = async () => {
@@ -186,20 +212,9 @@ export const FormularioCorral = () => {
                 console.log("🔍 Buscando animal con ID:", idNum);
                 if (animal) {
                     console.log("✅ Animal encontrado:", animal.codigo);
-                    // Se elimina el animal del corral anterior para poder añadirlo al nuevo corral.
-                    //const corralAnterior = corrales.find((corralBuscado) => corralBuscado.nombre === animal.corral);
-
-                    // Si tiene un corral anterior, se procede a eliminar ese animal del corral.
-                    /*if (corralAnterior) {
-                        // Se elimina el animal de la lista de su corral anterior
-                        corralAnterior.listaAnimales = corralAnterior.listaAnimales.filter(
-                            (animalId) => animalId !== id
-                        );
-                        modificarCorral(corralAnterior); // Se actualiza el corral en el estado
-                    }*/
                     const animalActualizado = {
                         ...animal,
-                        corral: nuevoCorralId  // Aquí usamos el ID del corral, como espera el backend
+                        corral: nuevoCorralId  // Aquí se ussa el ID del corral, como espera el backend
                     };
                     // Se asigna al animal el nuevo corral.
                     //modificarAnimal({ ...animal, corral: corral.nombre });
@@ -211,7 +226,7 @@ export const FormularioCorral = () => {
 
             if (esModificar) {
                 const corral_actualizado = await modificarCorral(corralConvertido);
-                setCorral(corralConvertido); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
+                //setCorral(corralConvertido); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
                 console.log("✅ Corral modificado:", corral_actualizado);
             }
 
@@ -295,7 +310,7 @@ export const FormularioCorral = () => {
                             : `MODIFICAR CORRAL`}
                 </div>
 
-                {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR  (!esAgregar),
+                {/* En caso de que sea una acción de VISUALIZAR o MODIFICAR (!esAgregar),
                 se mostrará el ID del corral dentro de un cuadrado. */}
                 {!esAgregar && (
                     <div className="cuadradoID">
@@ -314,9 +329,10 @@ export const FormularioCorral = () => {
             <hr/>
 
             <form>
-                {/*onSubmit={handleSubmit}*/}
                 <div className="contenedor-flex">
+                    {/* IZQUIERDA: nombre del corral y número de animales. */}
                     <div className="contenedor-izquierda">
+                        {/* Nombre del corral*/}
                         <div className="contenedor-linea">
                             <div className="label">Nombre del corral</div>
                             <input
@@ -324,7 +340,8 @@ export const FormularioCorral = () => {
                                 id="nombre"
                                 name="nombre" //Debe coincidir con el nombre de const[corral, ...]
                                 className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
-                                disabled={esVisualizar} //Se indica que el campo "nombre del corral" no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} //Se indica que el campo "nombre del corral"
+                                // no se puede modificar cuando se Visualiza.
                                 value={corral.nombre || ""}
                                 onChange={handleChange}
                             />
@@ -333,120 +350,153 @@ export const FormularioCorral = () => {
 
                         {/* En caso de que sea una acción de VISUALIZAR, MODIFICAR O AGREGAR,
                         se mostrará el número total de animales que hay en el corral y los seleccionados. */}
-                            <div className="contenedor-linea">
-                                <div className="label">Número de animales: </div>
-                                {animalesSeleccionados.length}
-                            </div>
+                        <div className="contenedor-linea">
+                            <div className="label">Número de animales:</div>
+                            {animalesSeleccionados.length}
+                        </div>
 
-                        {/* En caso de que sea una acción de AGREGAR o MODIFICAR  (!esVisualizar),
-                        se mostrará un listado de nombres de vacas/terneros con sus identificadores para poder
-                        añadirlos al corral. */}
+                        {/* El número de animales nuevos que se van a añadir solamente aparece
+                        en la acción de MODIFICAR o AGREGAR. */}
+                        {!esVisualizar && (
+                            <div className="contenedor-linea">
+                                <div className="label">Número de animales añadidos:</div>
+                                {animalesNuevosSeleccionados.length}
+                            </div>
+                        )}
+
+                    </div>
+
+                    {/* PARTE DERECHA: añadir animales y su listado. */}
+                    <div className="contenedor-derecha">
                         {!esVisualizar && (
                             <>
+                                {/* Buscador de animales encima del listado de animales (vacas/terneros) */}
                                 <div className="contenedor-linea">
                                     <div className="label">Añadir animales</div>
-                                    <div className="lista-animales">
-                                        {animales
-                                            /* Se filtra por los animales que NO están en el corral y no tienen el estado
-                                             "MUERTE" o "VENDIDA".
-                                             De estos animales, se obtiene el identificador y corral donde están*/
-                                            .filter(animal =>
-                                                !animalesSeleccionados.includes(animal.id) &&
-                                                animal.estado.toUpperCase() !== "MUERTE" &&
-                                                animal.estado.toUpperCase() !== "VENDIDA"
-                                            ).length === 0 ? (
-                                                <div className="mensaje-no-animales">
-                                                    No hay animales disponibles para añadir al corral.
-                                                </div>
-                                             ) : (
-                                                animales
-                                                .filter(animal =>
-                                                    !animalesSeleccionados.includes(animal.id) &&
-                                                    animal.estado.toUpperCase() !== "MUERTE" &&
-                                                    animal.estado.toUpperCase() !== "VENDIDA"
-                                                ).map((animal) => {
-                                                        // 🔎 Buscamos el corral correspondiente por id
-                                                        const corralAsignado = corrales.find(c => c.id === animal.corral);
-                                                        const nombreCorral = corralAsignado ? corralAsignado.codigo : "Ninguno";
-                                                        return (
-                                                            <label key={animal.id} className="item-animal">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    id={`animal-${animal.id}`}
-                                                                    name={`animal-${animal.id}`}
-                                                                    checked={animalesSeleccionados.includes(animal.id)}
-                                                                    onChange={() => toggleSeleccionAnimal(animal.id)}
-                                                                />
-                                                                {/*Aparece el ID de la vaca/ternero y el CORRAL donde se encuentra */}
-                                                                {/*{animal.codigo} ({nombreCorral})*/}
-                                                                <label htmlFor={`animal-${animal.id}`}>
-                                                                    {animal.codigo} ({nombreCorral})
-                                                                </label>
-                                                            </label>
-                                                        );
-                                                })
-                                            )
-                                        }
-                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar por código..."
+                                        id ="busquedaAnimal"
+                                        name = "busquedaAnimal"
+                                        className="cuadro-texto"
+                                        value={busquedaAnimal}
+                                        onChange={(e) => setBusquedaAnimal(e.target.value)}
+                                    />
+                                </div>
+
+                                {/* LISTADO DE SELECCIÓN */}
+                                <div className="lista-animales">
+                                    {/* Se filtra por los animales que NO están en el corral y no tienen el estado
+                                    "MUERTE" o "VENDIDA".
+                                    De estos animales, se obtiene el identificador y corral donde están */}
+                                    {animalesFiltrados.length === 0 ? (
+                                        <div className="mensaje-no-animales">
+                                            No hay animales disponibles para añadir al corral.
+                                        </div>
+                                    ) : (
+                                        animalesFiltrados.map((animal) => {
+                                            const corralAsignado = corrales.find(c => c.id === animal.corral);
+                                            const nombreCorral = corralAsignado ? corralAsignado.codigo : "Ninguno";
+                                            return (
+                                                <label key={animal.id} className="item-vaca">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`animal-${animal.id}`}
+                                                        name={`animal-${animal.id}`}
+                                                        checked={animalesSeleccionados.includes(animal.id)}
+                                                        onChange={() => toggleSeleccionAnimal(animal.id)}
+                                                    />
+                                                    {/*Aparece el ID de la vaca/ternero
+                                                       y el CORRAL donde se encuentra
+                                                    */}
+                                                    <span>{animal.codigo} ({nombreCorral})</span>
+                                                </label>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                                <div className="contenedor-botones-seleccion">
+                                    <button
+                                        type="button"
+                                        className="boton-seleccion-azul"
+                                        onClick={seleccionarTodas}
+                                    >
+                                        Seleccionar todo
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="boton-seleccion-rojo"
+                                        onClick={deseleccionarTodas}
+                                    >
+                                        Quitar selección
+                                    </button>
                                 </div>
                             </>
                         )}
-                        <>
-                            {/* LISTA DE ANIMALES SELECCIONADOS */}
-                            <div className="listaAnimalesAgregadosEnCorral">Lista de animales en el corral:</div>
-
-                            <table className="tabla-corrales">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    {/*La columna ACCIÓN solo aparece cuando se AGREGA o MODIFICA un corral*/}
-                                    {!esVisualizar && <th>ACCIÓN</th>}
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {animalesSeleccionados.length === 0 ? (
-
-                                    <tr>
-                                        {/* - Si se VISUALIZA se muestra un mensaje indicando que no hay animales*/}
-                                        {/*    en el corral. */}
-
-                                        {/* - Si se AGREGA o MODIFICA se muestra un mensaje indicando que no*/}
-                                        {/*    hay aniamles seleccionados.*/}
-                                        <td colSpan="2" className="mensaje-no-animales">
-                                            {esVisualizar ? "No hay animales en el corral" : "No hay animales seleccionados"}
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    animalesSeleccionados.map((id) => {
-                                        const animal = animales.find((a) => a.id === id);
-                                        return animal ? (
-                                            <tr key={id}>
-                                                <td>{animal.codigo}</td>
-                                                {/*El botón de QUITAR solo aparece cuando se AGREGA o MODIFICA un corral.*/}
-                                                {/*Además, el botón solo aparece en los animales que NO estaban en el corral, es decir,*/}
-                                                {/*se pone el botón en los que se están añadiendo ahora. Por tanto,*/}
-                                                {/*se comprueba que los animales NO estén en la lista de animales del corral.*!/*/}
-                                                {!esVisualizar && !animalesOriginalesRef.current.includes(id) && (
-                                                    <td>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-danger btn-sm"
-                                                            onClick={() => handleQuitarAnimal(id)}
-                                                        >
-                                                            QUITAR
-                                                        </button>
-                                                    </td>
-                                                )}
-                                            </tr>
-                                        ) : null;
-                                    })
-                                )}
-                                </tbody>
-                            </table>
-                        </>
                     </div>
                 </div>
+
+                {/* En caso de que sea una acción de AGREGAR o MODIFICAR  (!esVisualizar),
+                        se mostrará un listado de nombres de vacas/terneros con sus identificadores para poder
+                        añadirlos al corral. */}
+
                 <>
+                    {/* LISTA DE ANIMALES SELECCIONADOS */}
+                    <div className="listaAnimalesAgregadosEnCorral">Lista de animales en el corral:</div>
+                    <div className="scroll-vertical-tablaCorrales">  {/* Para hacer scoll en la derecha de la tabla*/}
+                        <table className="tabla-corrales">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                {/*La columna ACCIÓN solo aparece cuando se AGREGA o MODIFICA un corral*/}
+                                {!esVisualizar && <th>ACCIÓN</th>}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {animalesSeleccionados.length === 0 ? (
+
+                            <tr>
+                                {/* - Si se VISUALIZA se muestra un mensaje indicando que no hay animales*/}
+                                {/*    en el corral. */}
+
+                                {/* - Si se AGREGA o MODIFICA se muestra un mensaje indicando que no*/}
+                                {/*    hay aniamles seleccionados.*/}
+                                <td colSpan="2" className="mensaje-no-animales">
+                                    {esVisualizar ? "No hay animales en el corral" : "No hay animales seleccionados"}
+                                </td>
+                            </tr>
+                        ) : (
+                            animalesSeleccionados.map((id) => {
+                                const animal = animales.find((a) => a.id === id);
+                                return animal ? (
+                                    <tr key={id}>
+                                        <td>{animal.codigo}</td>
+                                        {/*El botón de QUITAR solo aparece cuando se AGREGA o MODIFICA un corral.*/}
+                                        {/*Además, el botón solo aparece en los animales que NO estaban en el corral, es decir,*/}
+                                        {/*se pone el botón en los que se están añadiendo ahora. Por tanto,*/}
+                                        {/*se comprueba que los animales NO estén en la lista de animales del corral.*!/*/}
+                                        {!esVisualizar && !animalesOriginalesRef.current.includes(id) && (
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => handleQuitarAnimal(id)}
+                                                >
+                                                    QUITAR
+                                                </button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ) : null;
+                            })
+                        )}
+                        </tbody>
+                    </table>
+                    </div>
+                </>
+
+                <>
+
                     {/* Si es una acción de AGREGAR o MODIFICAR: Aparecen los siguientes botones:
                         BOTONES DE ACEPTAR, ACEPTAR Y SEGUIR AÑADIENDO, Y CANCELAR */}
 
