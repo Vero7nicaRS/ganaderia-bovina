@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
+
 from .views import (
     AnimalViewSet,
     ToroViewSet,
@@ -24,6 +25,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('inventario_por_tipo/', inventario_por_tipo),
     path("simular-cria/", SimulacionCriaView.as_view(), name="simular-cria"),
-    path('reentrenar-cria/', ReentrenarCriaView.as_view(), name="reentrenar-cria")
-
+    path('reentrenar-cria/', ReentrenarCriaView.as_view(), name="reentrenar-cria"),
 ]
