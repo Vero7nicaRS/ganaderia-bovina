@@ -75,8 +75,6 @@ export const SimulacionCrias = () => {
         setAnimalesSeleccionados([]);
     };
 
-
-
     const validarFormulario = () => {
         const erroresTemp = ComprobarCamposSimulacion(datosSimulacion,animalesSeleccionados); // Revisa todos los campos
         setErrores(erroresTemp);
@@ -145,20 +143,6 @@ export const SimulacionCrias = () => {
 
                     {/* PARTE IZQUIERDA: Buscador de vacas, listado de vacas y botones. */}
                     <div className="contenedor-izquierda">
-                        {/*<div className="contenedor-linea-vertical">*/}
-                        {/*    <div className="label">Identificador vaca</div>*/}
-
-                        {/*    <input*/}
-                        {/*        type="text"*/}
-                        {/*        id="filtroIDAnimal"*/}
-                        {/*        name="filtroIDAnimal"*/}
-                        {/*        className={`cuadro-texto ${errores.listaAnimales ? "error" : ""}`}*/}
-                        {/*        placeholder="Buscar vaca por código..."*/}
-                        {/*        value={busquedaID}*/}
-                        {/*        onChange={(e) => setBusquedaID(e.target.value)}*/}
-                        {/*    />*/}
-
-
                         <div className="contenedor-linea-vertical">
                             <div className="fila-buscador">
                                 <div className="label">Identificador vaca</div>
@@ -287,7 +271,7 @@ export const SimulacionCrias = () => {
                 </>
 
                 {cargandoSimulacion && (
-                    <div style={{ textAlign: "center", marginTop: "10px", color: "#007bff" }}>
+                    <div className="mensaje-cargando-simulacion">
                         Cargando simulación, por favor espere...
                     </div>
                 )}
