@@ -8,6 +8,7 @@ import {CorralesContext} from "../../DataAnimales/DataCorrales/CorralesContext.j
 // Fusión del backend con el frontend:
 import api from "../../api.js"
 import { convertirAnimalParaAPI } from "../../utilities/ConversorAnimal.js"
+import {enviarCriaAlModeloAprendizaje} from "../../utilities/modeloAprendizaje.js";
 
 /*
 * ------------------------------------------ FormularioAnimal.jsx: ------------------------------------------
@@ -185,59 +186,9 @@ export const FormularioAnimal = () => {
             - Cría.
             - Reproductores.
             - Características de la cría.
-
         * */
         if (esAgregar && nuevoAnimalConId && animal.tipo === "Ternero" && animal.padre && animal.madre) {
-            try {
-
-                // Se obtiene el animal para obtener el código de las vacas, ya que la simulación trabaja con el "código"
-                const objVaca = animales.find((v) => v.id === parseInt(animal.madre));
-
-                // Se obtiene el toro para obtener su código, ya que la simulación trabaja con el "código"
-                const objToro = animalesToros.find((t) => t.id ===  parseInt(animal.padre));
-                console.log("VACA: ", objVaca)
-                console.log("TORO: ", objToro)
-                console.log("madre: ", animal.madre)
-                console.log("padre: ", animal.padre)
-                if (!objVaca || !objToro) {
-                    console.error("❌ Reproductores no encontrados. Vaca:", objVaca?.id, "Toro:", objToro?.id);
-                    return;
-                }
-
-                const entrenamiento= {
-                    id_vaca: objVaca.codigo,
-                    id_toro: objToro.codigo,
-                    id_cria: nuevoAnimalConId.codigo,
-                    celulas_somaticas: parseFloat(animal.celulas_somaticas),
-                    produccion_leche: parseFloat(animal.produccion_leche),
-                    calidad_patas: parseFloat(animal.calidad_patas),
-                    calidad_ubres: parseFloat(animal.calidad_ubres),
-                    grasa: parseFloat(animal.grasa),
-                    proteinas: parseFloat(animal.proteinas),
-                    cs_vaca: objVaca.celulas_somaticas,
-                    pl_vaca: objVaca.produccion_leche,
-                    pa_vaca: objVaca.calidad_patas,
-                    u_vaca: objVaca.calidad_ubres,
-                    g_vaca: objVaca.grasa,
-                    pr_vaca: objVaca.proteinas,
-                    cs_toro: objToro.celulas_somaticas,
-                    pl_toro: objToro.transmision_leche,
-                    pa_toro: objToro.calidad_patas,
-                    u_toro: objToro.calidad_ubres,
-                    g_toro: objToro.grasa,
-                    pr_toro: objToro.proteinas,
-                };
-
-                console.log("📦 Payload a enviar:", entrenamiento);
-
-                const response = await api.post("/reentrenar-cria/", entrenamiento);
-                console.log("🔁 Reentrenamiento exitoso:", response.data);
-            } catch (error) {
-                console.error("❌ Error al reentrenar modelo:", error);
-
-                console.log("📉 Error completo:", error.response?.data?.traceback);
-
-            }
+            await enviarCriaAlModeloAprendizaje(animal, nuevoAnimalConId, animales, animalesToros);
         }
 
         /* Una vez que se haya agregado un nuevo animal o se modifique un animal existente,
@@ -253,11 +204,12 @@ export const FormularioAnimal = () => {
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
         const animalConvertido = convertirAnimalParaAPI(animal, corrales, animales, animalesToros);
+        let nuevoAnimalConId; // Almacena el resultado de "agregarAnimal".
 
         try {
             if (esAgregar) {
                 console.log("Se ha añadido el animal y se continua añadiendo nuevos animales");
-                await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
+                nuevoAnimalConId = await agregarAnimal(animalConvertido); // Se añade el nuevo animal al backend y se muestra la información en el frontend.
                 setAnimal(estadoInicial); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
                 // También, se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
@@ -265,6 +217,17 @@ export const FormularioAnimal = () => {
             console.error("❌ Error al guardar el animal:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
+
+        /* Cada vez que se agregue una nueva cría (Ternero), se va a añadir una fila al modelo de aprendizaje.
+        Que contendrá:
+            - Cría.
+            - Reproductores.
+            - Características de la cría.
+        * */
+        if (esAgregar && nuevoAnimalConId && animal.tipo === "Ternero" && animal.padre && animal.madre) {
+            await enviarCriaAlModeloAprendizaje(animal, nuevoAnimalConId, animales, animalesToros);
+        }
+
     }
 
     /* ----------------------- FIN MANEJADOR ANIMALESCONTEXT: AGREGAR, AGREGAR Y SEGUIR, Y MODIFICAR  -----------------------*/
