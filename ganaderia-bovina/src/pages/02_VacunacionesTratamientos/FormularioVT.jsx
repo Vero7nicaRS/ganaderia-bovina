@@ -278,7 +278,7 @@ export const FormularioVT= () => {
                          */}
                         <div>
                             {vtForm.comentario && (
-                                <div style={{color: 'red', marginTop: '10px'}}>
+                                <div className="mensaje-motivo-eliminacionVT">
                                     <strong>Comentarios:</strong> {vtForm.comentario}
                                 </div>
                             )}
