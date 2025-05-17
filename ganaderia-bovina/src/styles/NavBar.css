@@ -1,0 +1,14 @@
+/* BOTÓN DE CERRAR SESIÓN: Se verá igual que el resto de elementos del NavLink. */
+.dropdown-item-button {
+    background: none;
+    border: none;
+    padding: 0.25rem 1rem;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    color: #212529;
+}
+.dropdown-item-button:hover {
+    background-color: #f8f9fa;
+    color: #16181b;
+}
