@@ -5,6 +5,7 @@ import {InseminacionesContext} from "../../DataAnimales/DataInseminaciones/Insem
 import "../../styles/ListaInseminaciones.css"
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 export const ListaInseminaciones = () => {
 
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListaInseminaciones.
@@ -87,13 +88,15 @@ export const ListaInseminaciones = () => {
                 <div className="cuadradoVisualizarListaInseminaciones">VISUALIZAR LISTA DE INSEMINACIONES</div>
 
                 {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
-                <NavLink
-                    to="/formulario-inseminacion"
-                    state={{modo: "agregar"}} // Se pasa el estado "Agregar"
-                    className="btn btn-info boton-derecha"
-                >
-                    AÑADIR INSEMINACIÓN
-                </NavLink>
+                <SoloAdmin>
+                    <NavLink
+                        to="/formulario-inseminacion"
+                        state={{modo: "agregar"}} // Se pasa el estado "Agregar"
+                        className="btn btn-info boton-derecha"
+                    >
+                        AÑADIR INSEMINACIÓN
+                    </NavLink>
+                </SoloAdmin>
             </div>
             <hr/>
             {/*Añade una línea/raya */}
@@ -201,37 +204,40 @@ export const ListaInseminaciones = () => {
                                                                             "MUERTA" ni "VENDIDA".
                                                      NI el toro tiene el "ESTADO": "No existente" (eliminado del sistema),
                                                                                     "MUERTE" y "OTROS".*/}
-                                                    {vaca && vaca.estado &&
-                                                        ["MUERTE", "VENDIDA", "NO EXISTENTE"].
-                                                            includes(vaca.estado.toUpperCase()) === false &&
-                                                        toro && toro.estado &&
-                                                        ["MUERTE", "OTROS", "NO EXISTENTE"].
-                                                            includes(toro.estado.toUpperCase()) === false &&
-                                                        (
+                                                    <SoloAdmin>
+                                                        {vaca && vaca.estado &&
+                                                            ["MUERTE", "VENDIDA", "NO EXISTENTE"].
+                                                                includes(vaca.estado.toUpperCase()) === false &&
+                                                            toro && toro.estado &&
+                                                            ["MUERTE", "OTROS", "NO EXISTENTE"].
+                                                                includes(toro.estado.toUpperCase()) === false &&
+                                                            (
+                                                            <>
+                                                                {/* BOTÓN MODIFICAR */}
+                                                                <NavLink
+                                                                    to={`/formulario-inseminacion/${item.id}`}
+                                                                    state={{
+                                                                        modo: "modificar",
+                                                                        inseminacion: item
+                                                                    }} //Se le pasa el MODO (modificar) y la inseminación (item)
+                                                                    className="btn-modificar"
+                                                                >
+                                                                    MODIFICAR
+                                                                </NavLink>
+                                                                </>
+                                                            )
+                                                        }
                                                         <>
-                                                            {/* BOTÓN MODIFICAR */}
-                                                            <NavLink
-                                                                to={`/formulario-inseminacion/${item.id}`}
-                                                                state={{
-                                                                    modo: "modificar",
-                                                                    inseminacion: item
-                                                                }} //Se le pasa el MODO (modificar) y la inseminación (item)
-                                                                className="btn-modificar"
-                                                            >
-                                                                MODIFICAR
-                                                            </NavLink>
-                                                            </>
-                                                        )}
-                                                    <>
-                                                        {/* BOTÓN ELIMINAR */}
-                                                        <button
-                                                            className="btn-eliminar"
-                                                            onClick={() => manejarEliminar(item.id, item.codigo,
-                                                                item.fecha_inseminacion, item.hora_inseminacion)}
-                                                            >
-                                                            ELIMINAR
-                                                        </button>
-                                                    </>
+                                                            {/* BOTÓN ELIMINAR */}
+                                                            <button
+                                                                className="btn-eliminar"
+                                                                onClick={() => manejarEliminar(item.id, item.codigo,
+                                                                    item.fecha_inseminacion, item.hora_inseminacion)}
+                                                                >
+                                                                ELIMINAR
+                                                            </button>
+                                                        </>
+                                                   </SoloAdmin>
 
                                                 </td>
                                             </tr>

@@ -12,6 +12,7 @@ import "../../styles/InventarioVT.css";
 import {useContext, useState} from "react";
 import {VTContext} from "../../DataAnimales/DataVacunasTratamientos/VTContext.jsx";
 import { useMemo } from "react";
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 
 export const InventarioVT = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de InventarioVT.
@@ -49,14 +50,17 @@ export const InventarioVT = () => {
             <div className="contenedor">
                 <div className="cuadradoVisualizarListaVT">INVENTARIO DE TRATAMIENTOS/VACUNAS</div>
 
-                {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
-                <NavLink
-                    to="/formulario-vt"
-                    state={{modo: "agregar"}} // Se pasa el estado "Agregar"
-                    className="btn btn-info boton-derecha"
-                >
-                    AÑADIR TRATAMIENTO/VACUNA
-                </NavLink>
+                <SoloAdmin>
+                    {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
+                    <NavLink
+                        to="/formulario-vt"
+                        state={{modo: "agregar"}} // Se pasa el estado "Agregar"
+                        className="btn btn-info boton-derecha"
+                    >
+                        AÑADIR TRATAMIENTO/VACUNA
+                    </NavLink>
+                </SoloAdmin>
+
             </div>
             <hr/>
             {/*Añade una línea/raya */}
@@ -131,30 +135,32 @@ export const InventarioVT = () => {
 
                                         {/* Se muestran los botones de MODIFICAR y ELIMINAR
                                          cuando el estado NO es "INACTIVO */}
-                                        {item.estado !== "Inactiva" && (
-                                            <>
-                                                {/* BOTÓN MODIFICAR */}
-                                                <NavLink
-                                                    to={`/formulario-vt/${item.id}`}
-                                                    state={{
-                                                        modo: "modificar",
-                                                        vt: item
-                                                    }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                                    className="btn-modificar"
-                                                >
-                                                    MODIFICAR
-                                                </NavLink>
-                                                {/* BOTÓN ELIMINAR */}
-                                                <NavLink
-                                                    to="/eliminar-inventario-vt"
-                                                    state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
-                                                    className="btn-eliminar"
+                                        <SoloAdmin>
+                                            {item.estado !== "Inactiva" && (
+                                                <>
+                                                    {/* BOTÓN MODIFICAR */}
+                                                    <NavLink
+                                                        to={`/formulario-vt/${item.id}`}
+                                                        state={{
+                                                            modo: "modificar",
+                                                            vt: item
+                                                        }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                                        className="btn-modificar"
+                                                    >
+                                                        MODIFICAR
+                                                    </NavLink>
+                                                    {/* BOTÓN ELIMINAR */}
+                                                    <NavLink
+                                                        to="/eliminar-inventario-vt"
+                                                        state={{vt_inventario: item}} //Se le pasa el ANIMAL (item).
+                                                        className="btn-eliminar"
 
-                                                >
-                                                    ELIMINAR
-                                                </NavLink>
-                                            </>
-                                        )}
+                                                    >
+                                                        ELIMINAR
+                                                    </NavLink>
+                                                </>
+                                            )}
+                                        </SoloAdmin>
                                     </td>
                                 </tr>
                                 ))

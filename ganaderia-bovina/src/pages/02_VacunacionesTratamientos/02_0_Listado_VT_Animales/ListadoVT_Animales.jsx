@@ -15,7 +15,8 @@ import {VTListadoContext} from "../../../DataAnimales/DataVacunasTratamientos/Da
 import { useMemo } from "react";
 import Swal from 'sweetalert2';
 import {AnimalesContext} from "../../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
-import {VTContext} from "../../../DataAnimales/DataVacunasTratamientos/VTContext.jsx"; // Se importa SweetAlert2 para llevar a cabo el mensaje de confirmación de eliminación.
+import {VTContext} from "../../../DataAnimales/DataVacunasTratamientos/VTContext.jsx";
+import {SoloAdmin} from "../../../components/SoloAdmin.jsx"; // Se importa SweetAlert2 para llevar a cabo el mensaje de confirmación de eliminación.
 
 export const ListadoVT_Animales = () => {
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListadoVT_Animales.
@@ -107,14 +108,17 @@ export const ListadoVT_Animales = () => {
             <div className="contenedor">
                 <div className="cuadradoVisualizarListaVTAnimal">LISTADO DE TRATAMIENTOS/VACUNAS EN ANIMALES</div>
 
-                {/* Botón para AGREGAR un nueva vacuna/tratamiento al animal*/}
-                <NavLink
-                    to="/formulario-vt-animal"
-                    state={{modo: "agregar"}} // Se pasa el estado "Agregar"
-                    className="btn btn-info boton-derecha"
-                >
-                    AÑADIR TIPO AL ANIMAL
-                </NavLink>
+                <SoloAdmin>
+                    {/* Botón para AGREGAR un nueva vacuna/tratamiento al animal*/}
+                    <NavLink
+                        to="/formulario-vt-animal"
+                        state={{modo: "agregar"}} // Se pasa el estado "Agregar"
+                        className="btn btn-info boton-derecha"
+                    >
+                        AÑADIR TIPO AL ANIMAL
+                    </NavLink>
+                </SoloAdmin>
+
             </div>
             <hr/>
             {/*Añade una línea/raya */}
@@ -231,36 +235,38 @@ export const ListadoVT_Animales = () => {
                                                      NO tiene el "ESTADO": "No existente" (eliminada del sistema),
                                                                            "MUERTE" o "VENDIDA".
                                                      Tampoco si la vacuna tiene el "ESTADO": "INACTIVA"*/}
-                                                    {vaca && vaca.estado &&
-                                                        ["MUERTE", "VENDIDA", "NO EXISTENTE"].
-                                                                    includes(vaca.estado.toUpperCase()) === false &&
-                                                        vtInventario && vtInventario.estado &&
-                                                        vtInventario.estado.toUpperCase() !== "INACTIVA" &&
-                                                        (
+                                                    <SoloAdmin>
+                                                        {vaca && vaca.estado &&
+                                                            ["MUERTE", "VENDIDA", "NO EXISTENTE"].
+                                                                        includes(vaca.estado.toUpperCase()) === false &&
+                                                            vtInventario && vtInventario.estado &&
+                                                            vtInventario.estado.toUpperCase() !== "INACTIVA" &&
+                                                            (
+                                                            <>
+                                                                {/* BOTÓN MODIFICAR */}
+                                                                <NavLink
+                                                                    to={`/formulario-vt-animal/${item.id}`}
+                                                                    state={{
+                                                                        modo: "modificar",
+                                                                        vt_animal: item
+                                                                    }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
+                                                                    className="btn-modificar"
+                                                                >
+                                                                        MODIFICAR
+                                                                </NavLink>
+                                                            </>
+                                                        )}
                                                         <>
-                                                            {/* BOTÓN MODIFICAR */}
-                                                            <NavLink
-                                                                to={`/formulario-vt-animal/${item.id}`}
-                                                                state={{
-                                                                    modo: "modificar",
-                                                                    vt_animal: item
-                                                                }} //Se le pasa el MODO (modificar) y la vacuna/tratamiento (item)
-                                                                className="btn-modificar"
+                                                           {/* BOTÓN ELIMINAR */}
+                                                            <button
+                                                                className="btn-eliminar"
+                                                                onClick={() => manejarEliminar(item.id, item.codigo,
+                                                                    item.tipo, item.nombre_vt)}
                                                             >
-                                                                    MODIFICAR
-                                                            </NavLink>
+                                                                ELIMINAR
+                                                            </button>
                                                         </>
-                                                    )}
-                                                    <>
-                                                       {/* BOTÓN ELIMINAR */}
-                                                        <button
-                                                            className="btn-eliminar"
-                                                            onClick={() => manejarEliminar(item.id, item.codigo,
-                                                                                                    item.tipo, item.nombre_vt)}
-                                                        >
-                                                            ELIMINAR
-                                                        </button>
-                                                    </>
+                                                    </SoloAdmin>
                                                 </td>
                                             </tr>
                                         )

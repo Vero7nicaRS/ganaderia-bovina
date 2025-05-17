@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import "../../styles/ListaCorrales.css"
 import {CorralesContext} from "../../DataAnimales/DataCorrales/CorralesContext.jsx";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 export const ListaCorrales = () => {
 
     /* Obtener datos mocks para probar las funcionalidades CRUD de ListaCorrales.
@@ -64,14 +65,16 @@ export const ListaCorrales = () => {
             <div className="contenedor">
                 <div className="cuadradoVisualizarListaCorrales">VISUALIZAR LISTA DE CORRALES</div>
 
-                {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
-                <NavLink
-                    to="/formulario-corral"
-                    state={{modo: "agregar"}} // Se pasa el estado "Agregar"
-                    className="btn btn-info boton-derecha"
-                >
-                    AÑADIR CORRAL
-                </NavLink>
+                <SoloAdmin>
+                    {/* Botón para AGREGAR un nueva vacuna/tratamiento*/}
+                    <NavLink
+                        to="/formulario-corral"
+                        state={{modo: "agregar"}} // Se pasa el estado "Agregar"
+                        className="btn btn-info boton-derecha"
+                    >
+                        AÑADIR CORRAL
+                    </NavLink>
+                </SoloAdmin>
             </div>
             <hr/>
             {/*Añade una línea/raya */}
@@ -88,12 +91,14 @@ export const ListaCorrales = () => {
                         onChange={manejarBusquedaID}
                     />
                 </div>
-                {/* BOTÓN DE MOVIMIENTO DE CORRAL*/}
-                <div className="boton-volver">
-                    <NavLink to="/movimiento-de-corral" className="btn btn-info">
-                        MOVER DE CORRAL
-                    </NavLink>
-                </div>
+                <SoloAdmin>
+                    {/* BOTÓN DE MOVIMIENTO DE CORRAL*/}
+                    <div className="boton-volver">
+                        <NavLink to="/movimiento-de-corral" className="btn btn-info">
+                            MOVER DE CORRAL
+                        </NavLink>
+                    </div>
+                </SoloAdmin>
             </div>
 
             <div className="listaVacunasTratamientos">Lista de corrales:</div>
@@ -139,36 +144,38 @@ export const ListaCorrales = () => {
                                                 {/* Se muestran los botones de MODIFICAR y ELIMINAR */}
 
                                                 <>
-                                                    {/* BOTÓN MODIFICAR */}
-                                                    <NavLink
-                                                        to={`/formulario-corral/${item.id}`}
-                                                        state={{modo: "modificar", corral: item}}
-                                                        className="btn-modificar"
-                                                    >
-                                                        MODIFICAR
-                                                    </NavLink>
-                                                    {/* BOTÓN ELIMINAR */}
-
-                                                    {/* Solo se muestra el botón "ELIMINAR" si el corral no
-                                                    tiene ningun animal, es decir, está el corral vacío */}
-                                                    {!animales.some(animal => animal.corral === item.id) ? (
-                                                        //Si NO hay animales, aparece el botón de ELIMINAR.
-
-                                                        <button
-                                                            className="btn-eliminar"
-                                                            onClick={() => manejarEliminar(item.id, item.codigo)}
-                                                            /* Se le pasa el "id" y el "código" para borrar el corral
-                                                      y mostrar un mensaje de error indicándole el código del corral. */
+                                                    <SoloAdmin>
+                                                        {/* BOTÓN MODIFICAR */}
+                                                        <NavLink
+                                                            to={`/formulario-corral/${item.id}`}
+                                                            state={{modo: "modificar", corral: item}}
+                                                            className="btn-modificar"
                                                         >
-                                                            ELIMINAR
-                                                        </button>
-                                                    ) : ( //Si hay animales, deshabilito el botón de ELIMINAR.
-                                                        <button
-                                                            className="btn-eliminar btn-eliminar-hidden"
-                                                        >
-                                                            ELIMINAR
-                                                        </button>
-                                                    )}
+                                                            MODIFICAR
+                                                        </NavLink>
+                                                        {/* BOTÓN ELIMINAR */}
+
+                                                        {/* Solo se muestra el botón "ELIMINAR" si el corral no
+                                                        tiene ningun animal, es decir, está el corral vacío */}
+                                                        {!animales.some(animal => animal.corral === item.id) ? (
+                                                            //Si NO hay animales, aparece el botón de ELIMINAR.
+
+                                                            <button
+                                                                className="btn-eliminar"
+                                                                onClick={() => manejarEliminar(item.id, item.codigo)}
+                                                                /* Se le pasa el "id" y el "código" para borrar el corral
+                                                          y mostrar un mensaje de error indicándole el código del corral. */
+                                                            >
+                                                                ELIMINAR
+                                                            </button>
+                                                        ) : ( //Si hay animales, deshabilito el botón de ELIMINAR.
+                                                            <button
+                                                                className="btn-eliminar btn-eliminar-hidden"
+                                                            >
+                                                                ELIMINAR
+                                                            </button>
+                                                        )}
+                                                    </SoloAdmin>
                                                 </>
                                             </td>
                                         </tr>

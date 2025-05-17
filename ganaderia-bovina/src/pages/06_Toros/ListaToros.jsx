@@ -11,6 +11,7 @@ import "../../styles/ListaToros.css";
 import {NavLink} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 
 export const ListaToros = () => {
 
@@ -41,14 +42,17 @@ export const ListaToros = () => {
                 <div className="cuadradoVisualizarListaToros">VISUALIZAR LISTA DE TOROS</div>
                 {/*<NavLink to="/agregar-animal" className="btn btn-info boton-derecha">AÑADIR ANIMAL</NavLink>*/}
 
-                {/* Botón para AGREGAR un nuevo animal (vaca/ternero)*/}
-                <NavLink
-                    to="/formulario-toro"
-                    state={{modo: "agregar"}} // Se pasa el estado "Agregar"
-                    className="btn btn-info boton-derecha"
-                >
-                    AÑADIR TORO
-                </NavLink>
+                <SoloAdmin>
+                    {/* Botón para AGREGAR un nuevo animal (vaca/ternero)*/}
+                    <NavLink
+                        to="/formulario-toro"
+                        state={{modo: "agregar"}} // Se pasa el estado "Agregar"
+                        className="btn btn-info boton-derecha"
+                    >
+                        AÑADIR TORO
+                    </NavLink>
+                </SoloAdmin>
+
             </div>
             <hr/>
             {/*Añade una línea/raya */}
@@ -104,32 +108,31 @@ export const ListaToros = () => {
 
                                         {/*Si el animal (toro) ha sido eliminado (estado = "Muerte")*, NO se muestran
                                     los botones MODIFICAR y ELIMINAR */}
+                                        <SoloAdmin>
+                                            {item.estado !== "Muerte" && item.estado !== "Otros"  && (
+                                                <>
+                                                    {/* BOTÓN MODIFICAR */}
+                                                    <NavLink
+                                                        to={`/formulario-toro/${item.id}`}
+                                                        state={{modo: "modificar", animalToro: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
+                                                        className="btn-modificar"
+                                                    >
+                                                        MODIFICAR
+                                                    </NavLink>
 
-                                        {item.estado !== "Muerte" && item.estado !== "Otros"  && (
-                                            <>
-                                                {/* BOTÓN MODIFICAR */}
-                                                <NavLink
-                                                    to={`/formulario-toro/${item.id}`}
-                                                    state={{modo: "modificar", animalToro: item}} //Se le pasa el MODO (modificar) y el ANIMAL (item)
-                                                    className="btn-modificar"
-                                                >
-                                                    MODIFICAR
-                                                </NavLink>
+                                                    {/* BOTÓN ELIMINAR */}
+                                                    <NavLink
+                                                        to="/eliminar-toro"
+                                                        state={{animalToro: item}} //Se le pasa el ANIMAL (item).
+                                                        className="btn-eliminar"
 
-                                                {/* BOTÓN ELIMINAR */}
-                                                <NavLink
-                                                    to="/eliminar-toro"
-                                                    state={{animalToro: item}} //Se le pasa el ANIMAL (item).
-                                                    className="btn-eliminar"
+                                                    >
+                                                        ELIMINAR
+                                                    </NavLink>
+                                                </>
 
-                                                >
-                                                    ELIMINAR
-                                                </NavLink>
-                                            </>
-
-                                        )}
-
-
+                                            )}
+                                        </SoloAdmin>
                                     </td>
                                 </tr>
                                 ))

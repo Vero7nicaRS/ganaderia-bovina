@@ -10,6 +10,7 @@ import "../../styles/ListaAnimales.css";
 import {useState, useContext, useEffect} from "react";
 import {NavLink} from "react-router-dom";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 
 export const ListaAnimales = () => {
 
@@ -50,14 +51,16 @@ export const ListaAnimales = () => {
         <>
             <div className="contenedor">
                 <div className="cuadradoVisualizarLista">VISUALIZAR LISTA DE ANIMALES</div>
-                {/* Botón para AGREGAR un nuevo animal (vaca/ternero)*/}
-                <NavLink
-                    to="/formulario-animal"
-                    state={{modo: "agregar"}} // Se pasa el estado "Agregar"
-                    className="btn btn-info boton-derecha"
-                >
-                    AÑADIR ANIMAL
-                </NavLink>
+                <SoloAdmin>
+                    {/* Botón para AGREGAR un nuevo animal (vaca/ternero)*/}
+                    <NavLink
+                        to="/formulario-animal"
+                        state={{modo: "agregar"}} // Se pasa el estado "Agregar"
+                        className="btn btn-info boton-derecha"
+                    >
+                        AÑADIR ANIMAL
+                    </NavLink>
+                </SoloAdmin>
             </div>
 
             <hr/>
@@ -138,29 +141,31 @@ export const ListaAnimales = () => {
                                                 </>
                                                 {/*Si el animal ha sido eliminado (estado = "Muerte" o "Vendida")*
                                          NO se muestran los botones MODIFICAR y ELIMINAR */}
-                                                {item.estado !== "Muerte" && item.estado !== "Vendida" &&
-                                                    (
-                                                        <>
-                                                            {/* BOTÓN MODIFICAR */}
-                                                            <NavLink
-                                                                to={`/formulario-animal/${item.id}`}
-                                                                state={{modo: "modificar", animal: item}}
-                                                                className="btn-modificar"
-                                                            >
-                                                                MODIFICAR
-                                                            </NavLink>
+                                                <SoloAdmin>
+                                                    {item.estado !== "Muerte" && item.estado !== "Vendida" &&
+                                                        (
+                                                            <>
+                                                                {/* BOTÓN MODIFICAR */}
+                                                                <NavLink
+                                                                    to={`/formulario-animal/${item.id}`}
+                                                                    state={{modo: "modificar", animal: item}}
+                                                                    className="btn-modificar"
+                                                                >
+                                                                    MODIFICAR
+                                                                </NavLink>
 
-                                                            {/* BOTÓN ELIMINAR */}
-                                                            <NavLink
-                                                                to="/eliminar-animal"
-                                                                state={{animal: item}} //Se le pasa el ANIMAL (item)
-                                                                className="btn-eliminar"
-                                                            >
-                                                                ELIMINAR
-                                                            </NavLink>
-                                                        </>
-                                                    )
-                                                }
+                                                                {/* BOTÓN ELIMINAR */}
+                                                                <NavLink
+                                                                    to="/eliminar-animal"
+                                                                    state={{animal: item}} //Se le pasa el ANIMAL (item)
+                                                                    className="btn-eliminar"
+                                                                >
+                                                                    ELIMINAR
+                                                                </NavLink>
+                                                            </>
+                                                        )
+                                                    }
+                                                </SoloAdmin>
                                             </td>
                                         </tr>
                                     )
@@ -177,6 +182,6 @@ export const ListaAnimales = () => {
                         VOLVER AL MENÚ
                     </NavLink>
                 </div>
-            </>
-            );
-            };
+        </>
+    );
+};
