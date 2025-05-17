@@ -12,10 +12,13 @@ import PropTypes from "prop-types";
 import {VTContext} from "./VTContext.jsx";
 import {useEffect, useState} from "react";
 import api from "../../api.js";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 export const VtProvider = ({children}) => {
     const [vt, setVT] = useState([]);
+    const { accessToken } = useAuthContext();
     // Se cargan los datos de las vacunas/tratamientos del inventario que están en el backend.
     useEffect(() => {
+        if (!accessToken) return;
         api.get("/inventariovt/")
             .then(response => {
                 setVT(response.data);
@@ -23,7 +26,7 @@ export const VtProvider = ({children}) => {
             .catch(error => {
                 console.error("Error al cargar el inventario de vacunas/tratamientos:", error);
             });
-    }, []);
+    }, [accessToken]);
 
     /*
     * ----------------------------------------------------------------------------------------------

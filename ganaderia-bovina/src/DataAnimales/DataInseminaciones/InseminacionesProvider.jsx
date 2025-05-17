@@ -10,14 +10,16 @@ import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {InseminacionesContext} from "./InseminacionesContext.jsx";
 import api from "../../api.js";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 
 export const InseminacionesProvider = ({children}) => {
 
     //setInseminaciones permite actualizar el estado de inseminaciones (evitando modificar el estado actual "inseminaciones").
     const [inseminaciones, setInseminaciones] =  useState([]);
-
+    const { accessToken } = useAuthContext();
     // Se cargan los datos de las inseminaciones que están en el backend.
     useEffect(() => {
+        if (!accessToken) return;
         api.get("/listainseminaciones/")
             .then(response => {
                 setInseminaciones(response.data);
@@ -25,7 +27,7 @@ export const InseminacionesProvider = ({children}) => {
             .catch(error => {
                 console.error("Error al cargar las inseminaciones:", error);
             });
-    }, []);
+    }, [accessToken]);
 
     /*
     * ----------------------------------------------------------------------------------------------

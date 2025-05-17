@@ -11,12 +11,14 @@ import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {CorralesContext} from "./CorralesContext.jsx";
 import api from "../../api.js";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 
 export const CorralesProvider = ({children}) => {
     const [corrales, setCorrales] = useState([]);
-
+    const { accessToken } = useAuthContext();
     // Se cargan los datos de los corrales que están en el backend.
     useEffect(() => {
+        if (!accessToken) return;
         api.get("/corrales/")
             .then(response => {
                 setCorrales(response.data);
@@ -24,7 +26,7 @@ export const CorralesProvider = ({children}) => {
             .catch(error => {
                 console.error("Error al cargar los corrales:", error);
             });
-    }, []);
+    }, [accessToken]);
 
     /*
     * ----------------------------------------------------------------------------------------------

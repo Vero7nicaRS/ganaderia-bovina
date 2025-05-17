@@ -9,16 +9,18 @@
 * */
 
 import {useEffect, useState} from "react";
-import {torosMock} from "./TorosMock.jsx"
 import PropTypes from "prop-types";
 import {TorosContext} from "./TorosContext.jsx";
 import api from "../../api.js";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 
 export const TorosProvider = ({children}) => {
     const [animalesToros, setAnimalesToros] = useState([]);
+    const { accessToken } = useAuthContext();
 
     // Se cargan los datos de los toros que están en el backend.
     useEffect(() => {
+        if (!accessToken) return;
         api.get("/toros/")
             .then(response => {
                 setAnimalesToros(response.data);
@@ -26,7 +28,7 @@ export const TorosProvider = ({children}) => {
             .catch(error => {
                 console.error("Error al cargar los toros:", error);
             });
-    }, []);
+    }, [accessToken]);
 
 /*
 * ----------------------------------------------------------------------------------------------

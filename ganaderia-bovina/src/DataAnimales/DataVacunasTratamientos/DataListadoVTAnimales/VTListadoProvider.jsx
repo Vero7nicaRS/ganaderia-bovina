@@ -12,15 +12,18 @@ import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {VTListadoContext} from "./VTListadoContext.jsx";
 import api from "../../../api.js";
+import {useAuthContext} from "../../../authentication/AuthContext.jsx";
 
 export const VTListadoProvider = ({children}) => {
 
     /*setVT_Animal permite actualizar el estado de vacunas/tratamientos del animal
     (evitando modificar el estado actual "vt_animal") */
     const [vt_animal, setVT_Animal] = useState([]);
+    const { accessToken } = useAuthContext();
 
     // Se cargan los datos de las vacunas/tratamientos suministradas que están en el backend.
     useEffect(() => {
+        if (!accessToken) return;
         api.get("/vtanimales/")
             .then(response => {
                 setVT_Animal(response.data);
@@ -28,7 +31,7 @@ export const VTListadoProvider = ({children}) => {
             .catch(error => {
                 console.error("Error al cargar el inventario de vacunas/tratamientos suministradas:", error);
             });
-    }, []);
+    }, [accessToken]);
 
     /*
     * ----------------------------------------------------------------------------------------------
