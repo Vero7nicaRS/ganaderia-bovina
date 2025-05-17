@@ -10,40 +10,43 @@ import {InseminacionesProvider} from "./DataAnimales/DataInseminaciones/Insemina
 import {VTListadoProvider} from "./DataAnimales/DataVacunasTratamientos/DataListadoVTAnimales/VTListadoProvider.jsx";
 import {CorralesProvider} from "./DataAnimales/DataCorrales/CorralesProvider.jsx";
 import {SimulacionesProvider} from "./DataAnimales/DataSimulacionCria/SimulacionesProvider.jsx";
+import {AuthProvider} from "./authentication/AuthProvider.jsx";
 
 createRoot(document.getElementById('root')).render(
 
     <BrowserRouter>
-      <StrictMode>
-          <AnimalesProvider> {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
+        <AuthProvider>
+            <StrictMode>
+                <AnimalesProvider> {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
                                 los datos de los animales (Vacas/Terneros) y por tanto, podrán modificarlos */}
 
-              <TorosProvider> {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
+                    <TorosProvider> {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
                                 los datos de los animales (Toros) y por tanto, podrán modificarlos */}
 
-                  <VtProvider>   {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
+                        <VtProvider>   {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
                                 los datos de las vacunas y/o tratamientos y por tanto, podrán modificarlos */}
 
-                      <InseminacionesProvider>
-                          <VTListadoProvider>
-                              <CorralesProvider>
-                                  <SimulacionesProvider>
-                                      <App> </App>
+                            <InseminacionesProvider>
+                                <VTListadoProvider>
+                                    <CorralesProvider>
+                                        <SimulacionesProvider>
+                                            <App> </App>
 
-                                  </SimulacionesProvider>
+                                        </SimulacionesProvider>
 
-                              </CorralesProvider>
+                                    </CorralesProvider>
 
-                          </VTListadoProvider>
+                                </VTListadoProvider>
 
-                      </InseminacionesProvider>
+                            </InseminacionesProvider>
 
-                  </VtProvider>
+                        </VtProvider>
 
-              </TorosProvider>
+                    </TorosProvider>
 
-          </AnimalesProvider>
+                </AnimalesProvider>
 
-      </StrictMode>
+            </StrictMode>
+        </AuthProvider>
     </BrowserRouter>
 )
