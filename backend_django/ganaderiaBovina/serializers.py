@@ -13,6 +13,7 @@ import re
 from datetime import timedelta
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 
@@ -734,3 +735,20 @@ class ListaInseminacionesSerializer(serializers.ModelSerializer):
             toro_nuevo.save()
 
         return super().update(instance, validated_data)
+
+# --------------------------------------------------------------------------------------------------------------
+#                                       Serializer de CustonTokenObtainPain
+# --------------------------------------------------------------------------------------------------------------
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Se comprueba que el usuario tiene un perfil
+        if hasattr(user, 'perfil') and user.perfil:
+            token['rol'] = user.perfil.rol  # Suponiendo que tiene un perfil con campo "rol"
+        else:
+            token['rol'] = 'Desconocido'  # o lanza una excepción controlada
+        token['username'] = user.username
+        return token
