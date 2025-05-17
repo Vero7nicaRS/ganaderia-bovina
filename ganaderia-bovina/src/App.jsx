@@ -22,18 +22,19 @@ import {ArbolGenealogico} from "./pages/07_ArbolGenealogico/ArbolGenealogico.jsx
 import {FormularioCorral} from "./pages/03_MovimientosDeCorral/FormularioCorral.jsx";
 import {MovimientoCorral} from "./pages/03_MovimientosDeCorral/MovimientoCorral.jsx"
 import {EliminarVT} from "./pages/02_VacunacionesTratamientos/EliminarVT.jsx";
+import {InicioSesion} from "./pages/InicioSesion/InicioSesion.jsx";
+import {ProtegerRuta} from "./authentication/ProtegerRuta.jsx";
 export const App = () => {
 
     const localizacion = useLocation(); //Ubicación actual de la página
      return (
          <>
 
-             {localizacion.pathname !== "/" && <NavBar />}
+             {localizacion.pathname !== "/inicio-sesion" && <NavBar />}
              {/*
-                Lo uso para controlar que el NavBar (barra de tareas) aparezca siempre al principio de la página.
-                En caso de que esté en "HOME" aparecerá después del mensaje de bienvenido.
+                Lo uso para controlar que el NavBar (barra de tareas) aparezca siempre al principio de la página,
+                excepto en la página de inicio de sesión ( "/inicio-sesion") que no aparecerá.
              */}
-             {/*<NavBar></NavBar>*/}
              <div>
 
                  {/* Contiene todas las rutas que hay en la aplicación*/}
@@ -46,16 +47,40 @@ export const App = () => {
                          {/*<Route path="/agregar-animal" element={<AgregarAnimal/>}/>
                             Cuando no estaba centralizado en el formularioAnimal
                          */}
-                         <Route path="/eliminar-animal" element={<EliminarAnimal/>}/>
-                         <Route path="/formulario-animal" element={<FormularioAnimal/>}/>
+                         <Route path="/eliminar-animal"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <EliminarAnimal/>
+                                    </ProtegerRuta>
+                                }
+                         />
+                         <Route path="/formulario-animal"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <FormularioAnimal/>
+                                    </ProtegerRuta>
+                                }
+                         />
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicho animal
                          Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-animal/:id" element={<FormularioAnimal />} />
 
                          {/* ---------- Páginas referentes a INVENTARIO DE VACUNAS Y/O TRATAMIENTOS ----------*/}
                          <Route path="/inventario-vt" element={<InventarioVT/>}/>
-                         <Route path="/eliminar-inventario-vt" element={<EliminarVT/>}/>
-                         <Route path="/formulario-vt" element={<FormularioVT/>}/>
+                         <Route path="/eliminar-inventario-vt"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <EliminarVT/>
+                                    </ProtegerRuta>
+                                }
+                         />
+                         <Route path="/formulario-vt"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <FormularioVT/>
+                                    </ProtegerRuta>
+                                }
+                         />
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicha vacuna/tratamiento.
                          Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-vt/:id" element={<FormularioVT/>}/>
@@ -63,7 +88,13 @@ export const App = () => {
 
                          {/* ---------- Páginas referentes a LISTADO DE VACUNAS Y/O TRATAMIENTOS EN ANIMALES ----------*/}
                          <Route path="/listado-vt-animal" element={<ListadoVT_Animales/>}/>
-                         <Route path="/formulario-vt-animal" element={<FormularioVT_Animales/>}/>
+                         <Route path="/formulario-vt-animal"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <FormularioVT_Animales/>
+                                    </ProtegerRuta>
+                                }
+                         />
                          {/* Para permitir que si se recarga la página, se consigan los datos de
                          la vacuna/tratamiento suministrada al animal.
                          Sin tener que navegar a otra página.*/}
@@ -72,16 +103,34 @@ export const App = () => {
 
                          {/* ---------- Páginas referentes a LISTA DE CORRALES ----------*/}
                          <Route path="/lista-corrales" element={<ListaCorrales/>}/>
-                         <Route path="/formulario-corral" element={<FormularioCorral/>}/>
+                         <Route path="/formulario-corral"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <FormularioCorral/>
+                                    </ProtegerRuta>
+                                }
+                         />
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicho corral
                          Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-corral/:id" element={<FormularioCorral/>}/>
-                         <Route path="/movimiento-de-corral" element={<MovimientoCorral/>}/>
+                         <Route path="/movimiento-de-corral"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <MovimientoCorral/>
+                                    </ProtegerRuta>
+                                }
+                         />
 
 
                          {/* ---------- Páginas referentes a LISTA DE INSEMINACIONES  ----------*/}
                          <Route path="/lista-inseminaciones" element={<ListaInseminaciones/>}/>
-                         <Route path="/formulario-inseminacion" element={<FormularioInseminacion/>}/>
+                         <Route path="/formulario-inseminacion"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <FormularioInseminacion/>
+                                    </ProtegerRuta>
+                                }
+                         />
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicho corral
                          Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-inseminacion/:id" element={<FormularioInseminacion />} />
@@ -91,41 +140,36 @@ export const App = () => {
 
                          {/* ---------- Páginas referentes a LISTA DE TOROS ----------*/}
                          <Route path="/visualizar-toros" element={<ListaToros/>}/>
-                         <Route path="/formulario-toro" element={<FormularioToro/>}/>
+                         <Route path="/formulario-toro"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <FormularioToro/>
+                                    </ProtegerRuta>
+                                }
+                         />
                          {/* Para permitir que si se recarga la página, se consigan los datos de dicho corral
                          Sin tener que navegar a otra página.*/}
                          <Route path="/formulario-toro/:id" element={<FormularioToro />} />
-                         <Route path="/eliminar-toro" element={<EliminarToro/>}/>
-
-
-
+                         <Route path="/eliminar-toro"
+                                element={
+                                    <ProtegerRuta requiereRol="Administrador">
+                                        <EliminarToro/>
+                                    </ProtegerRuta>
+                                }
+                         />
 
                          {/* ---------- Páginas referentes a ARBOL GENEALÓGICO ----------*/}
                          <Route path="/arbol-genealogico" element={<ArbolGenealogico/>}/>
 
+                         {/* ---------- Páginas referentes a INICIO DE SESIÓN ----------*/}
+                         <Route path="/inicio-sesion" element={<InicioSesion/>}/>
 
                          <Route path="/*" element={<Navigate to='/'/>}></Route>
 
                      </Routes>
                  </div>
                  <Footer></Footer>
-
              </div>
          </>
      )
 }
-
-//     <>
-         //         <NavBar></NavBar>
-         //         <div>
-         //             <Header /> {/* Tu componente de navegación */}
-    //             <div className="container">
-    //                 <Routes>
-    //                     <Route path="/" element={<Home/>}/>
-    //                     <Route path="/gestion-vacas" element={<GestionVacas/>}/>
-    //                     <Route path="/contacto" element={<Contacto/>}/>
-    //                 </Routes>
-    //             </div>
-    //
-    //         </>
-
