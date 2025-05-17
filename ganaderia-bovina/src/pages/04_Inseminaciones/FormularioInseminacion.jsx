@@ -6,6 +6,7 @@ import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesConte
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposFormularioInseminacion} from "../../components/ComprobarCamposFormularioInseminacion.jsx";
 import api from "../../api.js";
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 export const FormularioInseminacion = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento).
@@ -22,6 +23,10 @@ export const FormularioInseminacion = () => {
     const { modo, inseminacion: inseminacionInicial } = location.state || {}; // Se recupera el modo y vacuna/tratamiento desde el state
     const { id } = useParams();
     const modoFinal = modo || (id ? "ver" : "agregar")
+
+    // Para controlar que un EMPLEADO no pueda MODIFICAR ni AGREGAR.
+    const { rol } = useAuthContext();
+    const esAdmin = rol === "Administrador";
 
     const estadoInicialInseminacion = {
         id: null,
@@ -148,6 +153,15 @@ export const FormularioInseminacion = () => {
         }
     }
 
+
+    if (!esAdmin && (esAgregar || esModificar)) {
+        return (
+            <div className="mensaje-error">
+                No tienes permiso para acceder a esta acción.
+                Solo los administradores pueden AGREGAR o MODIFICAR inseminaciones.
+            </div>
+        );
+    }
     return (
         <>
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
@@ -413,31 +427,34 @@ export const FormularioInseminacion = () => {
 
                     {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                         ACEPTAR */}
-                    {!esVisualizar && (
-                        <div className="boton-espacio">
-                            <button type="button"
-                                    className="btn btn-info"
-                                    onClick={handleAgregar}>
-                                ACEPTAR
-                            </button>
-                            <>
-                                {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
+                    <SoloAdmin>
+                        {!esVisualizar && (
+                            <div className="boton-espacio">
+                                <button type="button"
+                                        className="btn btn-info"
+                                        onClick={handleAgregar}>
+                                    ACEPTAR
+                                </button>
+                                <>
+                                    {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
                                     BOTÓN DE ACEPTAR Y SEGUIR AÑADIENDO */}
-                                {esAgregar && (
-                                    <button type="button"
-                                            className="btn btn-info"
-                                            onClick={handleAceptarYSeguir}>
-                                        ACEPTAR Y SEGUIR AÑADIENDO
-                                    </button>
-                                )}
-                            </>
+                                    {esAgregar && (
+                                        <button type="button"
+                                                className="btn btn-info"
+                                                onClick={handleAceptarYSeguir}>
+                                            ACEPTAR Y SEGUIR AÑADIENDO
+                                        </button>
+                                    )}
+                                </>
 
-                            {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
+                                {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
-                            {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
-                            <NavLink to="/lista-inseminaciones" className="btn btn-info">CANCELAR</NavLink>
-                        </div>
-                    )}
+                                {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
+                                <NavLink to="/lista-inseminaciones" className="btn btn-info">CANCELAR</NavLink>
+                            </div>
+                        )}
+                    </SoloAdmin>
+
 
                     {esVisualizar && (
                         <div className="boton-espacio">

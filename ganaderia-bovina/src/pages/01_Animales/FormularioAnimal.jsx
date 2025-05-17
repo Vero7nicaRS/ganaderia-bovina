@@ -9,7 +9,8 @@ import {CorralesContext} from "../../DataAnimales/DataCorrales/CorralesContext.j
 import api from "../../api.js"
 import { convertirAnimalParaAPI } from "../../utilities/ConversorAnimal.js"
 import {enviarCriaAlModeloAprendizaje} from "../../utilities/modeloAprendizaje.js";
-
+import {SoloAdmin} from "../../components/SoloAdmin.jsx";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 /*
 * ------------------------------------------ FormularioAnimal.jsx: ------------------------------------------
 * Funcionalidad: se muestra un formulario para visualizar, agregar y modificar un animal (vaca/ternero).
@@ -32,6 +33,10 @@ export const FormularioAnimal = () => {
     const {modo, animal: animalInicial} = location.state || {tipo: "Vaca", estado: "Vacía", corral: "Corral vacas 1"}; // Se recupera el modo y animal desde el state
     const {id} = useParams(); // Se emplea para acceder mediante URL
     const modoFinal = modo || (id ? "ver" : "agregar") // Se indica el modo en el que debe estar el formulario, si ha sido pasado por el state o no.
+
+    // Para controlar que un EMPLEADO no pueda MODIFICAR ni AGREGAR.
+    const { rol } = useAuthContext();
+    const esAdmin = rol === "Administrador";
 
     /* Se inicializa el animal con los datos del state.
        En caso de que el formulario este vacio, se inicializa con unos valores por defecto */
@@ -237,6 +242,15 @@ export const FormularioAnimal = () => {
     */
     const corralSeleccionado = corrales.find((c) => c.id === animal.corral);
     const codigoCorralActual = corralSeleccionado ? corralSeleccionado.codigo : animal.corral;
+
+    if (!esAdmin && (esAgregar || esModificar)) {
+        return (
+            <div className="mensaje-error">
+                No tienes permiso para acceder a esta acción.
+                Solo los administradores pueden AGREGAR o MODIFICAR animales.
+            </div>
+        );
+    }
     return (
         <>
             {/* El cuadrado que aparece en la página indicando la ACCIÓN que se va a realizar:
@@ -631,30 +645,31 @@ export const FormularioAnimal = () => {
 
                     {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                         ACEPTAR */}
-                    {!esVisualizar && (
-                        <div className="boton-espacio">
-                            <button type="button"
-                                    className="btn btn-info"
-                                    onClick={handleAgregar}>
-                                ACEPTAR
-                            </button>
-                            <>
-                                {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
+                    <SoloAdmin>
+                        {!esVisualizar && (
+                            <div className="boton-espacio">
+                                <button type="button"
+                                        className="btn btn-info"
+                                        onClick={handleAgregar}>
+                                    ACEPTAR
+                                </button>
+                                <>
+                                    {/* Si es una acción de AGREGAR: Aparece el siguiente botón:
                                     BOTÓN DE ACEPTAR Y SEGUIR AÑADIENDO */}
-                                {esAgregar && (
-                                    <button type="button"
-                                            className="btn btn-info"
-                                            onClick={handleAceptarYSeguir}>
-                                        ACEPTAR Y SEGUIR AÑADIENDO
-                                    </button>
-                                )}
-                            </>
-                            {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
+                                    {esAgregar && (
+                                        <button type="button"
+                                                className="btn btn-info"
+                                                onClick={handleAceptarYSeguir}>
+                                            ACEPTAR Y SEGUIR AÑADIENDO
+                                        </button>
+                                    )}
+                                </>
+                                {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
-                            {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
-                            <NavLink to="/visualizar-animales" className="btn btn-info">CANCELAR</NavLink>
-                        </div>
-                    )}
+                                <NavLink to="/visualizar-animales" className="btn btn-info">CANCELAR</NavLink>
+                            </div>
+                        )}
+                    </SoloAdmin>
 
                     {esVisualizar && (
                         <div className="boton-espacio">
