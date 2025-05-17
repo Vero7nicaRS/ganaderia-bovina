@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from ganaderiaBovina.views import CustomTokenObtainPairView
+
 # include: permite agrutar rutas con el nombre ___ ('api/')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('ganaderiaBovina.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # Para hacer una autenticación con Jason Web Token.
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
