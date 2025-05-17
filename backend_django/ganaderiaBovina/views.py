@@ -31,13 +31,14 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .filters import AnimalFilter, ToroFilter, CorralFilter, InventarioVTFilter, VTAnimalesFilter, \
     ListaInseminacionesFilter
 from .models import Animal, Toro, Corral, InventarioVT, VTAnimales, ListaInseminaciones
 from .permisos import EsAdministrador, PermisosPorModelo
-from .serializers import AnimalSerializer, ToroSerializer, CorralSerializer, InventarioVTSerializer,\
-    VTAnimalesSerializer, ListaInseminacionesSerializer
+from .serializers import AnimalSerializer, ToroSerializer, CorralSerializer, InventarioVTSerializer, \
+    VTAnimalesSerializer, ListaInseminacionesSerializer, CustomTokenObtainPairSerializer
 from .simulacionCria import simular_cria_optima, agregar_y_reentrenar_cria
 
 import traceback
@@ -558,3 +559,7 @@ class ReentrenarCriaView(APIView):
                 "error": str(e),
                 "traceback": traceback.format_exc()
             }, status=500)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
