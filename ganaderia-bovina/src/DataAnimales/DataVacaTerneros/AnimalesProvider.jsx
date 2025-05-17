@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {animalesMock} from "./AnimalesMock.jsx";
 import {AnimalesContext} from "./AnimalesContext.jsx";
 import PropTypes from "prop-types"; //Se usa prop-types para definir children.
 import api from "../../api.js"
