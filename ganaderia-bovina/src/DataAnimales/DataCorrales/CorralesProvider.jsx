@@ -10,7 +10,6 @@
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import {CorralesContext} from "./CorralesContext.jsx";
-import {corralesMock} from "./corralesMock.jsx";
 import api from "../../api.js";
 
 export const CorralesProvider = ({children}) => {
