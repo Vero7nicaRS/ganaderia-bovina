@@ -11,13 +11,11 @@
 # - ___str___: lo que se ve cuando se imprime el objeto.
 # -----------------------------------------------------------------------------------
 
-import re
-
-from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.db.models import PROTECT
 from decimal import Decimal
+from django.contrib.auth.models import User
+
 # Create your models here.
 # Modelos: Animales (Vacas y Terneros), Corrales, Inventario VT, VT en animales, Lista inseminaciones, Toros
 # ---------------------------------------------------------------------------------------------------------------------------------
@@ -479,5 +477,16 @@ class Toro(models.Model):
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
 
+# --------------------------------------------------------------------------------------------------------------
+#                                       Modelo de PERFIL
+#
+# Se utilizará para guardar el perfil de los usuarios.
+# --------------------------------------------------------------------------------------------------------------
 
 
+class Perfil(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    rol = models.CharField(max_length=20, choices=[("Administrador", "Administrador"), ("Empleado", "Empleado")])
+
+    def __str__(self):
+        return f"{self.user.username} - {self.rol}"
