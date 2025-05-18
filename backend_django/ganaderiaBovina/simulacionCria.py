@@ -6,10 +6,7 @@
 import numpy as np # Biblioteca Numpy.
 import pandas as pd # Biblioteca Pandas.
 from sklearn.linear_model import LinearRegression # Modelo de Regresión Lineal.
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
-
-import os # Construye la ruta del archivo CSV.
+import os # Construye automáticamente la ruta del archivo CSV.
 from django.conf import settings
 
 
@@ -62,7 +59,7 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
         pred = modelo.predict(x_input)[0]
 
         # Se realiza el ajuste de las predicciones (dependiendo el atributo que se desea predecir)
-        atributos_predichos = {
+        atributos_cria_futura = {
             'celulas_somaticas': np.clip(pred[0], 50000, 2000000),
             'produccion_leche': np.clip(pred[1], 0, 200000),
             'calidad_patas': np.clip(pred[2], 1, 9),
@@ -75,8 +72,8 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
         resultados.append({
             'id_vaca': vaca['id_vaca'],
             'id_toro': toro['id_toro'],
-            'atributos': atributos_predichos,
-            'valor_prioridad': atributos_predichos[atributo_prioridad]
+            'atributos': atributos_cria_futura,
+            'valor_prioridad': atributos_cria_futura[atributo_prioridad]
         })
 
     # Se ordenan las crías por el valor más alto del atributo que se ha querido potenciar (de mayor a menor)
