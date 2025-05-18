@@ -13,7 +13,7 @@ export const enviarCriaAlModeloAprendizaje = async (animal, nuevoAnimalConId, an
         console.log("madre: ", animal.madre)
         console.log("padre: ", animal.padre)
         if (!objVaca || !objToro) {
-            console.error("❌ Reproductores no encontrados. Vaca:", objVaca?.id, "Toro:", objToro?.id);
+            console.error(" Reproductores no encontrados. Vaca:", objVaca?.id, "Toro:", objToro?.id);
             return;
         }
 
@@ -41,14 +41,12 @@ export const enviarCriaAlModeloAprendizaje = async (animal, nuevoAnimalConId, an
             pr_toro: objToro.proteinas,
         };
 
-        console.log("📦 Payload a enviar:", entrenamiento);
+        console.log(" Payload a enviar:", entrenamiento);
 
         const response = await api.post("/reentrenar-cria/", entrenamiento);
-        console.log("🔁 Reentrenamiento exitoso:", response.data);
+        console.log("Reentrenamiento completado con éxito:", response.data);
     } catch (error) {
-        console.error("❌ Error al reentrenar modelo:", error);
-
-        console.log("📉 Error completo:", error.response?.data?.traceback);
-
+        console.error(" Error al reentrenar modelo:", error);
+        console.log(" Error completo:", error.response?.data?.traceback);
     }
 }
