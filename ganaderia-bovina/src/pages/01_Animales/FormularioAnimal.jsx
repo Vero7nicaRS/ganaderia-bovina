@@ -167,8 +167,8 @@ export const FormularioAnimal = () => {
                 await modificarAnimal(animalConvertido);
             }
         } catch (error) {
-            console.error("❌ Error al guardar el animal:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error("Error al guardar el animal:", error);
+            console.log(" Respuesta del backend:", error.response?.data);
         }
 
         // 2. Se actualiza el estado del corral (contexto) con el animal asignado.
@@ -182,8 +182,8 @@ export const FormularioAnimal = () => {
                 }
             }
         } catch (error) {
-            console.error("❌ Error al guardar el animal:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error(" Error al guardar el animal:", error);
+            console.log(" Respuesta del backend:", error.response?.data);
         }
 
         /* Cada vez que se agregue una nueva cría (Ternero), se va a añadir una fila al modelo de aprendizaje.
@@ -219,8 +219,8 @@ export const FormularioAnimal = () => {
                 // También, se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
             }
         } catch (error) {
-            console.error("❌ Error al guardar el animal:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error(" Error al guardar el animal:", error);
+            console.log(" Respuesta del backend:", error.response?.data);
         }
 
         /* Cada vez que se agregue una nueva cría (Ternero), se va a añadir una fila al modelo de aprendizaje.
