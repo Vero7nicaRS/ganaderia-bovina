@@ -1,15 +1,18 @@
+
+# --------------------------------- simulacionCria.py: ---------------------------------
+# Funcionalidad: permite realizar la simulación y el reentrenamiento del modelo
+# --------------------------------------------------------------------------------------
 # Bibliotecas que se utilizan.
 import numpy as np # Biblioteca Numpy.
 import pandas as pd # Biblioteca Pandas.
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression # Modelo de Regresión Lineal.
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 
-import os
+import os # Construye la ruta del archivo CSV.
 from django.conf import settings
-import pandas as pd
 
-# simulacionCria.py
+
 def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
 
     # Se carga el conjunto de datos almacenado en el archivo .csv (localizado en la misma carpeta).
@@ -54,10 +57,6 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
             vaca['cs_vaca'], vaca['pl_vaca'], vaca['pa_vaca'], vaca['u_vaca'], vaca['g_vaca'], vaca['pr_vaca'],
             toro['cs_toro'], toro['pl_toro'], toro['pa_toro'], toro['u_toro'], toro['g_toro'], toro['pr_toro']
         ]], columns=columnas)
-        #x_input = [[
-        #    vaca['cs_vaca'], vaca['pl_vaca'], vaca['pa_vaca'], vaca['u_vaca'], vaca['g_vaca'], vaca['pr_vaca'],
-        #    toro['cs_toro'], toro['pl_toro'], toro['pa_toro'], toro['u_toro'], toro['g_toro'], toro['pr_toro']
-        #]]
 
         # Se predicen las características de la cría
         pred = modelo.predict(x_input)[0]
@@ -82,22 +81,22 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
 
     # Se ordenan las crías por el valor más alto del atributo que se ha querido potenciar (de mayor a menor)
     resultados_ordenados = sorted(resultados, key=lambda r: r['valor_prioridad'], reverse=True)
-    print("🐮 ID vacas recibidas:", id_vacas)
-    print("🐂 ID toro recibido:", id_toro)
-    print("📊 Vacas encontradas en el CSV:", crias_df[crias_df['id_vaca'].isin(id_vacas)].shape[0])
-    print("📊 Toro encontrado en el CSV:", crias_df[crias_df['id_toro'] == id_toro].shape[0])
+    print(" ID vacas recibidas:", id_vacas)
+    print(" ID toro recibido:", id_toro)
+    print(" Vacas encontradas en el CSV:", crias_df[crias_df['id_vaca'].isin(id_vacas)].shape[0])
+    print(" Toro encontrado en el CSV:", crias_df[crias_df['id_toro'] == id_toro].shape[0])
     # Se devuelve el resultado de la cría más óptima dado el atributo que se ha querido mejorar.
     return resultados_ordenados[0] if resultados_ordenados else None
 
 
 
 def agregar_y_reentrenar_cria(nueva_muestra):
-    """
-    nueva_muestra: diccionario con los siguientes campos:
-    - id_vaca, id_toro, id_cria, celulas_somaticas, produccion_leche, calidad_patas, calidad_ubres, grasa, proteinas
-    - cs_vaca, pl_vaca, pa_vaca, u_vaca, g_vaca, pr_vaca
-    - cs_toro, pl_toro, pa_toro, u_toro, g_toro, pr_toro
-    """
+
+    # nueva_muestra: diccionario con los siguientes campos:
+    # - id_vaca, id_toro, id_cria, celulas_somaticas, produccion_leche, calidad_patas, calidad_ubres, grasa, proteinas
+    # - cs_vaca, pl_vaca, pa_vaca, u_vaca, g_vaca, pr_vaca
+    # - cs_toro, pl_toro, pa_toro, u_toro, g_toro, pr_toro
+
     ruta_csv = os.path.join(settings.BASE_DIR, 'backend_django', 'ganaderiaBovina', 'cria_ganado_dataset_05_03_25.csv')
 
     # Se carga el conjunto de datos actual.
