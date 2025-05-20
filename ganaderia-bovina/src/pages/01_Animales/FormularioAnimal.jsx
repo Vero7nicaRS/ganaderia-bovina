@@ -193,7 +193,7 @@ export const FormularioAnimal = () => {
             - Características de la cría.
         * */
         if (esAgregar && nuevoAnimalConId && animal.tipo === "Ternero" && animal.padre && animal.madre) {
-            await enviarCriaAlModeloAprendizaje(animal, nuevoAnimalConId, animales, animalesToros);
+            await enviarCriaAlModeloAprendizaje(nuevoAnimalConId, animales, animalesToros);
         }
 
         /* Una vez que se haya agregado un nuevo animal o se modifique un animal existente,
@@ -230,7 +230,7 @@ export const FormularioAnimal = () => {
             - Características de la cría.
         * */
         if (esAgregar && nuevoAnimalConId && animal.tipo === "Ternero" && animal.padre && animal.madre) {
-            await enviarCriaAlModeloAprendizaje(animal, nuevoAnimalConId, animales, animalesToros);
+            await enviarCriaAlModeloAprendizaje(nuevoAnimalConId, animales, animalesToros);
         }
 
     }
