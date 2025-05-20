@@ -99,7 +99,7 @@ export const SimulacionCrias = () => {
         // Se obtiene el código del toro, ya que la simulación trabaja con el "código"
         const toroSeleccionado = animalesToros.find((t) => t.id === parseInt(datosSimulacion.idToro));
         if (!toroSeleccionado) {
-            console.error("❌ Toro no encontrado con ID:", datosSimulacion.idToro);
+            console.error(" El Toro no ha sido encontrado con ID:", datosSimulacion.idToro);
             return;
         }
         try {
@@ -110,13 +110,12 @@ export const SimulacionCrias = () => {
                 codigo_toro: toroSeleccionado.codigo,
                 atributo_prioridad: datosSimulacion.atributo_prioridad,
             });
-
-            console.log("✅ Simulación exitosa:", response.data);
+            console.log(" Simulación completada con éxito:", response.data);
             setResultadoSimulacion(response.data.cria_mas_optima);
 
         }catch (error) {
-            console.error("❌ Error al hacer la simulación:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error(" Error al realizar la simulación:", error);
+            console.log(" Respuesta del backend:", error.response?.data);
 
             await Swal.fire({
                 title: "No se realizó la simulación",
@@ -187,7 +186,6 @@ export const SimulacionCrias = () => {
                             <button
                                 type="button"
                                 className="boton-seleccion-azul"
-                                //onClick={() => setAnimalesSeleccionados(vacasFiltradas.map((v) => v.id))}
                                 onClick={seleccionarTodas}
                             >
                                 Seleccionar todo
@@ -195,7 +193,6 @@ export const SimulacionCrias = () => {
                             <button
                                 type="button"
                                 className="boton-seleccion-rojo"
-                                //onClick={() => setAnimalesSeleccionados([])}
                                 onClick={deseleccionarTodas}
                             >
                                 Quitar selección
@@ -216,21 +213,20 @@ export const SimulacionCrias = () => {
                                 {animalesToros && animalesToros.length > 0 ? (
                                     animalesToros
                                         /*Se filtra por el tipo "Toro" para asegurar el contenido de tipo.
-                                        Además, el toro no debe estar con el estado "muerto" ni "otros", por lo tanto se añade a la
-                                        condición del filtro*/
+                                        Además, el toro no debe estar con el estado "muerto" ni "otros",
+                                        por lo tanto se añade a la condición del filtro*/
                                         .filter((animalToro) => animalToro.tipo.toUpperCase() === "Toro".toUpperCase()
                                             && animalToro.estado.toUpperCase() !== "Muerte".toUpperCase()
                                             && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
                                         )
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
-                                                {toro.codigo} {/*Aparece el ID del toro*/}
+                                                {toro.codigo} {/*Aparece el CÓDIGO del toro*/}
                                             </option>
                                         ))
                                 ) : (
                                     <option>No hay toros disponibles</option>
-                                )
-                                }
+                                )}
                             </select>
                             {errores.toro && <div className="mensaje-error">{errores.toro}</div>}
                         </div>
