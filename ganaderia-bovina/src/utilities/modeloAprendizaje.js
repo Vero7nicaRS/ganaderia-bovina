@@ -1,17 +1,12 @@
 import api from "../api.js";
 
-export const enviarCriaAlModeloAprendizaje = async (animal, nuevoAnimalConId, animales, animalesToros) => {
+export const enviarCriaAlModeloAprendizaje = async (nuevoAnimalConId, animales, animalesToros) => {
     try {
-
         // Se obtiene el animal para obtener el código de las vacas, ya que la simulación trabaja con el "código"
-        const objVaca = animales.find((v) => v.id === parseInt(animal.madre));
+        const objVaca = animales.find((v) => v.id === parseInt(nuevoAnimalConId.madre));
 
         // Se obtiene el toro para obtener su código, ya que la simulación trabaja con el "código"
-        const objToro = animalesToros.find((t) => t.id ===  parseInt(animal.padre));
-        console.log("VACA: ", objVaca)
-        console.log("TORO: ", objToro)
-        console.log("madre: ", animal.madre)
-        console.log("padre: ", animal.padre)
+        const objToro = animalesToros.find((t) => t.id ===  parseInt(nuevoAnimalConId.padre));
         if (!objVaca || !objToro) {
             console.error(" Reproductores no encontrados. Vaca:", objVaca?.id, "Toro:", objToro?.id);
             return;
@@ -21,12 +16,12 @@ export const enviarCriaAlModeloAprendizaje = async (animal, nuevoAnimalConId, an
             id_vaca: objVaca.codigo,
             id_toro: objToro.codigo,
             id_cria: nuevoAnimalConId.codigo,
-            celulas_somaticas: parseFloat(animal.celulas_somaticas),
-            produccion_leche: parseFloat(animal.produccion_leche),
-            calidad_patas: parseFloat(animal.calidad_patas),
-            calidad_ubres: parseFloat(animal.calidad_ubres),
-            grasa: parseFloat(animal.grasa),
-            proteinas: parseFloat(animal.proteinas),
+            celulas_somaticas: parseFloat(nuevoAnimalConId.celulas_somaticas),
+            produccion_leche: parseFloat(nuevoAnimalConId.produccion_leche),
+            calidad_patas: parseFloat(nuevoAnimalConId.calidad_patas),
+            calidad_ubres: parseFloat(nuevoAnimalConId.calidad_ubres),
+            grasa: parseFloat(nuevoAnimalConId.grasa),
+            proteinas: parseFloat(nuevoAnimalConId.proteinas),
             cs_vaca: objVaca.celulas_somaticas,
             pl_vaca: objVaca.produccion_leche,
             pa_vaca: objVaca.calidad_patas,
