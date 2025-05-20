@@ -533,11 +533,13 @@ class SimulacionCriaView(APIView):
         atributo = request.data.get("atributo_prioridad")
 
         if not vacas or not toro or not atributo:
-            return Response({"simulacion_cria": "Faltan datos obligatorios."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"simulacion_cria": "Faltan datos obligatorios."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         resultado = simular_cria_optima(vacas, toro, atributo)
         if not resultado:
-            return Response({"simulacion_cria": "No se pudo calcular la cría óptima."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"simulacion_cria": "No se pudo calcular la cría óptima."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"cria_mas_optima":resultado})
 
@@ -546,10 +548,10 @@ class ReentrenarCriaView(APIView):
     permission_classes = [EsAdministrador]
 
     def post(self, request):
-        nueva_muestra = request.data
+        nueva_cria = request.data
 
         try:
-            exito = agregar_y_reentrenar_cria(nueva_muestra)
+            exito = agregar_y_reentrenar_cria(nueva_cria)
             if exito:
                 return Response({"mensaje": "Cría añadida y modelo actualizado correctamente."})
             else:
