@@ -9,13 +9,11 @@ from sklearn.linear_model import LinearRegression # Modelo de Regresión Lineal.
 import os # Construye automáticamente la ruta del archivo CSV.
 from django.conf import settings
 
-
 def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
 
     # Se carga el conjunto de datos almacenado en el archivo .csv (localizado en la misma carpeta).
-    # crias_df = pd.read_csv('cria_ganado_dataset_05_03_25.csv', delimiter=";")
     ruta_csv = os.path.join(settings.BASE_DIR, 'backend_django', 'ganaderiaBovina', 'cria_ganado_dataset_05_03_25.csv')
-    print("🛠 Ruta final del CSV:", ruta_csv)
+    print(" Ruta final del CSV:", ruta_csv)
     crias_df = pd.read_csv(ruta_csv, delimiter=";")
 
     # A partir de aquí, se va a realizar el entrenamiento del modelo.
@@ -28,7 +26,6 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
     modelo = LinearRegression()
     # Se entrena el modelo de aprendizaje.
     modelo.fit(x, y)
-
 
     # Preparar vacas y toro seleccionados
     vacas_df = crias_df[crias_df['id_vaca'].isin(id_vacas)]
@@ -82,15 +79,16 @@ def simular_cria_optima(id_vacas, id_toro, atributo_prioridad):
     print(" ID toro recibido:", id_toro)
     print(" Vacas encontradas en el CSV:", crias_df[crias_df['id_vaca'].isin(id_vacas)].shape[0])
     print(" Toro encontrado en el CSV:", crias_df[crias_df['id_toro'] == id_toro].shape[0])
+
     # Se devuelve el resultado de la cría más óptima dado el atributo que se ha querido mejorar.
     return resultados_ordenados[0] if resultados_ordenados else None
 
 
 
-def agregar_y_reentrenar_cria(nueva_muestra):
+def agregar_y_reentrenar_cria(nueva_cria):
 
-    # nueva_muestra: diccionario con los siguientes campos:
-    # - id_vaca, id_toro, id_cria, celulas_somaticas, produccion_leche, calidad_patas, calidad_ubres, grasa, proteinas
+    # nueva_cria: diccionario con los siguientes campos:
+    # - id_vaca, id_toro, id_cria, celulas_somaticas, produccion_leche, calidad_patas, calidad_ubres, grasa, proteínas.
     # - cs_vaca, pl_vaca, pa_vaca, u_vaca, g_vaca, pr_vaca
     # - cs_toro, pl_toro, pa_toro, u_toro, g_toro, pr_toro
 
@@ -99,8 +97,8 @@ def agregar_y_reentrenar_cria(nueva_muestra):
     # Se carga el conjunto de datos actual.
     df = pd.read_csv(ruta_csv, delimiter=";")
 
-    # Se convierte la muestra a un DataFrame de una fila.
-    nueva_fila = pd.DataFrame([nueva_muestra])
+    # Se convierte la nueva cría a un DataFrame de una fila.
+    nueva_fila = pd.DataFrame([nueva_cria])
 
     # Se añade y se guarda esa fila al conjunto de datos.
     df = pd.concat([df, nueva_fila], ignore_index=True)
