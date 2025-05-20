@@ -286,7 +286,6 @@ export const FormularioAnimal = () => {
             <hr/>
 
             <form>
-                {/*onSubmit={handleSubmit}*/}
                 <div className="contenedor-flex">
                     <div className="contenedor-izquierda">
 
@@ -319,9 +318,6 @@ export const FormularioAnimal = () => {
                                 <option value="Preñada">Preñada</option>
                                 <option value="No inseminar">No inseminar</option>
                                 <option value="Joven">Joven</option>
-                                {/*<option value="Muerta" disabled>Muerta</option>*/}
-                                {/*<option value="Vendida" disabled>Vendida</option>*/}
-
                                 {/* Opción oculta pero mostrada si ya estaba asignada */}
                                 {["Muerte", "Vendida"].includes(animal.estado) && (
                                     <option value={animal.estado}>{animal.estado}</option>
@@ -333,7 +329,6 @@ export const FormularioAnimal = () => {
                             <div className="label">Nombre</div>
                             <input
                                 type="text"
-                                // className="cuadro-texto"
                                 className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
                                 name="nombre"
                                 disabled={esVisualizar} //Se indica que el campo "Nombre" no se puede modificar cuando se Visualiza.
@@ -420,7 +415,6 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.madre ? "error" : ""}`}
                                 name="madre"
                                 disabled={esVisualizar || (esModificar && animal.madre === null)}
-                                //value={animal.madre || ""}
                                 value={animal.madre !== null ? animal.madre : "eliminada"}
                                 onChange={handleChange}
                             >
@@ -483,7 +477,6 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.corral ? "error" : ""}`}
                                 name="corral"
                                 disabled={esVisualizar} //Se indica que el campo "Corral" no se puede modificar cuando se Visualiza.
-                                //value={esVisualizar ? codigoCorralActual : animal.corral || ""}
                                 /* El valor del campo "corral" es:
                                     - null: aparece "Ninguno" (esta situación es cuando un animal tiene el estado
                                         "VENDIDA" o "MUERTE").
@@ -525,7 +518,6 @@ export const FormularioAnimal = () => {
                                 className={`cuadro-texto ${errores.celulas_somaticas ? "error" : ""}`}
                                 name="celulas_somaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
-                                //value={animal.celulas_somaticas || ""}
                                 value={animal.celulas_somaticas !== null &&
                                         animal.celulas_somaticas !== undefined ? animal.celulas_somaticas : ""}
 
@@ -542,7 +534,6 @@ export const FormularioAnimal = () => {
                                 className={`cuadro-texto ${errores.produccion_leche ? "error" : ""}`}
                                 name="produccion_leche"
                                 disabled={esVisualizar} //Se indica que el campo "Producción de leche" no se puede modificar cuando se Visualiza.
-                                //value={animal.produccion_leche || ""}
                                 value={animal.produccion_leche !== null &&
                                        animal.produccion_leche !== undefined ? animal.produccion_leche : ""}
 
@@ -559,7 +550,6 @@ export const FormularioAnimal = () => {
                                 className={`cuadro-texto ${errores.calidad_patas ? "error" : ""}`}
                                 name="calidad_patas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
-                                //value={animal.calidad_patas || ""}
                                 value={animal.calidad_patas !== null &&
                                         animal.calidad_patas !== undefined ? animal.calidad_patas : ""}
                                 onChange={handleChange}
@@ -574,7 +564,6 @@ export const FormularioAnimal = () => {
                                 className={`cuadro-texto ${errores.calidad_ubres ? "error" : ""}`}
                                 name="calidad_ubres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
-                                //value={animal.calidad_ubres || ""}
                                 value={animal.calidad_ubres !== null &&
                                        animal.calidad_ubres !== undefined ? animal.calidad_ubres : ""}
                                 onChange={handleChange}
@@ -604,7 +593,6 @@ export const FormularioAnimal = () => {
                                 className={`cuadro-texto ${errores.proteinas ? "error" : ""}`}
                                 name="proteinas"
                                 disabled={esVisualizar} //Se indica que el campo "Proteínas" no se puede modificar cuando se Visualiza.
-                                //value={animal.proteinas || ""}
                                 value={animal.proteinas !== null &&
                                        animal.proteinas !== undefined ? animal.proteinas : ""}
                                 onChange={handleChange}
