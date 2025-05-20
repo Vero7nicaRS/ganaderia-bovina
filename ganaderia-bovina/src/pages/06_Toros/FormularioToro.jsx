@@ -6,6 +6,7 @@ import {ComprobarCamposFormularioAnimal} from "../../components/ComprobarCamposF
 // Fusión del backend con el frontend:
 import api from "../../api.js"
 import {SoloAdmin} from "../../components/SoloAdmin.jsx";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 
 /*
 * ------------------------------------------ FormularioToro.jsx: ------------------------------------------
