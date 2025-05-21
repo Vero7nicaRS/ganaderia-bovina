@@ -191,13 +191,13 @@ export const  EliminarAnimal = () => {
         <>
             <div className="contenedor">
                 <div className="cuadradoEliminar"> ELIMINAR ANIMAL</div>
-                <div className="cuadradoID"> {/* Se muestra el ID del animal dentro de un cuadrado. */}
+                <div className="cuadradoID"> {/* Se muestra el CÓDIGO del animal dentro de un cuadrado. */}
                     <span className="identificador">ID</span>
                     <input
                         type="text"
                         className="cuadro-id"
                         name="id"
-                        value={animal.id || ""}
+                        value={animal.codigo || ""}
                         disabled
                     />
                 </div>
