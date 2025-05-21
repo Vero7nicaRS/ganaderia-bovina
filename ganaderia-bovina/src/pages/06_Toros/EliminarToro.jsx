@@ -69,13 +69,8 @@ export  const EliminarToro = () => {
 
         {/*Aparece un mensaje indicando que el usuario no ha seleccionado ningún motivo*/
         }
-        // if (!motivo) {
-        //     alert("ERROR: Selecciona un motivo antes de eliminar el animal (toro).");
-        //     return;
-        // }
 
         if (!validarFormulario()) return; // Si hay errores, no continúa
-
         /*
             Si el animal (toro) ha sido eliminado por el motivo de ERROR, se elimina directamente del sistema.
             Si el animal (toro) ha sido eliminado por el motivo de MUERTE o OTROS se actualiza el campo de
@@ -163,13 +158,13 @@ export  const EliminarToro = () => {
         <>
             <div className="contenedor">
                 <div className="cuadradoEliminar"> ELIMINAR TORO</div>
-                <div className="cuadradoID"> {/* Se muestra el ID del animal (toro) dentro de un cuadrado. */}
+                <div className="cuadradoID"> {/* Se muestra el CÓDIGO del animal (toro) dentro de un cuadrado. */}
                     <span className="identificador">ID</span>
                     <input
                         type="text"
                         className="cuadro-id"
                         name="id"
-                        value={animalToro.id || ""}
+                        value={animalToro.codigo || ""}
                         disabled
                     />
                 </div>
