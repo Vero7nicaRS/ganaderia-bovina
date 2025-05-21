@@ -3,7 +3,7 @@
 * Funcionalidad: se muestra un formulario para la eliminación del animal.
 * Se selecciona el motivo por el cual se desea borrar el animal (MUERTE, VENDIDA o ERROR).
 * En caso de que se indique ERROR será eliminado mientras que si se selecciona el resto de motivos,
-* se actualizaran los campos "estado" y "corral".
+* se actualizarán los campos "estado" y "corral".
 * También, se puede escribir un comentario respecto a su eliminación.
 * --------------------------------------------------------------------------------------------------------
 * */
@@ -94,11 +94,6 @@ export const  EliminarAnimal = () => {
 
         return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
     };
-
-    /* corralMV: Variable que contiene el valor "ninguno", se utilizará para actualizar el campo "corral"
-    cuando el animal tenga como estado "vendida" o "muerte".
-    * */
-    //const corralMV = 'Ninguno';
 
     /* ----------------------- MANEJADOR ANIMALESCONTEXT: ELIMINAR -----------------------*/
 
