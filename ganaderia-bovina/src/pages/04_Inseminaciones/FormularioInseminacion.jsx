@@ -111,7 +111,7 @@ export const FormularioInseminacion = () => {
         return Object.keys(erroresTemp).length === 0; // Retorna true si no hay errores
     };
 
-    //Para llevar acabo las acciones de AGREGAR y MODIFICAR una inseminacion.
+    //Para llevar a cabo las acciones de AGREGAR y MODIFICAR una inseminacion.
     const handleAgregar = async (e) => {
         console.log(inseminacion); // Verifica el estado de la inseminacion antes de validar
         e.preventDefault();
@@ -129,8 +129,8 @@ export const FormularioInseminacion = () => {
             }
             await obtenerListadoToros(); // Se actualiza el listado del inventario de vacunas/tratamientos.
         } catch (error) {
-            console.error("❌ Error al guardar la inseminación:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error(" Error al guardar la inseminación:", error);
+            console.log(" Respuesta del backend:", error.response?.data);
         }
         /* Una vez que se haya agregado una nueva inseminacion o se modifique una inseminacion existente,
          el usuario es redirigido a la página de "lista-inseminaciones".
@@ -149,8 +149,8 @@ export const FormularioInseminacion = () => {
                 setInseminacion(estadoInicialInseminacion); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
             }
         }catch(error){
-            console.error("❌ Error al guardar la inseminación:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error("Error al guardar la inseminación:", error);
+            console.log("Respuesta del backend:", error.response?.data);
         }
     }
 
