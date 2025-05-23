@@ -154,7 +154,6 @@ export const FormularioInseminacion = () => {
         }
     }
 
-
     if (!esAdmin && (esAgregar || esModificar)) {
         return (
             <div className="mensaje-error">
@@ -200,7 +199,6 @@ export const FormularioInseminacion = () => {
             <hr/>
 
             <form>
-                {/*onSubmit={handleSubmit}*/}
                 <div className="contenedor-flex">
                     <div className="contenedor-izquierda">
 
@@ -224,7 +222,6 @@ export const FormularioInseminacion = () => {
                                 className={`form-select ${errores.id_vaca ? "error" : ""}`}
                                 name="id_vaca"
                                 disabled={esVisualizar}
-                                // value={inseminacion.id_vaca || ""}
                                 value={inseminacion.id_vaca !== null ? inseminacion.id_vaca : "eliminada"}
                                 onChange={handleChange}
                             >
@@ -287,7 +284,6 @@ export const FormularioInseminacion = () => {
                                 className={`form-select ${errores.id_toro ? "error" : ""}`}
                                 name="id_toro"
                                 disabled={esVisualizar}
-                                //value={inseminacion.id_toro || ""}
                                 value={inseminacion.id_toro !== null ? inseminacion.id_toro : "eliminado"}
                                 onChange={handleChange}
                             >
@@ -309,8 +305,6 @@ export const FormularioInseminacion = () => {
                                             && animalToro.estado.toUpperCase() !== "Otros".toUpperCase()
                                             && (animalToro.cantidad_semen > 0 || animalToro.id === parseInt(inseminacion.id_toro))
                                         )
-                                        //.filter((animal) => animal.id.startsWith("V-")) //Se filtra por el identificador ya que "animales" contiene también "Terneros"
-                                        // .filter((animal) => animal.tipo === "vaca" || animal.id.startsWith("V-")) //Se filtra tanto por tipo o por id.
                                         .map((toro) => (
                                             <option key={toro.id} value={toro.id}>
                                                 {toro.codigo} ({toro.cantidad_semen})
@@ -450,7 +444,6 @@ export const FormularioInseminacion = () => {
 
                                 {/* Si es una acción de AGREGAR o MODIFICAR: Aparece el siguiente botón:
                                 BOTÓN CANCELAR */}
-                                {/*<NavLink type = "submit" className="btn btn-info">ACEPTAR</NavLink>*/}
                                 <NavLink to="/lista-inseminaciones" className="btn btn-info">CANCELAR</NavLink>
                             </div>
                         )}
