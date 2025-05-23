@@ -358,7 +358,7 @@ export  const EliminarVT = () => {
                     CONFIRMAR ELIMINACIÓN
                 </button>
 
-                {/* BOTÓN DE CANCELAR (se vuelve a la lista de toros) */}
+                {/* BOTÓN DE CANCELAR (se vuelve al inventario de vacunas y tratamientos) */}
                 <NavLink to="/inventario-vt" className="btn btn-info">CANCELAR</NavLink>
             </>
             {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
