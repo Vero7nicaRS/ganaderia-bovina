@@ -359,7 +359,7 @@ export  const EliminarVT = () => {
                 </button>
 
                 {/* BOTÓN DE CANCELAR (se vuelve a la lista de toros) */}
-                <NavLink to="/visualizar-toros" className="btn btn-info">CANCELAR</NavLink>
+                <NavLink to="/inventario-vt" className="btn btn-info">CANCELAR</NavLink>
             </>
             {/* BOTÓN DE VOLVER AL MENÚ PRINCIPAL*/}
             <div className="boton-volver">
