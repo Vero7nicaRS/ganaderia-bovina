@@ -22,7 +22,7 @@ export  const EliminarVT = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-    //Se obtiene la vacuna/tratamiento
+    //Se obtiene la vacuna/tratamiento.
     const {vt_inventario: estadoInicialVT} = location.state; // Se recupera la vacuna/tratamiento desde el state
     const [vt_inventario] = useState(estadoInicialVT);
     /* Se obtiene la función eliminarVT para hacer D (eliminar).
@@ -131,7 +131,7 @@ export  const EliminarVT = () => {
                 };
                 actualizarVTEnContexto(vt_inventarioActualizado); // Se actualiza el estado del animal en el contexto.
 
-                /* Aparece un mensaje indicando que el animal (toro) ha sido eliminado por un determinado motivo
+                /* Aparece un mensaje indicando que la vacuna/tratamiento ha sido eliminado por un determinado motivo
                     y dado unos comentarios */
                 Swal.fire({
                     icon: 'success',
@@ -146,6 +146,7 @@ export  const EliminarVT = () => {
             }
 
             navigate("/inventario-vt"); // Redirige a la página que contiene el listado de vacunas y/o tratamientos.
+
 
         } catch (error) {
             console.error("❌ Error al eliminar la vacuna/tratamiento:", error.response?.data || error.message);
@@ -235,7 +236,7 @@ export  const EliminarVT = () => {
                 });
             }
         }
-
+    };
     /* ----------------------- FIN MANEJADOR INVENTARIOVTCONTEXT: ELIMINAR -----------------------*/
 
     return (
@@ -244,7 +245,7 @@ export  const EliminarVT = () => {
                 <div className="cuadradoEliminar">
                     ELIMINAR {vt_inventario.tipo.toLowerCase() === "vacuna" ? "LA VACUNA" : "EL TRATAMIENTO "}
                 </div>
-                <div className="cuadradoID"> {/* Se muestra el CÓDIGO de la vacuna/tratamiento dentro de un cuadrado. */}
+                <div className="cuadradoID"> {/* Se muestra el ID de la vacuna/tratamiento dentro de un cuadrado. */}
                     <span className="identificador">ID</span>
                     <input
                         type="text"
