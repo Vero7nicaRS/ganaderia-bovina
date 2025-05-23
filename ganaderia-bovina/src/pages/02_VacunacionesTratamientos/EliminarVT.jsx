@@ -22,8 +22,8 @@ export  const EliminarVT = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-    //Se obtiene al animal (toro).
-    const {vt_inventario: estadoInicialVT} = location.state; // Se recupera  animal (toro) desde el state
+    //Se obtiene la vacuna/tratamiento
+    const {vt_inventario: estadoInicialVT} = location.state; // Se recupera la vacuna/tratamiento desde el state
     const [vt_inventario] = useState(estadoInicialVT);
     /* Se obtiene la función eliminarVT para hacer D (eliminar).
          Para ello se emplea useContext (se accede al contexto) ----> Se utiliza VTContext
@@ -147,7 +147,6 @@ export  const EliminarVT = () => {
 
             navigate("/inventario-vt"); // Redirige a la página que contiene el listado de vacunas y/o tratamientos.
 
-
         } catch (error) {
             console.error("❌ Error al eliminar la vacuna/tratamiento:", error.response?.data || error.message);
 
@@ -236,44 +235,7 @@ export  const EliminarVT = () => {
                 });
             }
         }
-        // }catch(error){
-        //
-        //     console.error("❌ Error al eliminar la vacuna/tratamiento:", error.response?.data || error.message);
-        //
-        //     if (error.response && error.response.data && error.response.data.ERROR) {
-        //         const mensajeError = error.response.data.ERROR;
-        //
-        //         if (mensajeError.includes("asociado a otros registros")) {
-        //             // Mensaje especial para errores de relaciones (PROTECT)
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'No se puede eliminar',
-        //                 html: `
-        //                 ${vt_inventario.tipo.toLowerCase() === "vacuna" ? "La vacuna" : "El tratamiento"}
-        //                 <strong>${vt_inventario.codigo}</strong>
-        //                 no se puede eliminar porque está asociado a animales.<br><br>
-        //                 Puede marcarlo como <strong>INACTIVO</strong> si lo desea.`,
-        //                 confirmButtonText: 'Aceptar'
-        //             });
-        //         } else {
-        //             // Otros errores
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Error al eliminar',
-        //                 text: mensajeError,
-        //                 confirmButtonText: 'Aceptar'
-        //             });
-        //         }
-        //     } else {
-        //         Swal.fire({
-        //             icon: 'error',
-        //             title: 'Error inesperado',
-        //             text: 'No se pudo completar la operación.',
-        //             confirmButtonText: 'Aceptar'
-        //         });
-        //     }
-        // }
-    };
+
     /* ----------------------- FIN MANEJADOR INVENTARIOVTCONTEXT: ELIMINAR -----------------------*/
 
     return (
@@ -282,7 +244,7 @@ export  const EliminarVT = () => {
                 <div className="cuadradoEliminar">
                     ELIMINAR {vt_inventario.tipo.toLowerCase() === "vacuna" ? "LA VACUNA" : "EL TRATAMIENTO "}
                 </div>
-                <div className="cuadradoID"> {/* Se muestra el ID del animal (toro) dentro de un cuadrado. */}
+                <div className="cuadradoID"> {/* Se muestra el CÓDIGO de la vacuna/tratamiento dentro de un cuadrado. */}
                     <span className="identificador">ID</span>
                     <input
                         type="text"
@@ -351,7 +313,7 @@ export  const EliminarVT = () => {
                 </div>
             </div>
             <>
-                {/* BOTÓN DE CONFIRMAR ELIMINACIÓN (se vuelve a la lista de toros) */}
+                {/* BOTÓN DE CONFIRMAR ELIMINACIÓN (se vuelve al inventario de vacunas y tratamientos) */}
                 <button type="button"
                         className="btn btn-info"
                         onClick={handleEliminar}>
