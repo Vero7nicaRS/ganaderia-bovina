@@ -7,6 +7,7 @@ import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {ComprobarCamposFormularioInseminacion} from "../../components/ComprobarCamposFormularioInseminacion.jsx";
 import api from "../../api.js";
 import {SoloAdmin} from "../../components/SoloAdmin.jsx";
+import {useAuthContext} from "../../authentication/AuthContext.jsx";
 export const FormularioInseminacion = () => {
 
     //Se utiliza "location" para acceder a los datos (state) que han sido transmitidos mediante el NavLink (modo y vacuna/tratamiento).
