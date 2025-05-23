@@ -361,7 +361,6 @@ export const FormularioAnimal = () => {
                                 className={`form-select ${errores.padre ? "error" : ""}`}
                                 name="padre"
                                 disabled={esVisualizar || (esModificar && animal.padre === null)}
-                                //value={animal.padre || ""}
                                 value={animal.padre !== null ? animal.padre : "eliminado"}
                                 onChange={handleChange}
                             >
@@ -578,7 +577,6 @@ export const FormularioAnimal = () => {
                                 className={`cuadro-texto ${errores.grasa ? "error" : ""}`}
                                 name="grasa"
                                 disabled={esVisualizar} //Se indica que el campo "Grasa" no se puede modificar cuando se Visualiza.
-                                //value={animal.grasa || ""}
                                 value={animal.grasa !== null &&
                                        animal.grasa !== undefined ? animal.grasa : ""}
                                 onChange={handleChange}

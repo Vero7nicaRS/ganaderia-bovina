@@ -64,7 +64,6 @@ export const FormularioCorral = () => {
 
     //Se emplea para seleccionar los animales que se van añadir al corral.
     //Parte de los animales que ya están en el corral o si no hay ningún animal, coge una lista vacia.
-    //const [animalesSeleccionados, setAnimalesSeleccionados] = useState(corral.listaAnimales || []);
     const [animalesSeleccionados, setAnimalesSeleccionados] = useState(() => {
         if ((esVisualizar || esModificar) && corral.id) {
             return animales.filter(a => a.corral === corral.id).map(a => a.id);
@@ -82,7 +81,6 @@ export const FormularioCorral = () => {
             animal.codigo.toUpperCase().includes(busquedaAnimal.toUpperCase())
     );
 
-
     //Para seleccionar o deseleccionar todo el check-box de animales (vacas/terneros).
     const seleccionarTodas = () => {
         const nuevosIds = animalesFiltrados.map(a => a.id);
@@ -93,7 +91,6 @@ export const FormularioCorral = () => {
             prev.filter(id => animalesOriginalesRef.current.includes(id))
         );
     };
-
 
     //Manejador para llevar acabo las modificaciones de los corrales (actualizar el estado de corral)
     const handleChange = (e) => {
@@ -162,7 +159,7 @@ export const FormularioCorral = () => {
 
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
-        console.log('😉 Animal seleccionado: ', id);
+        console.log('Animal seleccionado: ', id);
         setAnimalesSeleccionados((prev) =>
             prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
         );
@@ -187,13 +184,13 @@ export const FormularioCorral = () => {
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         const corralConvertido = convertirCorralParaAPI(corral);
-        console.log("😀 Corral convertido: ", corral);
+        console.log(" Corral convertido: ", corral);
         let nuevoCorralId = corral.id;
         try {
             if (esAgregar) {
                 const nuevoCorralCreado = await agregarCorral(corralConvertido);
                 nuevoCorralId = nuevoCorralCreado.id;
-                console.log("✅ Corral añadido:", nuevoCorralCreado);
+                console.log(" Corral añadido:", nuevoCorralCreado);
             }
 
             /* Recorre la lista de animales (vacas/terneros) que han sido seleccionados
@@ -201,19 +198,17 @@ export const FormularioCorral = () => {
                (Actualización de los animales en el contexto)
             */
 
-            console.log("📋 Todos los animales en contexto:");
+            console.log(" Todos los animales en contexto:");
             animales.forEach(a => {
                 console.log(`  → id: ${a.id}, código: ${a.codigo}`);
             });
-            console.log("🧠 IDs seleccionados:", animalesSeleccionados);
+            console.log(" IDs seleccionados:", animalesSeleccionados);
             const nuevosAnimales = animalesSeleccionados.filter(
                 id => !animalesOriginalesRef.current.includes(id)
             );
             // Se actualiza los animales, eliminándolos de sus corrales anteriores
             for (const id of nuevosAnimales) {
-                // console.log("OEOEO id: ",id);
-                // const animal = animales.find((animal) => animal.id === id);
-                const idNum = Number(id); // 👈 Asegúrate de que sea número
+                const idNum = Number(id);
                 const animal = animales.find((a) => a.id === idNum);
 
                 console.log("🔍 Buscando animal con ID:", idNum);
@@ -221,20 +216,18 @@ export const FormularioCorral = () => {
                     console.log("✅ Animal encontrado:", animal.codigo);
                     const animalActualizado = {
                         ...animal,
-                        corral: nuevoCorralId  // Aquí se ussa el ID del corral, como espera el backend
+                        corral: nuevoCorralId  // Aquí se usa el ID del corral, como espera el backend
                     };
                     // Se asigna al animal el nuevo corral.
-                    //modificarAnimal({ ...animal, corral: corral.nombre });
                     await api.put(`/animales/${animal.id}/`, animalActualizado);
-                    modificarAnimal(animalActualizado); // 👈 ACTUALIZA el contexto
+                    modificarAnimal(animalActualizado);
 
                 }
             }
 
             if (esModificar) {
                 const corral_actualizado = await modificarCorral(corralConvertido);
-                //setCorral(corralConvertido); // Se actualiza el animal en el contexto (frontend) y se muestra la información en el frontend.
-                console.log("✅ Corral modificado:", corral_actualizado);
+                console.log(" El corral ha sido modificado:", corral_actualizado);
             }
 
             /* Una vez que se haya agregado un nuevo corral o se modifique un corral existente,
@@ -242,8 +235,8 @@ export const FormularioCorral = () => {
             */
             navigate("/lista-corrales");
         } catch (error) {
-            console.error("❌ Error al guardar el corral o actualizar animales:", error);
-            console.log("💬 Detalles del error:", error.response?.data);
+            console.error(" Error al guardar el corral o actualizar animales:", error);
+            console.log(" Detalles del error:", error.response?.data);
         }
     };
 
@@ -355,8 +348,8 @@ export const FormularioCorral = () => {
                                 id="nombre"
                                 name="nombre" //Debe coincidir con el nombre de const[corral, ...]
                                 className={`cuadro-texto ${errores.nombre ? "error" : ""}`}
-                                disabled={esVisualizar} //Se indica que el campo "nombre del corral"
-                                // no se puede modificar cuando se Visualiza.
+                                disabled={esVisualizar} /*Se indica que el campo "nombre del corral"
+                                                            no se puede modificar cuando se Visualiza.*/
                                 value={corral.nombre || ""}
                                 onChange={handleChange}
                             />
@@ -378,7 +371,6 @@ export const FormularioCorral = () => {
                                 {animalesNuevosSeleccionados.length}
                             </div>
                         )}
-
                     </div>
 
                     {/* PARTE DERECHA: añadir animales y su listado. */}
@@ -486,10 +478,10 @@ export const FormularioCorral = () => {
                                 return animal ? (
                                     <tr key={id}>
                                         <td>{animal.codigo}</td>
-                                        {/*El botón de QUITAR solo aparece cuando se AGREGA o MODIFICA un corral.*/}
-                                        {/*Además, el botón solo aparece en los animales que NO estaban en el corral, es decir,*/}
-                                        {/*se pone el botón en los que se están añadiendo ahora. Por tanto,*/}
-                                        {/*se comprueba que los animales NO estén en la lista de animales del corral.*!/*/}
+                                        {/*El botón de QUITAR solo aparece cuando se AGREGA o MODIFICA un corral.
+                                        Además, el botón solo aparece en los animales que NO estaban en el corral, es decir,
+                                        se pone el botón en los que se están añadiendo ahora. Por tanto,
+                                        se comprueba que los animales NO estén en la lista de animales del corral.*/}
                                         {!esVisualizar && !animalesOriginalesRef.current.includes(id) && (
                                             <td>
                                                 <button
@@ -544,7 +536,6 @@ export const FormularioCorral = () => {
                             </div>
                         )}
                     </SoloAdmin>
-
 
                     {esVisualizar && (
                         <div className="boton-espacio">
