@@ -128,23 +128,17 @@ export const FormularioToro = () => {
         try{
             if (esAgregar) {
                 console.log("Se ha añadido el toro");
-                //await api.post("/toros/", animalToro); //se crea un nuevo animal
                 // Se añade el nuevo toro al backend y se muestra la información en el frontend.
                 agregarToro(animalToro);
             } else if (esModificar) {
                 console.log("Se ha modificado el toro");
-                // modificarAnimal(animalToro); // Llamada a la función modificar de TorosContext: Se modifica el animal existente (toro)
-
-
                 // Se actualiza el toro en el contexto (frontend) y se muestra la información en el frontend.
-                //await api.put(`/toros/${animalToro.id}/`, animalToro); // se actualiza el animal
                 modificarToro(animalToro);
             }
         }catch (error) {
             console.error("❌ Error al guardar el toro:", error);
             console.log("💬 Respuesta del backend:", error.response?.data);
         }
-
 
         /* Una vez que se haya agregado un nuevo animal (toro) o se modifique un animal existente (toro),
          el usuario es redirigido a la página de "visualizar-toros".
@@ -162,7 +156,6 @@ export const FormularioToro = () => {
 
         if (esAgregar) {
             console.log("Se ha añadido el toro y se continua añadiendo nuevos toros");
-            //agregarAnimal(animalToro); // Llamada a la función agregar de TorosContext: Se añade el nuevo animal (tooro)
             await api.post("/toros/", animalToro); //se añade el nuevo animal.
             setAnimalToro(estadoInicialToro); //Se pone el formulario a vacio, al introducir el campo con un valor vacío.
         }
@@ -279,7 +272,6 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.transmision_leche ? "error" : ""}`}
                                 name="transmision_leche"
                                 disabled={esVisualizar} //Se indica que el campo "Transmisión de producción de leche" no se puede modificar cuando se Visualiza.
-                                //value={animalToro.transmision_leche || ""}
                                 value={animalToro.transmision_leche !== null &&
                                        animalToro.transmision_leche !== undefined ? animalToro.transmision_leche : ""}
 
@@ -299,7 +291,6 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.celulas_somaticas ? "error" : ""}`}
                                 name="celulas_somaticas"
                                 disabled={esVisualizar} //Se indica que el campo "Células somáticas" no se puede modificar cuando se Visualiza.
-                                //value={animalToro.celulas_somaticas || ""}
                                 value={animalToro.celulas_somaticas !== null &&
                                        animalToro.celulas_somaticas !== undefined ? animalToro.celulas_somaticas : ""}
                                 onChange={handleChange}
@@ -313,7 +304,6 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.calidad_patas ? "error" : ""}`}
                                 name="calidad_patas"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de patas" no se puede modificar cuando se Visualiza.
-                                //value={animalToro.calidad_patas || ""}
                                 value={animalToro.calidad_patas !== null &&
                                        animalToro.calidad_patas !== undefined ? animalToro.calidad_patas : ""}
                                 onChange={handleChange}
@@ -328,7 +318,6 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.calidad_ubres ? "error" : ""}`}
                                 name="calidad_ubres"
                                 disabled={esVisualizar} //Se indica que el campo "Calidad de ubres" no se puede modificar cuando se Visualiza.
-                                //value={animalToro.calidad_ubres || ""}
                                 value={animalToro.calidad_ubres !== null &&
                                        animalToro.calidad_ubres !== undefined ? animalToro.calidad_ubres : ""}
                                 onChange={handleChange}
@@ -343,7 +332,6 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.grasa ? "error" : ""}`}
                                 name="grasa"
                                 disabled={esVisualizar} //Se indica que el campo "Grasa" no se puede modificar cuando se Visualiza.
-                                //value={animalToro.grasa || ""}
                                 value={animalToro.grasa !== null &&
                                        animalToro.grasa !== undefined ? animalToro.grasa : ""}
                                 onChange={handleChange}
@@ -358,7 +346,6 @@ export const FormularioToro = () => {
                                 className={`cuadro-texto ${errores.proteinas ? "error" : ""}`}
                                 name="proteinas"
                                 disabled={esVisualizar} //Se indica que el campo "Proteínas" no se puede modificar cuando se Visualiza.
-                                //value={animalToro.proteinas || ""}
                                 value={animalToro.proteinas !== null &&
                                        animalToro.proteinas !== undefined ? animalToro.proteinas : ""}
                                 onChange={handleChange}
@@ -379,8 +366,6 @@ export const FormularioToro = () => {
                         </div>
                     </div>
                 </div>
-
-
 
                 <>
                     {/* Si es una acción de AGREGAR o MODIFICAR: Aparecen los siguientes botones:
@@ -415,11 +400,9 @@ export const FormularioToro = () => {
 
                             </div>
                         )}
-
                     </SoloAdmin>
 
                     {esVisualizar && (
-
                         <div className="boton-espacio">
                             <NavLink to="/visualizar-toros" className="btn btn-info">VISUALIZAR OTROS TOROS</NavLink>
                         </div>
