@@ -12,11 +12,4 @@
     margin: 50px auto;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     padding-right: 20px; /* Se añade un espacio a la derecha para que no esté el texto pegado con el borde*/
-
-
 }
-
-/*!* Pie de página siempre en la parte inferior *!*/
-/*.footer {*/
-/*    margin-top: auto; !* Empuja el footer hacia abajo *!*/
-/*}*/
