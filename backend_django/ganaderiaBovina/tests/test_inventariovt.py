@@ -5,19 +5,57 @@
 
 import pytest
 from rest_framework.test import APIClient
-from django.urls import reverse
-from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
+
+from ganaderiaBovina.models import Animal, Corral, InventarioVT, VTAnimales, Perfil
 from decimal import Decimal
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User, Permission
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Test de INVENTARIOVT: LÓGICA
 # --------------------------------------------------------------------------------------------------------------
 
+def obtener_usuario_autenticado():
+    # Se crea a un usuario
+    user, _ = User.objects.get_or_create(username="usuariotest")
+    user.set_password("usuariotest1234")
+    user.is_staff = True
+    user.save()
+
+    # Se crea un perfil "Administrador" para el usuario
+    perfil, _ = Perfil.objects.get_or_create(user=user)
+    perfil.rol = "Administrador"
+    perfil.save()
+
+    # Se le asigna un grupo al usuario
+    grupo_admin, _ = Group.objects.get_or_create(name="Administrador")
+    if not user.groups.filter(name="Administrador").exists():
+        user.groups.add(grupo_admin)
+
+    # Se le asignan los permisos al usuario
+    permisos_necesarios = ['add_inventariovt', 'change_inventariovt',
+                           'view_inventariovt', 'delete_inventariovt']
+    for tipo_permiso in permisos_necesarios:
+        permiso = Permission.objects.get(codename=tipo_permiso)
+        user.user_permissions.add(permiso)
+
+    # Se crea el token para la autenticación
+    refresh = RefreshToken.for_user(user)
+    token = str(refresh.access_token)
+
+    # Se autentica al usuario
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    return client
+
+
+
 # Test donde se comprueba que se puede crear un tratamiento/vacuna en el inventario correctamente con datos válidos.
 @pytest.mark.django_db
 def test_crear_inventariovt_valido():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         "tipo": "Vacuna",
@@ -42,7 +80,7 @@ def test_crear_inventariovt_valido():
 # Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
 def test_inventariovt_campos_requeridos_vacios():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         "nombre": "",
@@ -60,7 +98,7 @@ def test_inventariovt_campos_requeridos_vacios():
 # Test para comprobar que tienen los valores por defecto correctamente.
 @pytest.mark.django_db
 def test_inventariovt_campos_por_defecto():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     datos = {
         "nombre": "Tratamiento Prueba",
         "unidades": 5
@@ -76,7 +114,7 @@ def test_inventariovt_campos_por_defecto():
 # Test para comprobar los valores fuera de rango
 @pytest.mark.django_db
 def test_inventariovt_valores_fuera_de_rango():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Los datos tienen se sobresalen del rango mínimo.
     datosMin = {
@@ -112,7 +150,7 @@ def test_inventariovt_valores_fuera_de_rango():
 # Test para comprobar que no puede haber dos corrales con el mismo nombre.
 @pytest.mark.django_db
 def test_inventariovt_nombre_duplicado():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     vacuna = InventarioVT.objects.create(
         codigo="VT-11",
         tipo= "Vacuna",
@@ -141,7 +179,7 @@ def test_inventariovt_nombre_duplicado():
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_toro():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Se crea un toro indicándole un código en específico ("T-100").
     InventarioVT.objects.create(
@@ -173,7 +211,7 @@ def test_codigo_duplicado_toro():
 # Test para comprobar código con formato incorrecto.
 @pytest.mark.django_db
 def test_crear_inventariovt_codigo_formato_incorrecto():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     InventarioVT.objects.create(
         codigo = "VT-100",
@@ -203,7 +241,7 @@ def test_crear_inventariovt_codigo_formato_incorrecto():
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
 def test_codigo_inventariovt_generado_automaticamente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     datos = {
         # No se indica el campo "codigo"
         "tipo": "Vacuna",
@@ -224,7 +262,7 @@ def test_codigo_inventariovt_generado_automaticamente():
 # Test para comprobar que no se puede eliminar un toro inexistente.
 @pytest.mark.django_db
 def test_eliminar_inventariovt_no_existente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     id_inexistente = 9999  # Un ID que seguramente no exista
 
@@ -245,7 +283,7 @@ def test_eliminar_inventariovt_no_existente():
 #   a otras relaciones.
 @pytest.mark.django_db
 def test_eliminar_inventariovt_error_sin_relacion():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     inventario = InventarioVT.objects.create(
         nombre="Vacuna Prueba",
@@ -278,7 +316,7 @@ def test_eliminar_inventariovt_error_sin_relacion():
 #   a otras relaciones, por tanto debe lanzar un error.
 @pytest.mark.django_db
 def test_eliminar_inventariovt_error_con_relacion():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     inventario = InventarioVT.objects.create(
         codigo="VT-200",
@@ -336,7 +374,7 @@ def test_eliminar_inventariovt_error_con_relacion():
 # - El historial de VTAnimales se mantiene con el identificador del animal (FK).
 @pytest.mark.django_db
 def test_eliminar_inventarioVT_con_motivo_actualiza_estado():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     inventario = InventarioVT.objects.create(
         nombre="Tratamiento Prueba",
@@ -373,8 +411,8 @@ def test_eliminar_inventarioVT_con_motivo_actualiza_estado():
 
     inventario.refresh_from_db()
     assert response.status_code == 200
-    assert inventario.estado == "Inactiva" # El estado de la vacuna/tratamiento debe estar actualizado al motivo de su eliminación.
-
+    assert inventario.estado == "Inactiva" # El estado de la vacuna/tratamiento debe estar actualizado
+    # al motivo de su eliminación.
     # Se comprueba que no haya habido modificaciones en la lista de vacunas/tratamientos suministrados
     # y se mantienen la relación de la vacuna/tratamiento con las vacunas/tratamientos suministrados.
     vt.refresh_from_db()
@@ -383,7 +421,7 @@ def test_eliminar_inventarioVT_con_motivo_actualiza_estado():
 # Test para comprobar la eliminación de un Animal por un motivo no correcto.
 @pytest.mark.django_db
 def test_eliminar_inventariovt_motivo_invalido():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     inventario = InventarioVT.objects.create(
         nombre="Tratamiento Prueba",
@@ -405,7 +443,7 @@ def test_eliminar_inventariovt_motivo_invalido():
 # Test para filtrar por las unidades de las vacunas/tratamientos del inventario.
 @pytest.mark.django_db
 def test_filtrado_inventariovt_por_rango_unidades():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # No cumple con el filtro (>=6).
     InventarioVT.objects.create(
@@ -454,7 +492,7 @@ def test_filtrado_inventariovt_por_rango_unidades():
 # Test para filtrar por el tipo y estado de las vacunas/tratamientos del inventario.
 @pytest.mark.django_db
 def test_filtrado_combinado_inventariovt_por_tipo_y_estado():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Sí cumple ambos filtros
     InventarioVT.objects.create(

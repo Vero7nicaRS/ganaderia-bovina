@@ -4,19 +4,56 @@
 # -----------------------------------------------------------------------------------
 import pytest
 from rest_framework.test import APIClient
-from django.urls import reverse
-from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
+from ganaderiaBovina.models import Toro, Animal, Corral, ListaInseminaciones, Perfil
 from decimal import Decimal
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, Permission
+
 
 
 # --------------------------------------------------------------------------------------------------------------
-#                                       Test de VTANIMALES: LÓGICA
+#                                       Test de ListaInseminaciones: LÓGICA
 # --------------------------------------------------------------------------------------------------------------
+
+def obtener_usuario_autenticado():
+
+    # Se crea a un usuario
+    user, _ = User.objects.get_or_create(username="usuariotest")
+    user.set_password("usuariotest1234")
+    user.is_staff = True
+    user.save()
+
+    # Se crea un perfil "Administrador" para el usuario
+    perfil, _ = Perfil.objects.get_or_create(user=user)
+    perfil.rol = "Administrador"
+    perfil.save()
+
+    # Se le asigna un grupo al usuario
+    grupo_admin, _ = Group.objects.get_or_create(name="Administrador")
+    if not user.groups.filter(name="Administrador").exists():
+        user.groups.add(grupo_admin)
+
+    # Se le asignan los permisos al usuario
+    permisos_necesarios = ['add_listainseminaciones', 'change_listainseminaciones',
+                           'view_listainseminaciones', 'delete_listainseminaciones']
+    for tipo_permiso in permisos_necesarios:
+        permiso = Permission.objects.get(codename=tipo_permiso)
+        user.user_permissions.add(permiso)
+
+    # Se crea el token para la autenticación
+    refresh = RefreshToken.for_user(user)
+    token = str(refresh.access_token)
+
+    # Se autentica al usuario
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    return client
 
 # Test donde se comprueba que se puede crear una inseminación con datos válidos.
 @pytest.mark.django_db
 def test_crear_listainseminaciones_valido():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",
@@ -79,7 +116,7 @@ def test_crear_listainseminaciones_valido():
 # Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
 def test_listainseminaciones_campos_requeridos_vacios():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         "fecha_inseminacion": "",
@@ -103,7 +140,7 @@ def test_listainseminaciones_campos_requeridos_vacios():
 # Test para comprobar que tienen los valores por defecto correctamente.
 @pytest.mark.django_db
 def test_listainseminaciones_campos_por_defecto():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",
@@ -150,7 +187,7 @@ def test_listainseminaciones_campos_por_defecto():
 # suficiente (>=1)
 @pytest.mark.django_db
 def test_listainseminacion_sin_cantidad_semen():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Se crea una vaca para inseminar.
     animal = Animal.objects.create(
@@ -184,7 +221,7 @@ def test_listainseminacion_sin_cantidad_semen():
         "razon": "Programada",
         "fecha_inseminacion": "2025-04-15",
         "hora_inseminacion": "11:00",
-        "responsable": "Veterinario X",
+        "responsable": "Veterinario Prueba",
         "id_vaca": animal.id,
         "id_toro": toro.id
     }
@@ -201,7 +238,7 @@ def test_listainseminacion_sin_cantidad_semen():
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_listainseminaciones():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",
@@ -261,7 +298,7 @@ def test_codigo_duplicado_listainseminaciones():
 # Test para comprobar si se generan códigos con formato incorrecto.
 @pytest.mark.django_db
 def test_crear_listainseminaciones_codigo_formato_incorrecto():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",
@@ -321,7 +358,7 @@ def test_crear_listainseminaciones_codigo_formato_incorrecto():
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
 def test_codigo_listainseminaciones_generado_automaticamente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     animal = Animal.objects.create(
         tipo="Vaca",
         estado="Vacía",
@@ -382,7 +419,7 @@ def test_codigo_listainseminaciones_generado_automaticamente():
 
 @pytest.mark.django_db
 def test_eliminar_listainseminacion_correcta():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",
@@ -430,7 +467,7 @@ def test_eliminar_listainseminacion_correcta():
 
 @pytest.mark.django_db
 def test_eliminar_listainseminaciones_no_existente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     id_inexistente = 9999  # Un ID que seguramente no exista
 
@@ -451,8 +488,8 @@ def test_eliminar_listainseminaciones_no_existente():
 
 # Test para filtrar por es_sexado de la inseminación.
 @pytest.mark.django_db
-def test_filtrado_vtanimales_por_es_sexado():
-    client = APIClient()
+def test_filtrado_listainseminaciones_por_es_sexado():
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",
@@ -539,8 +576,8 @@ def test_filtrado_vtanimales_por_es_sexado():
 
 # Test para filtrar por es_sexado de la inseminación.
 @pytest.mark.django_db
-def test_filtrado_combinado_vtanimales_por_tipo_y_ruta():
-    client = APIClient()
+def test_filtrado_combinado_listainseminaciones_por_tipo_y_ruta():
+    client = obtener_usuario_autenticado()
 
     animal = Animal.objects.create(
         tipo="Vaca",

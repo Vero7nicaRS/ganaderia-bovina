@@ -4,19 +4,55 @@
 # -----------------------------------------------------------------------------------
 import pytest
 from rest_framework.test import APIClient
+from django.contrib.auth.models import User, Permission
 from django.urls import reverse
-from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
+from rest_framework_simplejwt.tokens import RefreshToken
+from ganaderiaBovina.models import Toro, Animal, ListaInseminaciones, Perfil
 from decimal import Decimal
+from django.contrib.auth.models import Group
 
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Test de TOROS: LÓGICA
 # --------------------------------------------------------------------------------------------------------------
+def obtener_usuario_autenticado():
+
+    # Se crea a un usuario
+    user, _ = User.objects.get_or_create(username="usuariotest")
+    user.set_password("usuariotest1234")
+    user.is_staff = True
+    user.save()
+
+    # Se crea un perfil "Administrador" para el usuario
+    perfil, _ = Perfil.objects.get_or_create(user=user)
+    perfil.rol = "Administrador"
+    perfil.save()
+
+    # Se le asigna un grupo al usuario
+    grupo_admin, _ = Group.objects.get_or_create(name="Administrador")
+    if not user.groups.filter(name="Administrador").exists():
+        user.groups.add(grupo_admin)
+
+    # Se le asignan los permisos al usuario
+    permisos_necesarios = ['add_toro', 'change_toro', 'view_toro', 'delete_toro']
+    for tipo_permiso in permisos_necesarios:
+        permiso = Permission.objects.get(codename=tipo_permiso)
+        user.user_permissions.add(permiso)
+
+    # Se crea el token para la autenticación
+    refresh = RefreshToken.for_user(user)
+    token = str(refresh.access_token)
+
+    # Se autentica al usuario
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    return client
+
 
 # Test donde se comprueba que se puede crear un toro correctamente con datos válidos.
 @pytest.mark.django_db
 def test_crear_toro_valido():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         "nombre": "ToroPrueba",
@@ -48,7 +84,7 @@ def test_crear_toro_valido():
 # Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
 def test_toro_campos_requeridos_vacios():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         "nombre": "",  # Vacío
@@ -78,7 +114,7 @@ def test_toro_campos_requeridos_vacios():
 # Test para comprobar los valores fuera de rango
 @pytest.mark.django_db
 def test_toro_valores_fuera_de_rango():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datosMin = {
         "nombre": "ToroRango",
@@ -131,7 +167,7 @@ def test_toro_valores_fuera_de_rango():
 # Test para comprobar que no puede haber dos corrales con el mismo nombre.
 @pytest.mark.django_db
 def test_toro_nombre_duplicado():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     toro = Toro.objects.create(
         codigo="T-1",
         nombre="ToroPrueba",
@@ -168,7 +204,7 @@ def test_toro_nombre_duplicado():
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_toro():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Se crea un toro indicándole un código en específico ("T-100").
     Toro.objects.create(
@@ -205,7 +241,7 @@ def test_codigo_duplicado_toro():
 # Test para comprobar código con formato incorrecto.
 @pytest.mark.django_db
 def test_crear_toro_codigo_formato_incorrecto():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     Toro.objects.create(
         codigo="T-100",
@@ -244,7 +280,7 @@ def test_crear_toro_codigo_formato_incorrecto():
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
 def test_codigo_toro_generado_automaticamente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     datos = {
         # No se indica el campo "codigo"
         "nombre": "ToroSinCodigo",
@@ -269,7 +305,7 @@ def test_codigo_toro_generado_automaticamente():
 # Test para comprobar que no se puede eliminar un toro inexistente.
 @pytest.mark.django_db
 def test_eliminar_toro_no_existente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     id_inexistente = 9999  # Un ID que seguramente no exista
 
@@ -286,7 +322,7 @@ def test_eliminar_toro_no_existente():
 # Test para comprobar la eliminación del toro sin indicarle ningún motivo.
 @pytest.mark.django_db
 def test_eliminar_toro_destroy_sin_motivo():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     toro = Toro.objects.create(
         nombre="ToroDestroy",
@@ -343,7 +379,7 @@ def test_eliminar_toro_destroy_sin_motivo():
 # - El historial de ListaInseminaciones se mantiene a null (FK).
 @pytest.mark.django_db
 def test_eliminar_toro_error():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Se crea un toro
     toro = Toro.objects.create(
@@ -399,15 +435,18 @@ def test_eliminar_toro_error():
     assert ListaInseminaciones.objects.filter(id_vaca=vaca).exists()
     assert inseminacion.id_toro is None
 
+
+
 # Test para comprobar la eliminación de un Animal por el motivo "MUERTA o VENDIDA"
 # ¿Qué se verifica?
 # - El Toro permanece en la base de datos.
 # - Actualización del estado y de la fecha de eliminación.
 # - El historial de ListaInseminaciones se mantiene con el identificador del animal (FK).
+# - El historial con los animales se sigue manteniendo (FK).
 @pytest.mark.django_db
 @pytest.mark.parametrize("motivo", ["MUERTE", "OTROS"])
 def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Se crea un toro
     toro = Toro.objects.create(
@@ -435,6 +474,22 @@ def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
         proteinas=3.6,
     )
 
+    # Se crea un hijo del toro y la vaca anteriores
+    hijo_toro = Animal.objects.create(
+        nombre="CríaPrueba",
+        tipo="Ternero",
+        estado="Joven",
+        fecha_nacimiento="2025-05-01",
+        celulas_somaticas=120000,
+        produccion_leche=15.0,
+        calidad_patas=6.0,
+        calidad_ubres=7.0,
+        grasa=4.0,
+        proteinas=3.2,
+        padre=toro,
+        madre=vaca,
+    )
+
     # Se crea una inseminación con el toro que se va a eliminar.
     inseminacion = ListaInseminaciones.objects.create(
         id_vaca=vaca,
@@ -459,7 +514,6 @@ def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
 
     assert response.data["mensaje"] == mensaje_error
     assert toro.estado == motivo.capitalize() # El estado del toro debe estar actualizado al motivo de su eliminación.
-    # assert toro.fecha_eliminacion is not None # La fecha de eliminación tiene que tener algún valor.
 
     # Se comprueba que se mantiene el historial en las inseminaciones.
     assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
@@ -473,10 +527,15 @@ def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
     assert ListaInseminaciones.objects.filter(id_vaca=vaca).exists()
     assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
 
+
+    # Se comprueba que siga existiendo las relaciones con otros animales.
+    hijo_toro.refresh_from_db()
+    assert hijo_toro.padre == toro  # El toro sigue siendo su padre
+
 # Test para comprobar la eliminación de un Animal por un motivo no correcto.
 @pytest.mark.django_db
 def test_eliminar_toro_motivo_invalido():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Se crea un toro
     toro = Toro.objects.create(
@@ -520,7 +579,7 @@ def test_eliminar_toro_motivo_invalido():
 
     assert response.status_code == 400
     assert response.data["ERROR"] == "El motivo seleccionado no es correcto. Usa: 'ERROR', 'MUERTE' u 'OTROS'."
-    # ERROR': "El Motivo indicado no es válido. Usa 'ERROR', 'MUERTE' u 'OTROS'
+
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Test de TOROS: FILTRADO
@@ -529,7 +588,7 @@ def test_eliminar_toro_motivo_invalido():
 # Test para filtrar por la transmisión de leche del toro.
 @pytest.mark.django_db
 def test_filtrado_toro_por_rango_transmision_leche():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # No cumple con el filtro (>=3).
     Toro.objects.create(
@@ -591,7 +650,7 @@ def test_filtrado_toro_por_rango_transmision_leche():
 # Test para filtrar por la cantidad de semen y la calidad de ubres del toro.
 @pytest.mark.django_db
 def test_filtrado_combinado_toros_por_cantidad_semen_y_calidad_ubres():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # Toro que sí cumple ambos filtros
     Toro.objects.create(

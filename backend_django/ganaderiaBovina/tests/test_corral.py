@@ -2,22 +2,59 @@
 # Funcionalidad: se encarga de comprobar la API
 # (ej: crear, modificar, eliminar, mostrar...)
 # -----------------------------------------------------------------------------------
-from ganaderiaBovina.models import Corral
 import pytest
 from rest_framework.test import APIClient
-from django.urls import reverse
-from ganaderiaBovina.models import Toro, Animal, Corral, InventarioVT, VTAnimales, ListaInseminaciones
+from ganaderiaBovina.models import Animal, Corral, Perfil
 from decimal import Decimal
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, Permission
 
 
 # --------------------------------------------------------------------------------------------------------------
 #                                       Test de CORRAL: LÓGICA
 # --------------------------------------------------------------------------------------------------------------
+# Para poder realizar los test, se debe crear a un usuario autenticado
+# que tenga todos los permisos necesarios para ejecutar las pruebas.
+def obtener_usuario_autenticado():
+    # Se crea a un usuario
+    user, _ = User.objects.get_or_create(username="usuariotest")
+    user.set_password("usuariotest1234")
+    user.is_staff = True
+    user.save()
+
+    # Se crea un perfil "Administrador" para el usuario
+    perfil, _ = Perfil.objects.get_or_create(user=user)
+    perfil.rol = "Administrador"
+    perfil.save()
+
+    # Se le asigna un grupo al usuario
+    grupo_admin, _ = Group.objects.get_or_create(name="Administrador")
+    if not user.groups.filter(name="Administrador").exists():
+        user.groups.add(grupo_admin)
+
+    # Se le asignan los permisos al usuario
+    permisos_necesarios = ['add_corral', 'change_corral', 'view_corral', 'delete_corral',
+                           'add_animal', 'change_animal', 'view_animal', 'delete_animal',
+                           'add_toro', 'change_toro', 'view_toro', 'delete_toro']
+    for tipo_permiso in permisos_necesarios:
+        permiso = Permission.objects.get(codename=tipo_permiso)
+        user.user_permissions.add(permiso)
+
+    # Se crea el token para la autenticación
+    refresh = RefreshToken.for_user(user)
+    token = str(refresh.access_token)
+
+    # Se autentica al usuario
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    return client
+
 
 # Test donde se comprueba que se puede crear un tratamiento/vacuna suministrado correctamente con datos válidos.
 @pytest.mark.django_db
 def test_crear_corral_valido():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
      "nombre" : "Corral Prueba"
@@ -38,7 +75,7 @@ def test_crear_corral_valido():
 # Test para comprobar que debe haber valores en cada uno de los campos.
 @pytest.mark.django_db
 def test_corral_campos_requeridos_vacios():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         "nombre" : ""
@@ -51,18 +88,10 @@ def test_corral_campos_requeridos_vacios():
     # Mensajes de error personalizados esperados en el serializer
     assert response.data["nombre"][0] == "El nombre no puede estar vacío."
 
-
-# Test para comprobar los valores fuera de rango
-@pytest.mark.django_db
-def test_corral_valores_fuera_de_rango():
-    datos = {
-        "nombre" : ""
-    }
-
 # Test para comprobar que no puede haber dos corrales con el mismo nombre.
 @pytest.mark.django_db
 def test_corral_nombre_duplicado():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     Corral.objects.create(nombre="Corral Único")
 
     datos_duplicados = {
@@ -81,7 +110,7 @@ def test_corral_nombre_duplicado():
 # Test para comprobar si se generan códigos duplicados
 @pytest.mark.django_db
 def test_codigo_duplicado_corral():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
 
     Corral.objects.create(
@@ -106,7 +135,7 @@ def test_codigo_duplicado_corral():
 # Test para comprobar si se generan códigos con formato incorrecto.
 @pytest.mark.django_db
 def test_crear_corral_codigo_formato_incorrecto():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos_codigo_incorrecto = {
         "codigo": "ABC-999", # Formato de código incorrecto.
@@ -124,7 +153,7 @@ def test_crear_corral_codigo_formato_incorrecto():
 # Test para comprobar que si el usuario no introduce un código, éste se genera de manera automática.
 @pytest.mark.django_db
 def test_codigo_corral_generado_automaticamente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     datos = {
         # No se indica el campo "codigo"
@@ -141,7 +170,7 @@ def test_codigo_corral_generado_automaticamente():
 # Test para comprobar que no se puede eliminar un toro inexistente.
 @pytest.mark.django_db
 def test_eliminar_corral_no_existente():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     id_inexistente = 9999  # Un ID que seguramente no exista
 
@@ -158,7 +187,7 @@ def test_eliminar_corral_no_existente():
 # Test para comprobar que el número de animales que hay en el corral es el correcto.
 @pytest.mark.django_db
 def test_corral_actualiza_numero_animales_al_eliminar_animal():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     corral = Corral.objects.create(nombre="Corral Prueba 1")
 
     animal=Animal.objects.create(
@@ -211,7 +240,7 @@ def test_corral_actualiza_numero_animales_al_eliminar_animal():
 # Test para comprobar que un corral se elimina correctamente al no tener ningún animal.
 @pytest.mark.django_db
 def test_eliminar_corral_sin_animales():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
     corral = Corral.objects.create(nombre="Corral Libre")
 
     response = client.delete(f"/api/corrales/{corral.id}/")
@@ -225,10 +254,8 @@ def test_eliminar_corral_sin_animales():
 # se muestra un mensaje de error.
 @pytest.mark.django_db
 def test_eliminar_corral_con_animales_asociados():
-    client = APIClient()
-
+    client = obtener_usuario_autenticado()
     corral = Corral.objects.create(nombre="Corral Ocupado")
-
     animal = Animal.objects.create(
         tipo="Vaca",
         estado="Vacía",
@@ -242,9 +269,7 @@ def test_eliminar_corral_con_animales_asociados():
         proteinas=3.5,
         corral=corral
     )
-
     response = client.delete(f"/api/corrales/{corral.id}/")
-
     assert response.status_code == 400
     # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
     assert response.data["ERROR"] == f"No se puede eliminar el corral {corral.codigo} porque contiene animales asociados."
@@ -257,7 +282,7 @@ def test_eliminar_corral_con_animales_asociados():
 # Test para filtrar por el nombre del corral.
 @pytest.mark.django_db
 def test_filtrado_corral_por_nombre():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # No cumple con el filtro (Corral Prueba 1).
     Corral.objects.create(
@@ -288,7 +313,7 @@ def test_filtrado_corral_por_nombre():
 # Test para filtrar por el rango de animales que tiene el corral.
 @pytest.mark.django_db
 def test_filtrado_corrales_por_rango_animales():
-    client = APIClient()
+    client = obtener_usuario_autenticado()
 
     # No cumple con el filtro (>=2 & <=3).
     corral1 = Corral.objects.create(nombre="Corral Prueba 1") # No tiene ningún animal.
