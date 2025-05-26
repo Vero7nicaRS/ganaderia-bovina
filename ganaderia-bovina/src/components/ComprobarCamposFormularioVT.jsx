@@ -133,8 +133,9 @@ export const ComprobarCamposFormularioVT = (datosVT, tipo, listadoVTAnimales, an
             if (repetida) {
                 erroresTemp.fecha_inicio = `${datosVT.tipo.toLowerCase() === "vacuna" ? "Esta vacuna"
                                                 : "Este tratamiento"} ya fue suministrad
-                                                ${datosVT.tipo.toLowerCase() === "vacuna" ? "a" : "o"}
-                                                a ${objeto_animal.codigo} en los últimos 365 días.`
+                                                ${datosVT.tipo.toLowerCase() === "vacuna" 
+                                                    ? "ya fue suministrada" : "ya fue suministrado"}
+                                                ${objeto_animal.codigo} en los últimos 365 días.`
             }
         }
     }
