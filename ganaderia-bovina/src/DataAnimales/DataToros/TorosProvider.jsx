@@ -42,7 +42,7 @@ export const TorosProvider = ({children}) => {
 
             // Se añade el toro en el contexto: aparece en la lista de toros.
             setAnimalesToros(prev => [...prev, response.data]);
-            return response.data; // Se devuelve el toro con toda su información (incluyendo: id y codigo)
+            return response.data; // Se devuelve el toro con toda su información (incluyendo: id y código)
         } catch (error) {
             console.error("Error al crear toro:", error.response?.data || error.message);
             throw error;
