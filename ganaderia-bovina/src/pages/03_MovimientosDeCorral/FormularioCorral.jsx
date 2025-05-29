@@ -1,5 +1,5 @@
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
-import {useContext, useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useMemo, useRef, useState} from "react";
 import "../../styles/FormularioCorral.css";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {ComprobarCamposFormularioCorral} from "../../components/ComprobarCamposFormularioCorral.jsx";
@@ -73,13 +73,23 @@ export const FormularioCorral = () => {
 
     /* Para realizar una búsqueda*/
     const [busquedaAnimal, setBusquedaAnimal] = useState("");
-    const animalesFiltrados = animales.filter(
-        (animal) =>
-            !animalesSeleccionados.includes(animal.id) &&
-            animal.estado.toUpperCase() !== "MUERTE" &&
-            animal.estado.toUpperCase() !== "VENDIDA" &&
-            animal.codigo.toUpperCase().includes(busquedaAnimal.toUpperCase())
-    );
+    // const animalesFiltrados = animales.filter(
+    //     (animal) =>
+    //         !animalesSeleccionados.includes(animal.id) &&
+    //         animal.estado.toUpperCase() !== "MUERTE" &&
+    //         animal.estado.toUpperCase() !== "VENDIDA" &&
+    //         animal.codigo.toUpperCase().includes(busquedaAnimal.toUpperCase())
+    // );
+
+    const animalesFiltrados = useMemo(() => {
+        return animales.filter(
+            (animal) =>
+                !animalesSeleccionados.includes(animal.id) &&
+                animal.estado.toUpperCase() !== "MUERTE" &&
+                animal.estado.toUpperCase() !== "VENDIDA" &&
+                animal.codigo.toUpperCase().includes(busquedaAnimal.toUpperCase())
+        );
+    }, [animales, animalesSeleccionados, busquedaAnimal]);
 
     //Para seleccionar o deseleccionar todo el check-box de animales (vacas/terneros).
     const seleccionarTodas = () => {
@@ -139,8 +149,8 @@ export const FormularioCorral = () => {
                 }
             }
         };
-             console.log("Animales actualizados en el contexto:", animales);
-             console.log("Corrales actualizados en el contexto:", corrales);
+             //console.log("Animales actualizados en el contexto:", animales);
+             //console.log("Corrales actualizados en el contexto:", corrales);
         fetchCorral(); // Se llama después una única vez. Se ha añadido de nuevo porque no se puede poner async el "useEffect".
     }, [id, corralInicial,animales,corrales]);
 
@@ -159,7 +169,7 @@ export const FormularioCorral = () => {
 
     //Para hacer el check-box de animales.
     const toggleSeleccionAnimal = (id) => {
-        console.log('Animal seleccionado: ', id);
+        //console.log('Animal seleccionado: ', id);
         setAnimalesSeleccionados((prev) =>
             prev.includes(id) ? prev.filter((animalId) => animalId !== id) : [...prev, id]
         );
@@ -184,7 +194,7 @@ export const FormularioCorral = () => {
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
         const corralConvertido = convertirCorralParaAPI(corral);
-        console.log(" Corral convertido: ", corral);
+        //console.log(" Corral convertido: ", corral);
         let nuevoCorralId = corral.id;
         try {
             if (esAgregar) {
@@ -198,11 +208,11 @@ export const FormularioCorral = () => {
                (Actualización de los animales en el contexto)
             */
 
-            console.log(" Todos los animales en contexto:");
-            animales.forEach(a => {
-                console.log(`  → id: ${a.id}, código: ${a.codigo}`);
-            });
-            console.log(" IDs seleccionados:", animalesSeleccionados);
+            //console.log(" Todos los animales en contexto:");
+            // animales.forEach(a => {
+            //     console.log(`  → id: ${a.id}, código: ${a.codigo}`);
+            // });
+            //console.log(" IDs seleccionados:", animalesSeleccionados);
             const nuevosAnimales = animalesSeleccionados.filter(
                 id => !animalesOriginalesRef.current.includes(id)
             );
@@ -211,9 +221,9 @@ export const FormularioCorral = () => {
                 const idNum = Number(id);
                 const animal = animales.find((a) => a.id === idNum);
 
-                console.log("🔍 Buscando animal con ID:", idNum);
+               //console.log("🔍 Buscando animal con ID:", idNum);
                 if (animal) {
-                    console.log("✅ Animal encontrado:", animal.codigo);
+                 //   console.log("✅ Animal encontrado:", animal.codigo);
                     const animalActualizado = {
                         ...animal,
                         corral: nuevoCorralId  // Aquí se usa el ID del corral, como espera el backend
@@ -241,7 +251,7 @@ export const FormularioCorral = () => {
     };
 
     const handleAceptarYSeguir = async (e) => {
-        console.log(corral); // Verifica el estado de la vacuna/tratamiento antes de validar
+        //console.log(corral); // Verifica el estado de la vacuna/tratamiento antes de validar
         e.preventDefault();
         if (!validarFormulario()) return; // Si hay errores, no continúa
 
