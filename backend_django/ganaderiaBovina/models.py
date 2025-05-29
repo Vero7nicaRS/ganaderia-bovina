@@ -431,13 +431,11 @@ class Toro(models.Model):
     # Transmisión de producción de leche: (Media 30 y desviación 20. Tiene 2 decimales.)
     transmision_leche = models.DecimalField(
         max_digits=4, decimal_places= 2,
-        # validators=[MinValueValidator(Decimal('1')), MaxValueValidator(Decimal('9'))]
     )
 
     # Transmisión de células somáticas: (Media 0.5 y desviación 1.5. Tiene 2 decimales.)
     celulas_somaticas = models.DecimalField(
         max_digits=4, decimal_places= 2,
-        # validators=[MinValueValidator(Decimal('1')), MaxValueValidator(Decimal('9'))]
     )
 
     # Calidad ubres: (comprendido entre 1 y 9, con dos decimales)
@@ -482,7 +480,6 @@ class Toro(models.Model):
 #
 # Se utilizará para guardar el perfil de los usuarios.
 # --------------------------------------------------------------------------------------------------------------
-
 
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
