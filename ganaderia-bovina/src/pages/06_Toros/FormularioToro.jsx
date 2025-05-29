@@ -136,8 +136,8 @@ export const FormularioToro = () => {
                 modificarToro(animalToro);
             }
         }catch (error) {
-            console.error("❌ Error al guardar el toro:", error);
-            console.log("💬 Respuesta del backend:", error.response?.data);
+            console.error(" Error al guardar el toro:", error);
+            console.log(" Respuesta del backend:", error.response?.data);
         }
 
         /* Una vez que se haya agregado un nuevo animal (toro) o se modifique un animal existente (toro),
