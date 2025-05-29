@@ -6,7 +6,7 @@ export const Home = () => {
 
     return (
         <div>
-            <div className="cuadradoBienvenida"> ¡Bienvenido, {nombreUsuario} !</div>
+            <div className="cuadradoBienvenida"> ¡Bienvenido, {nombreUsuario}!</div>
             <div className="cuadradoQueHacer"> ¿Qué desea hacer hoy?</div>
             <hr/>
             <NavBar></NavBar>
