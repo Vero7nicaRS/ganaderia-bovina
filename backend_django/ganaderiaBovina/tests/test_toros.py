@@ -522,11 +522,9 @@ def test_eliminar_toro_con_motivo_actualiza_estado(motivo):
     # relación del toro con la vacuna/tratamiento:
     #   - id_vaca: para asegurarnos de que la inseminación no se ha eliminado.
     #   - id_toro: ""        ""     la relación con el toro se mantiene y no se pone a null.
-
     inseminacion.refresh_from_db()
     assert ListaInseminaciones.objects.filter(id_vaca=vaca).exists()
     assert ListaInseminaciones.objects.filter(id_toro=toro).exists()
-
 
     # Se comprueba que siga existiendo las relaciones con otros animales.
     hijo_toro.refresh_from_db()
