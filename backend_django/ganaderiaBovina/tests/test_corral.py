@@ -272,7 +272,8 @@ def test_eliminar_corral_con_animales_asociados():
     response = client.delete(f"/api/corrales/{corral.id}/")
     assert response.status_code == 400
     # Se comprueba que se obtiene correctamente el mensaje de error personalizado.
-    assert response.data["ERROR"] == f"No se puede eliminar el corral {corral.codigo} porque contiene animales asociados."
+    assert response.data["ERROR"] == (f"No se puede eliminar el corral {corral.codigo}"
+                                      f" porque contiene animales asociados.")
     assert Corral.objects.filter(id=corral.id).exists()
 
 # --------------------------------------------------------------------------------------------------------------
