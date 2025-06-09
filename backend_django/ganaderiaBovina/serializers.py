@@ -217,7 +217,7 @@ class AnimalSerializer(serializers.ModelSerializer):
 #                                       Serializer de TORO
 # --------------------------------------------------------------------------------------------------------------
 
-# Incluye todos los campos del modelo Toro, por tanto se podrá hacer CRUD mediante la API
+# Incluye todos los campos del modelo Toro, por tanto, se podrá hacer CRUD mediante la API
 class ToroSerializer(serializers.ModelSerializer):
 
     codigo = serializers.CharField(
@@ -267,8 +267,6 @@ class ToroSerializer(serializers.ModelSerializer):
                 'error_messages': {
                     'required': 'El número de células somáticas es obligatorio.',
                     'invalid': 'Debe introducir un número entero válido.',
-                    # 'min_value': "El valor mínimo permitido es 50000.",
-                    # 'max_value': "El valor máximo permitido es 2000000.",
                     'null': 'El número de células somáticas no puede ser nulo.'
                 }
             },
