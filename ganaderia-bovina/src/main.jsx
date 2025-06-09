@@ -25,27 +25,18 @@ createRoot(document.getElementById('root')).render(
 
                         <VtProvider>   {/*Toda la App (es decir, todas las páginas) tendrán a su disposición
                                 los datos de las vacunas y/o tratamientos y por tanto, podrán modificarlos */}
-
                             <InseminacionesProvider>
                                 <VTListadoProvider>
                                     <CorralesProvider>
                                         <SimulacionesProvider>
                                             <App> </App>
-
                                         </SimulacionesProvider>
-
                                     </CorralesProvider>
-
                                 </VTListadoProvider>
-
                             </InseminacionesProvider>
-
                         </VtProvider>
-
                     </TorosProvider>
-
                 </AnimalesProvider>
-
             </StrictMode>
         </AuthProvider>
     </BrowserRouter>
