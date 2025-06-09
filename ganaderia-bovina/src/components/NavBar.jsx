@@ -46,13 +46,13 @@ export const NavBar = () => {
                                         </li>
                                     </>
                                 )}
-                                <li>
-                                    <hr className="dropdown-divider"/>
-                                </li>
-                                {/* Enlace a la página "ÁRBOL GENEALÓGICO" */}
-                                <li><NavLink to='/arbol-genealogico' className="dropdown-item">Árbol genealógico
-                                </NavLink>
-                                </li>
+                                {/*<li>*/}
+                                {/*    <hr className="dropdown-divider"/>*/}
+                                {/*</li>*/}
+                                {/*/!* Enlace a la página "ÁRBOL GENEALÓGICO" *!/*/}
+                                {/*<li><NavLink to='/arbol-genealogico' className="dropdown-item">Árbol genealógico*/}
+                                {/*</NavLink>*/}
+                                {/*</li>*/}
 
                             </ul>
                         </li>
