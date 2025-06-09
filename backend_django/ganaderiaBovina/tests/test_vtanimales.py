@@ -399,7 +399,6 @@ def test_modificar_vtanimales_sin_cambiar_inventario_con_unidades_0():
 @pytest.mark.django_db
 def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
     client = obtener_usuario_autenticado()
-
     inventario_con_unidades = InventarioVT.objects.create(
         codigo="VT-1",
         tipo="Vacuna",
@@ -408,7 +407,6 @@ def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
         cantidad="Dosis",
         estado="Activa"
     )
-
     inventario_sin_unidades = InventarioVT.objects.create(
         codigo="VT-2",
         tipo="Vacuna",
@@ -417,7 +415,6 @@ def test_modificar_vtanimales_cambiando_a_inventario_sin_unidades():
         cantidad="Dosis",
         estado="Activa"
     )
-
     animal = Animal.objects.create(
         tipo="Vaca",
         estado="Vacía",
