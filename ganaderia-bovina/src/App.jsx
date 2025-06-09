@@ -25,7 +25,9 @@ import {EliminarVT} from "./pages/02_VacunacionesTratamientos/EliminarVT.jsx";
 import {InicioSesion} from "./pages/InicioSesion/InicioSesion.jsx";
 import {ProtegerRuta} from "./authentication/ProtegerRuta.jsx";
 import fondoVaca from "./assets/fondo_manchas_vaca.jpg"
+import {useAuthContext} from "./authentication/AuthContext.jsx";
 export const App = () => {
+    const { accessToken } = useAuthContext();
 
     const localizacion = useLocation(); //Ubicación actual de la página
      return (
@@ -56,7 +58,9 @@ export const App = () => {
                      {/* Contiene todas las rutas que hay en la aplicación*/}
                      <div className="container">
                          <Routes>
-                             <Route path="/" element={<Home/>}/>
+                             <Route path="/" element={
+                                 accessToken ? <Home /> : <Navigate to="/inicio-sesion" />
+                             }/>
 
                              {/* ---------- Páginas referentes a LISTA DE ANIMALES (Vacas/Terneros) ----------*/}
                              <Route path="/visualizar-animales" element={<ListaAnimales/>}/>
@@ -180,7 +184,8 @@ export const App = () => {
                              {/* ---------- Páginas referentes a INICIO DE SESIÓN ----------*/}
                              <Route path="/inicio-sesion" element={<InicioSesion/>}/>
 
-                             <Route path="/*" element={<Navigate to='/'/>}></Route>
+                             {/*<Route path="/*" element={<Navigate to='/'/>}></Route>*/}
+                             <Route path="/*" element={<Navigate to={accessToken ? "/" : "/inicio-sesion"} />} />
 
                          </Routes>
                      </div>
