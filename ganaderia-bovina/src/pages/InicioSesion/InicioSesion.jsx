@@ -23,7 +23,18 @@ export const InicioSesion = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                setError(errorData?.detail || "Usuario o contraseña no válidos.");
+
+                let mensaje = "Usuario o contraseña no válidos.";
+
+                if (errorData?.detail === "No active account found with the given credentials") {
+                    mensaje = "No existe ninguna cuenta activa con esas credenciales.";
+                } else if (errorData?.detail) {
+                    mensaje = errorData.detail;
+                } else if (errorData?.non_field_errors?.length > 0) {
+                    mensaje = errorData.non_field_errors[0];
+                }
+
+                setError(mensaje);
                 return;
             }
 
