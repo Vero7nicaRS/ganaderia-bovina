@@ -197,7 +197,7 @@ class ToroViewSet(viewsets.ModelViewSet):
     # Ascendente: toros/?ordering= ... (No se le indica nada)
     # Descentente: toros/?ordering= - ... (Se le indica un símbolo "-")
     ordering_fields = ['nombre', 'celulas_somaticas','transmision_leche', 'cantidad_semen',
-                       'calidad_patas', 'calidad_ubres','grasa','proteinas'] # , 'fecha_eliminacion'
+                       'calidad_patas', 'calidad_ubres','grasa','proteinas']
     ordering = ['nombre'] # Ordenación por defecto.
 
     # get_object: obtiene la instancia del modelo en la base de datos y lanza excepción si no lo encuentra.
