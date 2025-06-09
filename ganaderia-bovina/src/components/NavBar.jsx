@@ -226,15 +226,15 @@ export const NavBar = () => {
                                aria-expanded="false">Usuario</a>
                             <ul className="dropdown-menu dropdown-menu-end">
                                 {/* Enlace a la página "Perfil de usuario" --> NO IMPLEMENTADO */}
-                                <li>
-                                    <NavLink to='/perfil-usuario'
-                                             className="dropdown-item">
-                                        Perfil de usuario
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <hr className="dropdown-divider"/>
-                                </li>
+                                {/*<li>*/}
+                                {/*    <NavLink to='/perfil-usuario'*/}
+                                {/*             className="dropdown-item">*/}
+                                {/*        Perfil de usuario*/}
+                                {/*    </NavLink>*/}
+                                {/*</li>*/}
+                                {/*<li>*/}
+                                {/*    <hr className="dropdown-divider"/>*/}
+                                {/*</li>*/}
                                 {/* Enlace a la página "Cerrar sesión" */}
                                 <li>
                                     <button onClick={logout}
