@@ -1,0 +1,267 @@
+/* Contenedor que agrupa el cuadrado y el botón */
+.contenedor {
+    display: flex; /* Alinea los hijos horizontalmente */
+    align-items: center; /* Alinea los hijos verticalmente */
+    justify-content: center; /* Opcional: centra el contenido en la página */
+}
+.contenedor-linea {
+    display: flex;
+    align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
+    margin-bottom: 10px; /* Espaciado entre los elementos */
+    flex-grow: 1; /* Permite que el espacio se distribuya mejor */
+}
+
+/* Establecemos un contenedor para los dos bloques: izquierdo y derecho */
+.contenedor-flex {
+    display: flex; /*Permite una mejor dispoición de los elementos*/
+    justify-content: space-between;
+    gap: 20px; /* Espacio entre los dos bloques */
+}
+
+/* Contenedor izquierdo */
+.contenedor-izquierda {
+    width: 50%;
+}
+
+/* Contenedor derecho*/
+.contenedor-derecha {
+    width: 50%;
+}
+
+/* Para los select y los inputs, agregamos un espaciado vertical */
+.contenedor-linea {
+    display: flex; /*Permite una mejor disposición de los elementos*/
+    align-items: center; /* Alineamos el texto y el campo de entrada verticalmente */
+    margin-bottom: 10px; /* Espaciado entre los elementos */
+}
+
+/* Se encarga de poner el texto a la izquierda y el campo de escribir a la derecha del mismo */
+.label {
+    margin-right: 10px; /* Espacio entre el texto y el campo de escribir */
+    white-space: nowrap; /* Evitamos que el texto se rompa */
+}
+
+/* Aseguramos que los inputs y selects ocupen todo el ancho disponible */
+.cuadro-texto, .form-select {
+    width: auto;
+    max-width: 200px; /* Ajusta el tamaño máximo */
+    margin-right: 25px; /* Deja un margen a la derecha ->  Lo separa de la derecha*/
+}
+
+/* BOTÓN VOLVER AL MENÚ: botón para volver al menú principal*/
+.boton-volver {
+    display: flex; /*Permite una mejor dispoición de los elementos*/
+    justify-content: flex-end; /* Alinea el botón a la derecha */
+    margin-top: 15px; /* Espacio entre la tabla y el botón */
+}
+
+.boton-volver .btn {
+    font-size: 14px;/* Tamaño del texto */
+    padding: 5px 10px;/* Tamaño del botón */
+    background-color: #007bff; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: 1px solid #007bff; /* Borde sólido*/
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Aparece una manita cuando se pasa por encima del botón */
+}
+
+.boton-volver .btn:hover {
+    background-color: white; /* Cambia el fondo a blanco */
+    color: #007bff; /* Cambia el texto al color original del fondo */
+    border: 1px solid #007bff; /* Añade un borde del color original */
+}
+
+.boton-derecha {
+    font-size: 14px; /* Tamaño del texto */
+    padding: 5px 10px; /* Tamaño del botón */
+    background-color: #007bff; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: 1px solid #007bff; /* Borde sólido*/
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Manita al pasar por el botón */
+    transition: background-color 0.3s, color 0.3s; /* Transición suave */
+}
+
+.boton-derecha:hover {
+    background-color: white; /* Cambia el fondo a blanco */
+    color: #007bff; /* Cambia el texto al color original del fondo */
+    border: 1px solid #007bff; /* Añade un borde del color original */
+}
+
+.cuadradoSimulacion{
+    width: 300px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+/* MANEJO DE ERRORES: Cuadrado del campo se vuelve en color rojo*/
+.error {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.mensaje-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 2px;
+    height: 16px; /* Fijar la altura para que el formulario no se desplace */
+    white-space: nowrap; /* Evita que el mensaje se expanda en múltiples líneas */
+}
+
+/* MANEJO DE LISTADO DE VACAS: visualización del listado de vacas*/
+.lista-vacas {
+    width: 337px;
+    min-height: 300px; /* Se fija el mínimo de altura del listado de vacas*/
+    max-height: 300px;
+    border: 1px solid #ccc;
+    overflow-y: auto; /*Barra de scroll situada a la derecha*/
+    padding: 4px;
+    background-color: #fafafa;
+}
+
+.item-vaca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 4px;
+    font-size: 14px;
+}
+
+.item-vaca span {
+    display: inline-block;
+    min-width: 60px;
+    white-space: nowrap;
+}
+
+.mensaje-no-animales {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+}
+
+/* BOTÓN DE SIMULACIÓN: Separarlo de la lista de vacas. */
+.boton-simulacion {
+    margin-top: 30px;
+    display: flex; /*Permite una mejor dispoición de los elementos*/
+    justify-content: center; /* Alinea el botón a la derecha */
+    gap: 10px; /* Espaciado entre los botones */
+
+}
+
+.boton-simulacion .btn{
+
+    font-size: 14px;/* Tamaño del texto */
+    padding: 5px 10px;/* Tamaño del botón */
+    color: white; /* Color del texto */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Manita al pasar por el botón */
+    margin-top: 15px; /* Espacio entre la tabla y el botón */
+}
+
+{/*Cuando pasas el puntero del ratón por encima del botón*/}
+.boton-simulacion .btn:hover {
+    background-color: white; /* Cambia el fondo a blanco */
+    color: #007bff; /* Cambia el texto al color original del fondo */
+    border: 1px solid #007bff; /* Añade un borde del color original */
+}
+
+
+/* RESULTADO DE LA SIMULACIÓN: como aparece el resultado de la simulación*/
+.resultado-simulacion {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* BOTONES DE SELECCIONAR Y DESELECCIONAR: seleccionar todo o quitar todo del listado de vacas*/
+/* Botón azul: "Seleccionar todo" */
+.boton-seleccion-azul {
+    font-size: 14px;
+    padding: 5px 10px;
+    background-color: #747bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 10px;
+    margin-right: 8px;
+}
+
+.boton-seleccion-azul:hover {
+    background-color: #007bff; /* Azul oscuro */
+    color: white; /* Cambia el texto al color original del fondo */
+
+}
+
+/* Botón rojo: "Quitar selección" */
+.boton-seleccion-rojo {
+    font-size: 14px;
+    padding: 5px 10px;
+    background-color: #e35864;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 10px;
+}
+
+.boton-seleccion-rojo:hover {
+    background-color: #b02a37;
+    color: white;
+}
+
+/* Contenedor para los botones de selección/deselección */
+.contenedor-botones-seleccion {
+    display: flex;
+    justify-content: flex-start; /* Alinea a la izquierda */
+    margin-top: 15px;
+    margin-left: 35px;
+    gap: 8px; /* Espacio entre los dos botones */
+}
+
+
+/* MENSAJE DE ERROR LISTADO VACAS*/
+.contenedor-linea-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.fila-buscador {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+.fila-vacas {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.mensaje-error-al-lado {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    max-width: 140px;
+    white-space: nowrap; /* Se mantiene el texto en una línea */
+}
+
+
+/* MENSAJE CARGANDO SIMULACIÓN*/
+.mensaje-cargando-simulacion{
+    textAlign: center;
+    marginTop: 10px;
+    color: #007bff;
+}

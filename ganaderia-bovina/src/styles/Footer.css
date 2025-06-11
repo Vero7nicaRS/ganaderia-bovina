@@ -1,0 +1,15 @@
+/* Pie de página que aparecerá en cada pantalla indicando el diseñador de la aplicación web*/
+.cuadradoDiseñoRealizado{
+    width: 1000px;
+    height: 40px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    font-size: 20px;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    padding-right: 20px; /* Se añade un espacio a la derecha para que no esté el texto pegado con el borde*/
+}

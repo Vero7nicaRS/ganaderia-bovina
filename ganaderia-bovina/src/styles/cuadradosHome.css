@@ -1,0 +1,43 @@
+.cuadradoBienvenida {
+    width: 300px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+.cuadradosGenerales {
+    width: 300px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+.cuadradoQueHacer{
+    width: 250px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 50px auto;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+
+}
