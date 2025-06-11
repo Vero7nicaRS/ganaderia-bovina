@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
-
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-57*d_d&0l7t_zk4l)7!b((5-2oxc+emmm1poas@lc@nj&b=8bv'
+SECRET_KEY = config('SECRET_KEY')
+# print("CLAVE SECRETA:", SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -108,14 +109,14 @@ DATABASES = {
     #}
     'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'bd_ganaderia_bovina',
-            'USER': 'postgres',
-            'PASSWORD': 'posTPS',
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
         }
 }
-
+# print("CLAVE SECRETA:", SECRET_KEY)
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
