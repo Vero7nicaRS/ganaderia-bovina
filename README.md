@@ -27,17 +27,7 @@ Si se usa Linux/MacOs:
     pip install -r requirements.txt
 4. Configuración de la base de datos PostgreSQL:
 Crear una base de datos "bd_ganaderia_bovina" y comprobar que el archivo
-"settings.py" tenga la configuración adecuada:
-    DATABASES = {
-        'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bd_ganaderia_bovina',
-        'USER': 'postgres',
-        'PASSWORD': 'posTPS',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        }
-    }
+"settings.py" tenga la configuración adecuada.
 5. Creación y ejecución de las migraciones:
     Windows:
        run.bat makemigrations
