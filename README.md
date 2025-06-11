@@ -64,7 +64,7 @@ SCRIPTS DE EJECUCIÓN:
   python3 backend_django/manage.py "$@"
 
 ENDPOINTS DISPONIBLES:
-Una vez el servidor esté levantado, se puede acceder a:
+Una vez el servidor esté operativo, se puede acceder a:
 
 - http://localhost:8000/api/animales/
 
