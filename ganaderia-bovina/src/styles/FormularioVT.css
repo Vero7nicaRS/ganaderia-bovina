@@ -92,7 +92,7 @@
     border: 1px solid #007bff; /* Añade un borde del color original */
 }
 
-{/* Afecta a todos los elementos de boton-espacio*/}
+/* Afecta a todos los elementos de boton-espacio*/
 .boton-espacio{
     display: flex; /*Permite una mejor dispoición de los elementos*/
     justify-content: center; /* Alinea el botón a la derecha */
@@ -100,7 +100,7 @@
 
 }
 
-{/*Afecta al elemento botón*/}
+/*Afecta al elemento botón*/
 .boton-espacio .btn{
 
     font-size: 14px;/* Tamaño del texto */
@@ -111,7 +111,7 @@
     margin-top: 15px; /* Espacio entre la tabla y el botón */
 }
 
-{/*Cuando pasas el puntero del ratón por encima del botón*/}
+/*Cuando pasas el puntero del ratón por encima del botón*/
 .boton-espacio .btn:hover {
     background-color: white; /* Cambia el fondo a blanco */
     color: #007bff; /* Cambia el texto al color original del fondo */
