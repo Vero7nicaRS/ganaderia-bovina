@@ -168,7 +168,7 @@
     margin-top: 15px; /* Espacio entre la tabla y el botón */
 }
 
-{/*Cuando pasas el puntero del ratón por encima del botón*/}
+/*Cuando pasas el puntero del ratón por encima del botón*/
 .boton-simulacion .btn:hover {
     background-color: white; /* Cambia el fondo a blanco */
     color: #007bff; /* Cambia el texto al color original del fondo */
@@ -261,7 +261,7 @@
 
 /* MENSAJE CARGANDO SIMULACIÓN*/
 .mensaje-cargando-simulacion{
-    textAlign: center;
-    marginTop: 10px;
+    text-align: center;
+    margin-top: 10px;
     color: #007bff;
 }
