@@ -181,6 +181,8 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Transmisión de células somáticas: (Media 0.5 y desviación 1.5. Tiene 2 decimales.)
             if(isNaN(valorCelSom)){  // Se comprueban que sea un número.
                 erroresTemp.celulas_somaticas = "Debe ser un número válido";
+            }else if(valorCelSom <-99.99 || valorCelSom > 99.99){
+                erroresTemp.celulas_somaticas = "Rango no valido:  min. -99.99 y máx 99.99";
             }else if(!(Math.floor(valorCelSom * 100) === valorCelSom * 100)){ // Se comprueba que hay 2 decimales.
                 erroresTemp.celulas_somaticas = "Máximo dos decimales.";
             }
@@ -212,7 +214,9 @@ export const ComprobarCamposFormularioAnimal = (datosAnimal, tipoAnimal, esModif
             // Transmisión de producción de leche: (Media 30 y desviación 20. Tiene 2 decimales.)
             if(isNaN(valorTransLeche)){  // Se comprueban que sea un número.
                 erroresTemp.transmision_leche = "Debe ser un número válido";
-            }else if (!(Math.floor(valorTransLeche * 100) === valorTransLeche * 100)) { /* Se comprueba que no tiene ningún decimal
+            } else if( valorTransLeche <-99.99 || valorTransLeche > 99.99){
+                erroresTemp.transmision_leche = "Rango no valido: min. -99.99 y máx 99.99";
+            } else if (!(Math.floor(valorTransLeche * 100) === valorTransLeche * 100)) { /* Se comprueba que no tiene ningún decimal
                 Es como si fuera una multiplicación por 1*/
                 erroresTemp.transmision_leche = "Máximo dos decimales permitidos";
             }
