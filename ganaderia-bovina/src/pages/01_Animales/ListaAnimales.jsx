@@ -7,7 +7,7 @@
 * */
 
 import "../../styles/ListaAnimales.css";
-import {useState, useContext, useEffect} from "react";
+import {useState, useContext, useMemo} from "react";
 import {NavLink} from "react-router-dom";
 import {AnimalesContext} from "../../DataAnimales/DataVacaTerneros/AnimalesContext.jsx";
 import {SoloAdmin} from "../../components/SoloAdmin.jsx";
@@ -21,24 +21,37 @@ export const ListaAnimales = () => {
     //Creación de busquedaID y tipoSeleccionado para realizar un filtrado en la tabla de animales.
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de animales.
     const [tipoSeleccionado, setTipoSeleccionado] = useState("Sin filtro"); //Busqueda por TIPO en la lista de animales.
-    const [animalesFiltrados, setAnimalesFiltrados] = useState(animales); // Estado para almacenar los animales filtrados
+   //const [animalesFiltrados, setAnimalesFiltrados] = useState(animales); // Estado para almacenar los animales filtrados
 
-    // Realización del filtrado por ID y por TIPO
-    useEffect(() => {
+    // // Realización del filtrado por ID y por TIPO
+    // useEffect(() => {
+    //     // Filtrar animales cada vez que cambien los filtros de búsqueda
+    //     const datosFiltrados = animales.filter((item) => {
+    //         const coincideBusqueda =
+    //             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
+    //              se convierten a mayúsculas (toUpperCase)*/
+    //             busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase());
+    //         const coincideTipo = tipoSeleccionado === "Sin filtro" || item.tipo === tipoSeleccionado;
+    //         return coincideBusqueda && coincideTipo;
+    //     });
+    //
+    //     // Se actualiza el estado de los animales filtrados (vacas/terneros)
+    //     setAnimalesFiltrados(datosFiltrados);
+    // }, [busquedaID, tipoSeleccionado, animales]); // Tiene como dependencia cada uno de los filtros (ID y TIPO) y los animales
+
+
+    /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
+    const animalesFiltrados = useMemo(() => {
         // Filtrar animales cada vez que cambien los filtros de búsqueda
-        const datosFiltrados = animales.filter((item) => {
+        return animales.filter((item) => {
             const coincideBusqueda =
                 /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
-                 se convierten a mayúsculas (toUpperCase)*/
+                se convierten a mayúsculas (toUpperCase)*/
                 busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase());
             const coincideTipo = tipoSeleccionado === "Sin filtro" || item.tipo === tipoSeleccionado;
             return coincideBusqueda && coincideTipo;
         });
-
-        // Se actualiza el estado de los animales filtrados (vacas/terneros)
-        setAnimalesFiltrados(datosFiltrados);
-    }, [busquedaID, tipoSeleccionado, animales]); // Tiene como dependencia cada uno de los filtros (ID y TIPO) y los animales
-
+    }, [busquedaID, tipoSeleccionado, animales]);
     //Manejadores de las búsquedas realizadas por ID y por TIPO para encontrar al animal (vaca/ternero)
     const manejarBusquedaID = (e) => {
         setBusquedaID(e.target.value);

@@ -9,7 +9,7 @@
 
 import "../../styles/ListaToros.css";
 import {NavLink} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useMemo, useState} from "react";
 import {TorosContext} from "../../DataAnimales/DataToros/TorosContext.jsx";
 import {SoloAdmin} from "../../components/SoloAdmin.jsx";
 
@@ -17,20 +17,29 @@ export const ListaToros = () => {
 
     const {animalesToros} = useContext(TorosContext);
     const [busquedaID, setBusquedaID] = useState(""); //Busqueda por ID en la lista de toros.
-    const [animalesTorosFiltrados, setAnimalesTorosFiltrados] = useState(animalesToros); //Para almacenar los animales que han sido filtrados.
+    //const [animalesTorosFiltrados, setAnimalesTorosFiltrados] = useState(animalesToros); //Para almacenar los animales que han sido filtrados.
 
-    useEffect(() => {
-        const datosFiltrados = animalesToros.filter((item) => {
-            const coincideBusqueda =
-                /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
+    // useEffect(() => {
+    //     const datosFiltrados = animalesToros.filter((item) => {
+    //         const coincideBusqueda =
+    //             /*Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
+    //             se convierten a mayúsculas (toUpperCase)*/
+    //             busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
+    //         return coincideBusqueda ;
+    //     });
+    //     // Actualizar el estado de los animales filtrados
+    //     setAnimalesTorosFiltrados(datosFiltrados);
+    // }, [busquedaID, animalesToros]);
+
+
+    /* UseMemo: Evitar que se renderice. Los elementos que no cambian se mantienen (useMemo) */
+    const animalesTorosFiltrados = useMemo(() => {
+        return animalesToros.filter(item =>
+            /* Se ignoran las mayúsculas y minúsculas, ya que tanto el CÓDIGO que introduce el usuario como el almacenado
                 se convierten a mayúsculas (toUpperCase)*/
-                busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase()); // Búsqueda por ID
-            return coincideBusqueda ;
-        });
-        // Actualizar el estado de los animales filtrados
-        setAnimalesTorosFiltrados(datosFiltrados);
+            busquedaID === "" || item.codigo.toString().toUpperCase().includes(busquedaID.toUpperCase()) // Búsqueda por ID
+        );
     }, [busquedaID, animalesToros]);
-
     //Manejadores de las búsquedas realizadas por ID para encontrar al animal (toro)
     const manejarBusquedaID = (e) => {
         setBusquedaID(e.target.value);

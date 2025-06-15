@@ -1,6 +1,7 @@
 import "../../styles/InicioSesion.css";
 import {useAuthContext} from "../../authentication/AuthContext.jsx";
 import {useState} from "react";
+import imagen_logo from "../../assets/ApexGenomic_logo.png";
 
 export const InicioSesion = () => {
     const {login} = useAuthContext();
@@ -51,6 +52,8 @@ export const InicioSesion = () => {
 
     return (
         <>
+            {/* Aparece el logo de la aplicación */}
+            <img src={imagen_logo} alt="Logo ApexGenomic" className="ApexGenomicLogoInicioSesion"/>
             <div className="contenedor-inicioSesion">
                 <div className="cuadradoVisualizarAgregarModificar">INICIO DE SESIÓN</div>
             </div>
@@ -64,7 +67,7 @@ export const InicioSesion = () => {
                         <input
                             type="text"
                             className="cuadro-texto-inicioSesion"
-                            name = "nombreUsuario"
+                            name="nombreUsuario"
                             value={nombreUsuario}
                             onChange={(e) => setNombreUsuario(e.target.value)}
                             required
@@ -76,7 +79,7 @@ export const InicioSesion = () => {
                         <input
                             type="password"
                             className="cuadro-texto-inicioSesion"
-                            name = "contrasenya"
+                            name="contrasenya"
                             value={contrasenya}
                             onChange={(e) => setContrasenya(e.target.value)}
                             required
