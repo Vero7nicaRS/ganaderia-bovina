@@ -30,7 +30,7 @@ export const FormularioAnimal = () => {
     //Hook para navegar
     const navigate = useNavigate();
 
-    const {modo, animal: animalInicial} = location.state || {tipo: "Vaca", estado: "Vacía", corral: "Corral vacas 1"}; // Se recupera el modo y animal desde el state
+    const {modo, animal: animalInicial} = location.state || {tipo: "Vaca", estado: "Vacía", corral: "CORRAL-1"}; // Se recupera el modo y animal desde el state
     const {id} = useParams(); // Se emplea para acceder mediante URL
     const modoFinal = modo || (id ? "ver" : "agregar") // Se indica el modo en el que debe estar el formulario, si ha sido pasado por el state o no.
 
